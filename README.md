@@ -34,11 +34,10 @@ Please contact us!
 
 Thank you!
 
-* team member name and email
-* team member name and email
-* team member name and email
-* team member name and email
-* team member name and email
+* André Miguel Rodrigues dos Santos andremsantos06@gmail.com
+* Rodrigo Silveira de Carvalho rodrigosdecarvalho2006@gmail.com
+* Afonso Cerqueira de Sousa Gomes Bouça afonsogomesbouca@gmail.com
+* Tomás Ferreira da Costa
 
 ---
 ## Business Modelling
