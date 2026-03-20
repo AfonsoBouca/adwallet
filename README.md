@@ -118,8 +118,6 @@ At the end, it is good to add a rough indication of the value of the user story 
 
 -->
 
-## User Stories
-
 The system is designed to support three main types of users: **end users**, **advertising companies**, and **administrators**.
 
 For end users, the platform provides functionality for **account management**, including registration, login, profile customization, and security features such as email verification and password recovery. Users can browse available advertisements, view key details such as duration and reward, and choose which ads to watch. By interacting with ads and completing associated questionnaires, users earn rewards stored in a virtual wallet. They can track their earnings history, withdraw funds, or donate to verified charities, contributing to social impact initiatives. Additionally, users can rate ads, report inappropriate content, and manage notification preferences.
