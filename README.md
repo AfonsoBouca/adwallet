@@ -59,6 +59,34 @@ Indicate an  initial/tentative list of high-level features - high-level capabili
 Optionally, indicate an initial/tentative list of assumptions that you are doing about the app and dependencies of the app to other systems.
 -->
 
+### Features
+
+- **User Account Management** - registration, login, email verification, password reset, profile editing, and account deletion  
+- **Advertisement Browsing** - list of available ads with information such as duration and reward  
+- **Ad Interaction** - watch ads, answer questionnaires, rate ads, skip irrelevant ads, and report inappropriate content  
+- **Reward System (Wallet)** - virtual wallet to store earnings and track balance updates  
+- **Earnings History** - detailed history of rewards earned from ads  
+- **Withdrawals** - request transfer of wallet balance to a bank account and track request status  
+- **Donations System** - donate earnings to verified charities aligned with SDGs  
+- **Social Impact Tracking** - view donation history and total contributions per charity  
+- **Notification System** - receive updates about new ads, rewards, and special campaigns, with customizable preferences  
+- **Advertiser Dashboard** - upload ads, define rewards, create questionnaires, set targeting parameters, and schedule campaigns  
+- **Campaign Analytics** - access statistics on ad performance and user feedback  
+- **Administration Panel** - manage users, monitor activity, approve ads, manage charities, and generate reports  
+
+### Assumptions
+
+- Users are willing to watch advertisements in exchange for monetary rewards  
+- Advertisers are interested in targeted campaigns focused on the academic community  
+- Accurate demographic data improves ad relevance and effectiveness  
+- The platform integrates with secure external payment systems for withdrawals  
+- Verified charities are available and willing to partner with the platform  
+- Users value both financial incentives and social impact (donations)  
+- Notification systems improve user engagement and retention  
+- Administrative moderation is required to ensure content quality and platform safety  
+- The application complies with data protection regulations (e.g., GDPR)  
+- The system will be primarily used on mobile devices 
+
 ## Requirements
 
 ### User Stories
