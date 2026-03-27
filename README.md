@@ -135,9 +135,8 @@ For advertising companies, the system offers tools to **create and manage advert
 For administrators, the platform includes features for **system oversight and governance**, such as managing user accounts, monitoring activity to detect fraud, approving or rejecting advertisements, maintaining a list of verified charities, and generating reports to evaluate platform performance.
 
 ### Domain model
-### Domain model
 
-[cite_start]The following UML class diagram represents the core entities of the AdWallet ecosystem and their relationships, focusing on the interaction between users, the targeted advertising system, and the social impact through donations[cite: 29].
+The following UML class diagram identifies the core entities and relationships within the AdWallet platform. [cite_start]It illustrates how the system manages user demographics for targeted advertising, handles the virtual wallet through various transaction types, and facilitates social impact via charity donations.
 
 ```mermaid
 classDiagram
@@ -193,6 +192,18 @@ classDiagram
         <<Abstract>>
         +double amount
         +DateTime timestamp
+    }
+
+    class Withdrawal {
+        +String bankAccount
+    }
+
+    class Donation {
+        +String charityId
+    }
+
+    class Earning {
+        +String adId
     }
 
     class Charity {
