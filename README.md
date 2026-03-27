@@ -135,6 +135,88 @@ For advertising companies, the system offers tools to **create and manage advert
 For administrators, the platform includes features for **system oversight and governance**, such as managing user accounts, monitoring activity to detect fraud, approving or rejecting advertisements, maintaining a list of verified charities, and generating reports to evaluate platform performance.
 
 ### Domain model
+### Domain model
+
+[cite_start]The following UML class diagram represents the core entities of the AdWallet ecosystem and their relationships, focusing on the interaction between users, the targeted advertising system, and the social impact through donations[cite: 29].
+
+```mermaid
+classDiagram
+    class User {
+        <<Abstract>>
+        +String email
+        +String password
+        +register()
+        +login()
+    }
+
+    class EndUser {
+        +String name
+        +int age
+        +String gender
+        +String sexualOrientation
+        +String ethnicity
+        +String birthplace
+        +watchAd(Ad)
+        +rateAd(Ad)
+    }
+
+    class Advertiser {
+        +String companyName
+        +createCampaign()
+        +viewAnalytics()
+    }
+
+    class Admin {
+        +approveAd(Ad)
+        +manageCharity(Charity)
+    }
+
+    class Ad {
+        +String title
+        +String videoUrl
+        +int duration
+        +double rewardValue
+        +String status
+    }
+
+    class Questionnaire {
+        +List questions
+        +validateAnswers()
+    }
+
+    class Wallet {
+        +double balance
+        +updateBalance()
+    }
+
+    class Transaction {
+        <<Abstract>>
+        +double amount
+        +DateTime timestamp
+    }
+
+    class Charity {
+        +String name
+        +String sdgGoal
+        +String description
+    }
+
+    User <|-- EndUser
+    User <|-- Advertiser
+    User <|-- Admin
+
+    EndUser "1" -- "1" Wallet : owns
+    EndUser "1" -- "*" Transaction : performs
+    EndUser "*" -- "*" Ad : interacts_with
+
+    Advertiser "1" -- "*" Ad : creates
+    Ad "1" -- "1" Questionnaire : contains
+    
+    Transaction <|-- Withdrawal
+    Transaction <|-- Donation
+    Transaction <|-- Earning
+
+    Donation "*" -- "1" Charity : supports
 
 <!-- 
 To better understand the context of the software system, it is useful to have a simple UML class diagram with all and only the key concepts (names, attributes) and relationships involved of the problem domain addressed by your app. 
