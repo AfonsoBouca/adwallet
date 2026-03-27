@@ -90,6 +90,14 @@ Optionally, indicate an initial/tentative list of assumptions that you are doing
 ## Requirements
 
 ### User Stories
+
+The following user stories are ordered by perceived value for the users:
+
+1. **As a** User, **I want** to watch ads and answer their respective questionnaires **so that** I can earn money for my virtual wallet.
+2. **As a** User, **I want** to register on the application by providing my demographic information (mandatory and optional) **so that** the app can show me ads relevant to my profile.
+3. **As a** User, **I want** to donate my accumulated balance to charities available in the app **so that** I can contribute to social causes and support the Sustainable Development Goals (SDGs).
+4. **As a** User, **I want** to request the withdrawal of my virtual wallet balance to my bank account **so that** I can use the earned money for myself.
+5. **As an** Advertising Company, **I want** to set specific demographic parameters (age, gender, ethnicity, etc.) for my ads **so that** my advertising reaches exactly the desired target audience.
 <!-- 
 In this section you should describe all kinds of requirements for your module: functional and non-functional requirements.
 
