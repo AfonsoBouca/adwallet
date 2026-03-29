@@ -136,6 +136,20 @@ For administrators, the platform includes features for **system oversight and go
 
 ### Domain model
 
+The domain model represents a platform where users interact with advertisements to earn rewards and manage their virtual wallet. EndUsers can watch and rate ads, generating transactions such as earnings, donations, and withdrawals.
+
+Advertisers create ads, which may include questionnaires to validate user engagement. Donations made by users can support different charities available in the system.
+
+Overall, the model captures the main entities and relationships involved in user interaction, financialThe domain model represents a platform where users interact with advertisements to earn rewards and manage their virtual wallet. EndUsers can watch and rate ads, generating transactions such as earnings, donations, and withdrawals.
+
+Advertisers create ads, which may include questionnaires to validate user engagement. Donations made by users can support different charities available in the system.
+
+Overall, the model captures the main entities and relationships involved in user interaction, financial transactions, and social contribution within the application. transactions, and social contribution within the application.
+
+
+
+<img width="1014" height="1049" alt="Captura de ecrã de 2026-03-29 13-07-03" src="https://github.com/user-attachments/assets/ff748eca-acae-4585-9f02-96ef433834b1" />
+
 
 <!-- 
 To better understand the context of the software system, it is useful to have a simple UML class diagram with all and only the key concepts (names, attributes) and relationships involved of the problem domain addressed by your app. 
