@@ -147,8 +147,8 @@ Advertisers create ads, which may include questionnaires to validate user engage
 Overall, the model captures the main entities and relationships involved in user interaction, financial transactions, and social contribution within the application. transactions, and social contribution within the application.
 
 
+<img width="1024" height="952" alt="Captura de ecrã de 2026-03-29 15-11-48" src="https://github.com/user-attachments/assets/ba07a16a-cc99-469a-a78a-162227d86a4a" />
 
-<img width="1014" height="1049" alt="Captura de ecrã de 2026-03-29 13-07-03" src="https://github.com/user-attachments/assets/ff748eca-acae-4585-9f02-96ef433834b1" />
 
 
 <!-- 
