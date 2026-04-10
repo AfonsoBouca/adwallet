@@ -140,14 +140,15 @@ The domain model represents a platform where users interact with advertisements 
 
 Advertisers create ads, which may include questionnaires to validate user engagement. Donations made by users can support different charities available in the system.
 
-Overall, the model captures the main entities and relationships involved in user interaction, financialThe domain model represents a platform where users can watch and rate ads to earn rewards and manage their virtual wallet, generating transactions such as earnings, donations, and withdrawals.
+Overall, the model captures the main entities and relationships involved in user interaction, financial. The domain model represents a platform where users can watch and rate ads to earn rewards and manage their virtual wallet, generating transactions such as earnings, donations, and withdrawals.
 
 Advertisers create ads, which may include questionnaires to validate user engagement. Donations made by users can support different charities available in the system.
 
 Overall, the model captures the main entities and relationships involved in user interaction, financial transactions, and social contribution within the application. transactions, and social contribution within the application.
 
 
-<img width="1024" height="952" alt="Captura de ecrã de 2026-03-29 15-11-48" src="https://github.com/user-attachments/assets/ba07a16a-cc99-469a-a78a-162227d86a4a" />
+<img width="710" height="709" alt="Captura de ecrã de 2026-04-10 17-24-01" src="https://github.com/user-attachments/assets/22a711cf-3e76-4623-9404-f4221143bb57" />
+
 
 <!-- 
 To better understand the context of the software system, it is useful to have a simple UML class diagram with all and only the key concepts (names, attributes) and relationships involved of the problem domain addressed by your app. 
