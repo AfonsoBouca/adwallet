@@ -140,7 +140,7 @@ The domain model represents a platform where users interact with advertisements 
 
 Advertisers create ads, which may include questionnaires to validate user engagement. Donations made by users can support different charities available in the system.
 
-Overall, the model captures the main entities and relationships involved in user interaction, financialThe domain model represents a platform where users interact with advertisements to earn rewards and manage their virtual wallet. EndUsers can watch and rate ads, generating transactions such as earnings, donations, and withdrawals.
+Overall, the model captures the main entities and relationships involved in user interaction, financialThe domain model represents a platform where users can watch and rate ads to earn rewards and manage their virtual wallet, generating transactions such as earnings, donations, and withdrawals.
 
 Advertisers create ads, which may include questionnaires to validate user engagement. Donations made by users can support different charities available in the system.
 
