@@ -162,11 +162,9 @@ Example:
 ### User interfaces
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/6f93385d-270d-41e3-b72f-81485be6761c" height="500" style="width:auto;"/>
-  <img src="https://github.com/user-attachments/assets/63e6fbdb-9bf8-48d9-b9ec-04ec4a46c65b" height="500" style="width:auto;"/>
-  <img src="https://github.com/user-attachments/assets/8110f42f-cf35-4a75-a179-9115bcca8f71" height="500" style="width:auto;"/>
-  <img src="https://github.com/user-attachments/assets/6ebcdce8-65ea-478d-aea3-c037c3dea676" height="500" style="width:auto;"/>
-  <img src="https://github.com/user-attachments/assets/1c50228b-8e09-4f87-9d26-efff5750e3b1" height="500" style="width:auto;"/>
+  <img src="https://github.com/user-attachments/assets/aace9e32-9073-4c29-81a1-da28b83427d5" height="500" style="width:auto;"/>
+  <img src="https://github.com/user-attachments/assets/cf80df67-614f-45de-844d-8ab5add83f91" height="500" style="width:auto;"/>
+  <img src="https://github.com/user-attachments/assets/721deda4-7661-4895-8446-3035b25c25c6" height="500" style="width:auto;"/>
 </p>
 
 ## Architecture and Design
