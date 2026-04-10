@@ -149,8 +149,6 @@ Overall, the model captures the main entities and relationships involved in user
 
 <img width="1024" height="952" alt="Captura de ecrã de 2026-03-29 15-11-48" src="https://github.com/user-attachments/assets/ba07a16a-cc99-469a-a78a-162227d86a4a" />
 
-
-
 <!-- 
 To better understand the context of the software system, it is useful to have a simple UML class diagram with all and only the key concepts (names, attributes) and relationships involved of the problem domain addressed by your app. 
 Also provide a short textual description of each concept (domain class). 
@@ -161,6 +159,15 @@ Example:
 </p>
 -->
 
+### User interfaces
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/6f93385d-270d-41e3-b72f-81485be6761c" height="500" style="width:auto;"/>
+  <img src="https://github.com/user-attachments/assets/63e6fbdb-9bf8-48d9-b9ec-04ec4a46c65b" height="500" style="width:auto;"/>
+  <img src="https://github.com/user-attachments/assets/8110f42f-cf35-4a75-a179-9115bcca8f71" height="500" style="width:auto;"/>
+  <img src="https://github.com/user-attachments/assets/6ebcdce8-65ea-478d-aea3-c037c3dea676" height="500" style="width:auto;"/>
+  <img src="https://github.com/user-attachments/assets/1c50228b-8e09-4f87-9d26-efff5750e3b1" height="500" style="width:auto;"/>
+</p>
 
 ## Architecture and Design
 <!--
