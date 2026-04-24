@@ -6,27 +6,31 @@
 
 Welcome to the documentation of AdWallet!
 
-This Software Development Report, tailored for LEIC-ES-2025-26, provides comprehensive details about AdWallet, starting from an high-level vision and going into low-level implementation decisions. 
+This Software Development Report, tailored for LEIC-ES-2025-26, provides comprehensive details about AdWallet, starting from a high-level vision and going into low-level implementation decisions.
 
-It is organised by the following activities: 
+It is organised by the following activities:
 
-* [Business modeling](#Business-Modelling) 
-  * [Product Vision](#Product-Vision)
-  * [Features and Assumptions](#Features-and-Assumptions)
-* [Requirements](#Requirements)
-  * [User stories](#User-stories)
-  * [Domain model](#Domain-model)
-  * [User interfaces](#User-interfaces)
-* [Architecture and Design](#Architecture-And-Design)
-  * [Logical architecture](#Logical-Architecture)
-  * [Physical architecture](#Physical-Architecture)
-  * [Functional prototype](#Functional-Prototype)
-* [Project management](#Project-Management)
-  * [Sprint 0](#Sprint-0)
-  * [Sprint 1](#Sprint-1)
-  * [Sprint 2](#Sprint-2)
-  * [Sprint 3](#Sprint-3)
-  * [Final Release](#Final-Release)
+* [Business Modelling](#business-modelling)
+  * [Product Vision](#product-vision)
+  * [Features and Assumptions](#features-and-assumptions)
+* [Requirements](#requirements)
+  * [User Stories](#user-stories)
+  * [Domain Model](#domain-model)
+  * [User Interfaces](#user-interfaces)
+* [Architecture and Design](#architecture-and-design)
+  * [Architecture Overview](#architecture-overview)
+  * [Navigation & Data Flow](#navigation--data-flow)
+  * [Design Patterns](#design-patterns)
+  * [Notable Design Decisions](#notable-design-decisions)
+  * [Logical Architecture](#logical-architecture)
+  * [Physical Architecture](#physical-architecture)
+  * [Functional Prototype](#functional-prototype)
+* [Project Management](#project-management)
+  * [Sprint 0](#sprint-0)
+  * [Sprint 1](#sprint-1)
+  * [Sprint 2](#sprint-2)
+  * [Sprint 3](#sprint-3)
+  * [Final Release](#final-release)
 
 Contributions are expected to be made exclusively by the initial team, but we may open them to the community, after the course, in all areas and topics: requirements, technologies, development, experimentation, testing, etc.
 
@@ -34,24 +38,25 @@ Please contact us!
 
 Thank you!
 
-* André Miguel Rodrigues dos Santos andremsantos06@gmail.com
-* Rodrigo Silveira de Carvalho rodrigosdecarvalho2006@gmail.com
-* Afonso Cerqueira de Sousa Gomes Bouça afonsogomesbouca@gmail.com
-* Tomás Ferreira da Costa tfcosta05@gmail.com
+- André Miguel Rodrigues dos Santos — andremsantos06@gmail.com
+- Rodrigo Silveira de Carvalho — rodrigosdecarvalho2006@gmail.com
+- Afonso Cerqueira de Sousa Gomes Bouça — afonsogomesbouca@gmail.com
+- Tomás Ferreira da Costa — tfcosta05@gmail.com
 
 ---
+
 ## Business Modelling
 
 Business modeling in software development involves defining the product's vision, understanding market needs, aligning features with user expectations, and setting the groundwork for strategic planning and execution.
 
 ### Product Vision
 
-Earn, engage and give-back, a mobile app that rewards users for interacting with ads while supporting meaningful causes.
-
+Earn, engage and give-back — a mobile app that rewards users for interacting with ads while supporting meaningful causes.
 
 ### Features and Assumptions
+
 <!-- 
-Indicate an  initial/tentative list of high-level features - high-level capabilities or desired services of the system that are necessary to deliver benefits to the users.
+Indicate an initial/tentative list of high-level features - high-level capabilities or desired services of the system that are necessary to deliver benefits to the users.
  - Feature XPTO - a few words to briefly describe the feature
  - Feature ABCD - ...
 ...
@@ -59,60 +64,55 @@ Indicate an  initial/tentative list of high-level features - high-level capabili
 Optionally, indicate an initial/tentative list of assumptions that you are doing about the app and dependencies of the app to other systems.
 -->
 
-### Features
+#### Features
 
-- **User Account Management** - registration, login, email verification, password reset, profile editing, and account deletion  
-- **Advertisement Browsing** - list of available ads with information such as duration and reward  
-- **Ad Interaction** - watch ads, answer questionnaires, rate ads, skip irrelevant ads, and report inappropriate content  
-- **Reward System (Wallet)** - virtual wallet to store earnings and track balance updates  
-- **Earnings History** - detailed history of rewards earned from ads  
-- **Withdrawals** - request transfer of wallet balance to a bank account and track request status  
-- **Donations System** - donate earnings to verified charities aligned with SDGs  
-- **Social Impact Tracking** - view donation history and total contributions per charity  
-- **Notification System** - receive updates about new ads, rewards, and special campaigns, with customizable preferences  
-- **Advertiser Dashboard** - upload ads, define rewards, create questionnaires, set targeting parameters, and schedule campaigns  
-- **Campaign Analytics** - access statistics on ad performance and user feedback  
-- **Administration Panel** - manage users, monitor activity, approve ads, manage charities, and generate reports  
+- **User Account Management** — registration, login, email verification, password reset, profile editing, and account deletion
+- **Advertisement Browsing** — list of available ads with information such as duration and reward
+- **Ad Interaction** — watch ads, answer questionnaires, rate ads, skip irrelevant ads, and report inappropriate content
+- **Reward System (Wallet)** — virtual wallet to store earnings and track balance updates
+- **Earnings History** — detailed history of rewards earned from ads
+- **Withdrawals** — request transfer of wallet balance to a bank account and track request status
+- **Donations System** — donate earnings to verified charities aligned with SDGs
+- **Social Impact Tracking** — view donation history and total contributions per charity
+- **Notification System** — receive updates about new ads, rewards, and special campaigns, with customisable preferences
+- **Advertiser Dashboard** — upload ads, define rewards, create questionnaires, set targeting parameters, and schedule campaigns
+- **Campaign Analytics** — access statistics on ad performance and user feedback
+- **Administration Panel** — manage users, monitor activity, approve ads, manage charities, and generate reports
 
-### Assumptions
+#### Assumptions
 
-- Users are willing to watch advertisements in exchange for monetary rewards  
-- Advertisers are interested in targeted campaigns focused on the academic community  
-- Accurate demographic data improves ad relevance and effectiveness  
-- The platform integrates with secure external payment systems for withdrawals  
-- Verified charities are available and willing to partner with the platform  
-- Users value both financial incentives and social impact (donations)  
-- Notification systems improve user engagement and retention  
-- Administrative moderation is required to ensure content quality and platform safety  
-- The application complies with data protection regulations (e.g., GDPR)  
-- The system will be primarily used on mobile devices 
+- Users are willing to watch advertisements in exchange for monetary rewards
+- Advertisers are interested in targeted campaigns focused on the academic community
+- Accurate demographic data improves ad relevance and effectiveness
+- The platform integrates with secure external payment systems for withdrawals
+- Verified charities are available and willing to partner with the platform
+- Users value both financial incentives and social impact (donations)
+- Notification systems improve user engagement and retention
+- Administrative moderation is required to ensure content quality and platform safety
+- The application complies with data protection regulations (e.g., GDPR)
+- The system will be primarily used on mobile devices
+
+---
 
 ## Requirements
 
 ### User Stories
 
-The following user stories are ordered by perceived value for the users:
-
-1. **As a** User, **I want** to watch ads and answer their respective questionnaires **so that** I can earn money for my virtual wallet.
-2. **As a** User, **I want** to register on the application by providing my demographic information (mandatory and optional) **so that** the app can show me ads relevant to my profile.
-3. **As a** User, **I want** to donate my accumulated balance to charities available in the app **so that** I can contribute to social causes and support the Sustainable Development Goals (SDGs).
-4. **As a** User, **I want** to request the withdrawal of my virtual wallet balance to my bank account **so that** I can use the earned money for myself.
-5. **As an** Advertising Company, **I want** to set specific demographic parameters (age, gender, ethnicity, etc.) for my ads **so that** my advertising reaches exactly the desired target audience.
 <!-- 
 In this section you should describe all kinds of requirements for your module: functional and non-functional requirements.
 
-For LEIC-ES-2025-26, the requirements will be gathered and documented as user stories. 
+For LEIC-ES-2025-26, the requirements will be gathered and documented as user stories.
 
 Please add in this section a concise summary of all the user stories (not each user story!).
 
 **User stories as GitHub Project Items**
-The user stories themselves should be created and described as items in your GitHub Project with the label "user story". 
+The user stories themselves should be created and described as items in your GitHub Project with the label "user story".
 
 A user story is a description of a desired functionality told from the perspective of the user or customer. A starting template for the description of a user story is *As a < user role >, I want < goal > so that < reason >.*
 
-Name the item with either the full user story or a shorter name (recommended). In the “comments” field, add relevant notes, mockup images, and acceptance test scenarios, linking to the acceptance tests when available, and finally estimate value and effort.
+Name the item with either the full user story or a shorter name (recommended). In the "comments" field, add relevant notes, mockup images, and acceptance test scenarios, linking to the acceptance tests when available, and finally estimate value and effort.
 
-**INVEST in good user stories**. 
+**INVEST in good user stories**.
 You may add more details after, but the shorter and complete, the better. In order to decide if the user story is good, please follow the [INVEST guidelines](https://xp123.com/articles/invest-in-good-stories-and-smart-tasks/).
 
 **User interface mockups**.
@@ -123,36 +123,29 @@ For each user story you should write also the acceptance tests (textually in [Gh
 
 **Value and effort**.
 At the end, it is good to add a rough indication of the value of the user story to the customers (e.g. [MoSCoW](https://en.wikipedia.org/wiki/MoSCoW_method) method) and the team should add an estimation of the effort to implement it using points in a kind-of-a Fibonnacci scale (1,2,3,5,8,13,20,40, no idea).
-
 -->
+
+The following user stories are ordered by perceived value for the users:
+
+1. **As a** User, **I want** to watch ads and answer their respective questionnaires **so that** I can earn money for my virtual wallet.
+2. **As a** User, **I want** to register on the application by providing my demographic information (mandatory and optional) **so that** the app can show me ads relevant to my profile.
+3. **As a** User, **I want** to donate my accumulated balance to charities available in the app **so that** I can contribute to social causes and support the Sustainable Development Goals (SDGs).
+4. **As a** User, **I want** to request the withdrawal of my virtual wallet balance to my bank account **so that** I can use the earned money for myself.
+5. **As an** Advertising Company, **I want** to set specific demographic parameters (age, gender, ethnicity, etc.) for my ads **so that** my advertising reaches exactly the desired target audience.
 
 The system is designed to support three main types of users: **end users**, **advertising companies**, and **administrators**.
 
-For end users, the platform provides functionality for **account management**, including registration, login, profile customization, and security features such as email verification and password recovery. Users can browse available advertisements, view key details such as duration and reward, and choose which ads to watch. By interacting with ads and completing associated questionnaires, users earn rewards stored in a virtual wallet. They can track their earnings history, withdraw funds, or donate to verified charities, contributing to social impact initiatives. Additionally, users can rate ads, report inappropriate content, and manage notification preferences.
+For end users, the platform provides functionality for **account management**, including registration, login, profile customisation, and security features such as email verification and password recovery. Users can browse available advertisements, view key details such as duration and reward, and choose which ads to watch. By interacting with ads and completing associated questionnaires, users earn rewards stored in a virtual wallet. They can track their earnings history, withdraw funds, or donate to verified charities, contributing to social impact initiatives. Additionally, users can rate ads, report inappropriate content, and manage notification preferences.
 
 For advertising companies, the system offers tools to **create and manage advertising campaigns**, including uploading ads, defining rewards, setting demographic targeting parameters, scheduling campaigns, and creating questionnaires. Advertisers can also access analytics and user feedback to evaluate campaign performance and improve engagement.
 
 For administrators, the platform includes features for **system oversight and governance**, such as managing user accounts, monitoring activity to detect fraud, approving or rejecting advertisements, maintaining a list of verified charities, and generating reports to evaluate platform performance.
 
-### Domain model
-
-The domain model represents a platform where users interact with advertisements to earn rewards and manage their virtual wallet. EndUsers can watch and rate ads, generating transactions such as earnings, donations, and withdrawals.
-
-Advertisers create ads, which may include questionnaires to validate user engagement. Donations made by users can support different charities available in the system.
-
-Overall, the model captures the main entities and relationships involved in user interaction, financial. The domain model represents a platform where users can watch and rate ads to earn rewards and manage their virtual wallet, generating transactions such as earnings, donations, and withdrawals.
-
-Advertisers create ads, which may include questionnaires to validate user engagement. Donations made by users can support different charities available in the system.
-
-Overall, the model captures the main entities and relationships involved in user interaction, financial transactions, and social contribution within the application. transactions, and social contribution within the application.
-
-
-<img width="710" height="709" alt="Captura de ecrã de 2026-04-10 17-24-01" src="https://github.com/user-attachments/assets/22a711cf-3e76-4623-9404-f4221143bb57" />
-
+### Domain Model
 
 <!-- 
-To better understand the context of the software system, it is useful to have a simple UML class diagram with all and only the key concepts (names, attributes) and relationships involved of the problem domain addressed by your app. 
-Also provide a short textual description of each concept (domain class). 
+To better understand the context of the software system, it is useful to have a simple UML class diagram with all and only the key concepts (names, attributes) and relationships involved of the problem domain addressed by your app.
+Also provide a short textual description of each concept (domain class).
 
 Example:
  <p align="center" justify="center">
@@ -160,7 +153,11 @@ Example:
 </p>
 -->
 
-### User interfaces
+The domain model represents a platform where users interact with advertisements to earn rewards and manage their virtual wallet. End users can watch and rate ads, generating transactions such as earnings, donations, and withdrawals. Advertisers create ads, which may include questionnaires to validate user engagement. Donations made by users can support different charities available in the system. Overall, the model captures the main entities and relationships involved in user interaction, financial transactions, and social contribution within the application.
+
+<img width="710" height="709" alt="Domain Model" src="https://github.com/user-attachments/assets/22a711cf-3e76-4623-9404-f4221143bb57" />
+
+### User Interfaces
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/aace9e32-9073-4c29-81a1-da28b83427d5" height="500" style="width:auto;"/>
@@ -168,19 +165,95 @@ Example:
   <img src="https://github.com/user-attachments/assets/721deda4-7661-4895-8446-3035b25c25c6" height="500" style="width:auto;"/>
 </p>
 
+---
+
 ## Architecture and Design
+
 <!--
-The architecture of a software system encompasses the set of key decisions about its organization. 
+The architecture of a software system encompasses the set of key decisions about its organization.
 
 A well written architecture document is brief and reduces the amount of time it takes new programmers to a project to understand the code to feel able to make modifications and enhancements.
 
-To document the architecture requires describing the decomposition of the system in their parts (high-level components) and the key behaviors and collaborations between them. 
+To document the architecture requires describing the decomposition of the system in their parts (high-level components) and the key behaviors and collaborations between them.
 
 In this section you should start by briefly describing the components of the project and their interrelations. You should describe how you solved typical problems you may have encountered, pointing to well-known architectural and design patterns, if applicable.
 -->
 
+### Architecture Overview
 
-### Logical architecture
+The system is organised into three logical layers:
+
+```
+┌─────────────────────────────────────────┐
+│              UI Layer                   │
+│  RegistrationScreen  AdFeedScreen       │
+│  SurveyScreen        CharitiesScreen    │
+│  SettingsScreen      MainActivity       │
+├─────────────────────────────────────────┤
+│           ViewModel Layer               │
+│           WalletViewModel               │
+│    (balance, ads, charities, user)      │
+├─────────────────────────────────────────┤
+│             Data Layer                  │
+│   In-memory state (StateFlow)           │
+│   Ad list · Charity list                │
+│   DemographicState                      │
+└─────────────────────────────────────────┘
+```
+
+**`WalletViewModel`** is the single source of truth for the entire application. It holds all mutable state as `StateFlow` objects and exposes business operations (`registerUser`, `addReward`, `donate`, `setThemeOverride`). By centralising state in one ViewModel scoped to the Activity lifecycle, any screen can observe changes without explicit coordination.
+
+**Screen Composables** (`RegistrationScreen`, `AdFeedScreen`, `SurveyScreen`, `CharitiesScreen`, `SettingsScreen`) are stateless — they receive data and callbacks as parameters and never own mutable state themselves, making each screen independently testable.
+
+**`MainActivity`** acts as the composition root: it creates the ViewModel, collects state from its flows, and wires together the navigation graph using Jetpack Navigation Compose.
+
+### Navigation & Data Flow
+
+Navigation follows a linear onboarding flow followed by a tabbed main area:
+
+```
+Registration ──► AdFeed ──► Survey
+                  │
+           (Bottom Nav)
+                  │
+           Charities ── Settings
+```
+
+State changes propagate reactively: the ViewModel exposes `StateFlow` values, `MainActivity` collects them with `collectAsState()`, and passes them down as immutable parameters to composables. User interactions trigger callbacks that call ViewModel methods, which update the flows, causing Compose to automatically recompose only the affected parts of the UI — an application of the **Observer pattern**.
+
+#### Example end-to-end flow — watching an ad and earning a reward
+
+1. User clicks an Ad card in `AdFeedScreen` → navigates to `SurveyScreen` with the ad's data.
+2. User completes the survey → `onSurveySubmit(reward)` callback fires.
+3. `WalletViewModel.addReward()` updates `_balance` StateFlow.
+4. All screens observing the balance (Feed AppBar, Charities dialog) recompose instantly.
+
+### Design Patterns
+
+| Pattern | Where Used | Why |
+|---|---|---|
+| **MVVM** | `WalletViewModel` + Screen composables | Decouples UI from business logic; enables unit testing of state transitions without a running UI |
+| **Observer (Reactive Streams)** | `StateFlow` + `collectAsState()` | Eliminates manual UI refresh calls; UI always reflects current state |
+| **Single Activity** | `MainActivity` only | Modern Android best practice; simplifies back-stack management with Compose Navigation |
+| **Callback / Event Delegation** | `onRegisterSuccess`, `onDonate`, `onSurveySubmit` | Keeps composables dumb; they report intent upward, ViewModel decides effect |
+| **Scaffold + NavHost** | `MainActivity` | Standard Compose pattern for hosting bottom navigation with a changing content area |
+
+### Notable Design Decisions
+
+#### In-memory state only
+There is no database or persistence layer (no Room, no SharedPreferences). All state lives in `WalletViewModel` and is reset when the app process dies. This was appropriate for a prototype/demo context and keeps the architecture simple — adding a Repository backed by Room would be the natural next step for a production version.
+
+#### Global ViewModel
+A single `WalletViewModel` serves all screens, rather than per-screen ViewModels. This avoids the need to pass data between screens via navigation arguments for most state (e.g., balance is visible everywhere without re-fetching). The trade-off is that the ViewModel grows larger as the app scales, but for this scope it keeps the design straightforward.
+
+#### Input validation at entry point
+`RegistrationScreen` filters keystrokes in real-time (name allows only letters/spaces; age only digits) rather than validating on submit. This prevents invalid data from ever entering the ViewModel, keeping the model clean without defensive checks throughout the business layer.
+
+#### Theme control via ViewModel
+The dark/light mode preference is stored in `WalletViewModel` as a nullable `Boolean?` (`null` = follow system). `MainActivity` observes this and passes it into the custom `TPC3Theme`, so changing the setting from `SettingsScreen` immediately repaints the entire app — a clean demonstration of how a single reactive state change can cascade through the whole UI tree.
+
+### Logical Architecture
+
 <!--
 The purpose of this subsection is to document the high-level logical structure of the code (Logical View), using a UML diagram with logical packages, without the worry of allocating to components, processes or machines.
 
@@ -191,8 +264,72 @@ Example of _UML package diagram_ showing a _logical view_ of the Eletronic Ticke
 ![LogicalView](https://user-images.githubusercontent.com/9655877/160585416-b1278ad7-18d7-463c-b8c6-afa4f7ac7639.png)
 -->
 
+The application is decomposed into four logical packages arranged in horizontal layers, from the top-most user-facing layer down to the domain model.
 
-### Physical architecture
+```
+┌──────────────────────────────────────────────┐
+│               navigation                     │
+│          MainActivity · AdWalletApp          │
+└───────────┬──────────────┬───────────────────┘
+            │              │
+            ▼              ▼
+┌───────────────┐  ┌───────────────────────────┐
+│   viewmodel   │  │         ui.screens        │
+│WalletViewModel│  │ RegistrationScreen        │
+│               │  │ AdFeedScreen              │
+│               │  │ SurveyScreen              │
+│               │  │ CharitiesScreen           │
+│               │  │ SettingsScreen            │
+└───────┬───────┘  └──────────┬────────────────┘
+        │                     │         │
+        │                     │         ▼
+        │                     │  ┌─────────────┐
+        │                     │  │  ui.theme   │
+        │                     │  │ Color·Theme │
+        │                     │  │ Type        │
+        │                     │  └─────────────┘
+        │                     │
+        └──────────┬──────────┘
+                   ▼
+        ┌──────────────────────┐
+        │        model         │
+        │  Ad · Charity        │
+        │  DemographicState    │
+        └──────────────────────┘
+```
+
+#### Package Descriptions
+
+**`model` — Domain layer**
+Pure data classes with no dependencies on Android or UI frameworks. Contains `Ad` (an advertisement with a reward value), `Charity` (a cause users can donate to), and `DemographicState` (the registered user's profile). The stable base on which all other layers build.
+
+**`viewmodel` — Business logic layer**
+`WalletViewModel` is the single application-wide state holder. It owns all mutable state as `StateFlow` objects (`balance`, `availableAds`, `charities`, `demographics`, `themePreference`) and exposes the only operations that may change that state (`registerUser`, `addReward`, `donate`, `setThemeOverride`). Depends only on `model` and the Android ViewModel lifecycle library.
+
+**`ui.screens` — Presentation layer**
+Each screen is a stateless `@Composable` function that receives data and event callbacks as parameters — screens never hold mutable state or talk to the ViewModel directly. This makes each screen independently testable and reusable. Depends on `model` (for parameter types) and `ui.theme` (for colour and typography tokens).
+
+**`ui.theme` — Styling layer**
+`Color.kt` defines the colour palette for both light and dark schemes; `Type.kt` defines the typography scale; `Theme.kt` composes these into the `TPC3Theme` Composable that wraps the entire app. All visual tokens are centralised here so that a single theme change propagates everywhere.
+
+**`navigation` — Composition root**
+`MainActivity` creates the `WalletViewModel`, observes the theme preference, and applies `TPC3Theme`. `AdWalletApp` owns the `NavController`, defines the navigation graph (routes, arguments, back-stack rules), collects state from the ViewModel, and wires it into the correct screen Composable. The only layer that knows about both the ViewModel and the individual screens.
+
+#### Dependency Direction
+
+Dependencies flow strictly downward:
+
+```
+navigation → ui.screens → model
+navigation → viewmodel  → model
+navigation → ui.theme
+ui.screens → ui.theme
+```
+
+No lower layer ever references a higher one. Business logic in `viewmodel` is entirely unaware of Compose or navigation, and `model` classes are plain Kotlin data with no framework coupling — keeping each layer independently replaceable.
+
+### Physical Architecture
+
 <!--
 The goal of this subsection is to document the high-level physical structure of the software system (machines, connections, software components installed, and their dependencies) using UML deployment diagrams (Deployment View) or component diagrams (Implementation View), separate or integrated, showing the physical structure of the system.
 
@@ -203,17 +340,78 @@ Example of _UML deployment diagram_ showing a _deployment view_ of the Eletronic
 ![DeploymentView](https://user-images.githubusercontent.com/9655877/160592491-20e85af9-0758-4e1e-a704-0db1be3ee65d.png)
 -->
 
+AdWallet is a fully self-contained Android application with no backend or network dependency. The entire system runs on a single physical node: the user's Android device.
 
-### Functional prototype
+```
+┌─────────────────────────────────────────────────────┐
+│                   Android Device                    │
+│                                                     │
+│  ┌──────────────────────────────────────────────┐   │
+│  │           Android OS (API 36)                │   │
+│  │                                              │   │
+│  │  ┌────────────────────────────────────────┐  │   │
+│  │  │            adwallet.apk                │  │   │
+│  │  │                                        │  │   │
+│  │  │  MainActivity  (Entry Point)           │  │   │
+│  │  │  AdWalletApp   (NavHost + Bottom Nav)  │  │   │
+│  │  │  WalletViewModel (State + Logic)       │  │   │
+│  │  │  Screen Composables (UI Layer)         │  │   │
+│  │  │  AdWalletTheme (Material 3 Theming)    │  │   │
+│  │  └────────────────────────────────────────┘  │   │
+│  │                                              │   │
+│  │  Jetpack Compose Runtime                     │   │
+│  │  Navigation Compose                          │   │
+│  │  Kotlin Coroutines / StateFlow               │   │
+│  │  ViewModel Lifecycle Library                 │   │
+│  │  Material3 Library                           │   │
+│  └──────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────┘
+```
+
+#### Node & Artifact Description
+
+**Android Device / Android OS (API 36)** — The sole execution environment. Minimum and target SDK is API 36 (Android 15); there is no server node, no cloud backend, and no peer-to-peer connection. All computation and state reside entirely on the device.
+
+**`adwallet.apk`** — The single deployable artifact produced by the Gradle build. It packages all compiled Kotlin bytecode, Compose UI descriptors, resources (strings, colours, icons), and the `AndroidManifest` into one installable file.
+
+| Component | Role |
+|---|---|
+| `MainActivity` | Android entry point; applies the theme and hosts the Compose content tree |
+| `AdWalletApp` | Composition root; owns the `NavController` and navigation graph |
+| `WalletViewModel` | Lifecycle-scoped state holder; survives configuration changes (e.g. rotation) |
+| Screen Composables | Stateless UI functions for each screen; recompose on state changes |
+| `AdWalletTheme` | Applies the Material 3 colour scheme and typography to the entire tree |
+
+#### Technologies & Justification
+
+**Kotlin** — Null safety, data classes, extension functions, and first-class coroutine support reduce boilerplate compared to Java and align naturally with the reactive patterns used throughout the app.
+
+**Jetpack Compose** — Google's declarative UI toolkit. Composable functions describe the UI as a function of state; when state changes, only the affected parts of the tree recompose. Eliminates manual `findViewById` wiring, reduces UI/state inconsistency, and is the current recommended approach for new Android projects.
+
+**Jetpack Navigation Compose** — Route-based navigation integrated directly into the Compose tree. Routes are type-safe strings with declared argument types (`NavType.StringType` for `adId`), and the `NavController` manages the back stack automatically — avoiding the complexity of mixing the older Fragment API with Compose.
+
+**Kotlin Coroutines / StateFlow** — `StateFlow` is a coroutine-based observable stream that always holds a current value. It is the idiomatic replacement for `LiveData` in Compose projects: it integrates with `collectAsState()` to trigger recomposition, requires no lifecycle observer boilerplate, and is trivially testable with `runTest`. Exposing read-only `StateFlow` from a `MutableStateFlow` inside the ViewModel enforces unidirectional data flow.
+
+**Android ViewModel (Lifecycle library)** — Survives Activity recreation events (screen rotation, language change) without re-initialising state, which is critical for maintaining balance and user data across configuration changes without a persistent storage layer.
+
+**Material Design 3 (Material You)** — Provides the standard component set (`Card`, `NavigationBar`, `Scaffold`, `Dialog`, `TextField`) and a colour system with adaptive light/dark theming. Using the official library ensures accessibility compliance (contrast ratios, touch target sizes) without custom implementation effort.
+
+**Gradle (Kotlin DSL)** — The standard Android build system. Using `build.gradle.kts` instead of Groovy gives type-safe build script authoring and IDE autocompletion. The `libs.versions.toml` version catalogue centralises all dependency versions in one file, avoiding version drift across modules.
+
+### Functional Prototype
+
 <!--
 To help on validating all the architectural, design and technological decisions made, we usually implement a functional prototype, a thin vertical slice of the system integrating as much technologies as we can.
 
 In this subsection please describe which feature, or part of it, you have implemented, and how, together with a snapshot of the user interface, if applicable.
 
-At this phase, instead of a complete user story, you can simply implement a small part of a feature that demonstrates thay you can use the technology, for example, show a screen with the app credits (name and authors).
+At this phase, instead of a complete user story, you can simply implement a small part of a feature that demonstrates that you can use the technology, for example, show a screen with the app credits (name and authors).
 -->
 
-## Project management
+---
+
+## Project Management
+
 <!--
 Software project management is the art and science of planning and leading software projects, in which they are planned, implemented, monitored and controlled.
 
@@ -221,18 +419,17 @@ In the context of ESOF, we recommend each team to adopt a set of project managem
 
 Common practices of managing agile software development with Scrum are: backlog management, release management, estimation, Sprint planning, Sprint development, acceptance tests, and Sprint retrospectives.
 
-You can find below information and references related with the project management: 
+You can find below information and references related with the project management:
 
 * Backlog management: Product backlog and Sprint backlog in a [Github Projects board](https://github.com/orgs/FEUP-LEIC-ES-2023-24/projects/64);
 * Release management: [v0](#), v1, v2, v3, ...;
-* Sprint planning and retrospectives: 
+* Sprint planning and retrospectives:
   * plans: screenshots of Github Projects board at begin and end of each Sprint;
   * retrospectives: meeting notes in a document in the repository, addressing the following questions:
     * Did well: things we did well and should continue;
     * Do differently: things we should do differently and how;
-    * Puzzles: things we don’t know yet if they are right or wrong;
+    * Puzzles: things we don't know yet if they are right or wrong;
     * list of a few improvements to implement next Sprint;
-
 -->
 
 ### Sprint 0
@@ -246,4 +443,3 @@ You can find below information and references related with the project managemen
 ### Sprint 4
 
 ### Final Release
-
