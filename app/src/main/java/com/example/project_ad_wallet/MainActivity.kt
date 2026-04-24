@@ -4,44 +4,35 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.project_ad_wallet.domain.model.ThemeMode
+import com.example.project_ad_wallet.ui.screen.AdWalletApp
 import com.example.project_ad_wallet.ui.theme.Project_Ad_WalletTheme
+import com.example.project_ad_wallet.ui.viewmodel.WalletViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Project_Ad_WalletTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "World",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+            val viewModel: WalletViewModel = viewModel()
+            val uiState by viewModel.uiState.collectAsState()
+            val systemDarkTheme = isSystemInDarkTheme()
+            val darkTheme = when (uiState.settings.themeMode) {
+                ThemeMode.System -> systemDarkTheme
+                ThemeMode.Light -> false
+                ThemeMode.Dark -> true
+            }
+
+            Project_Ad_WalletTheme(darkTheme = darkTheme) {
+                AdWalletApp(
+                    viewModel = viewModel,
+                    uiState = uiState,
+                )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Project_Ad_WalletTheme {
-        Greeting("Android")
     }
 }
