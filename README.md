@@ -449,20 +449,29 @@ Another challenge was balancing Modeling with Development: Maintaining high-qual
 Sprint 0 Retrospective
 
 Did Well:
+
 ◦ Domain Modeling: We successfully modeled the domain concepts early on. The UML diagrams and textual descriptions provided a clear roadmap that kept the code clean.
+
 ◦Vision Clarity: The "Vision" pattern worked well to keep the team motivated and focused on the "why" of the project rather than just the "how."
+
 ◦User Story Quality: Applying the INVEST criteria early meant that our tasks were actionable and testable from day one.
 
 Do Differently:
+
 ◦Architecture vs. Prototyping Balance: We spent a significant amount of time on the Logical and Physical Architecture (UML diagrams). In the next sprint, we should try to balance documentation time more closely with active coding to avoid bottlenecks.
+
 ◦Mockup Detail: While our UI mockups were explicit, some transitions were missing, leading to slight confusion during the prototype implementation.
 
 Puzzles:
+
 ◦UML Synchronization: We are still figuring out the best way to keep our UML Package and Deployment diagrams perfectly in sync with the code as the project evolves rapidly.
+
 ◦Testing Scope: We aren't yet sure if our Acceptance Tests are too broad or if they should be more granular for specific UI components.
 
 Improvements for Sprint 1:
+
 ◦Refine UI Navigation: We will explicitly map every button click in the mockups to a specific navigation event in the code.
+
 ◦Daily Sync on "Definition of Ready": Ensure that even bugs/improvements include screenshots of intended behavior before they are moved to "In Progress."
 
 ### Sprint 1
