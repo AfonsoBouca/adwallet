@@ -476,6 +476,45 @@ Improvements for Sprint 1:
 
 ### Sprint 1
 
+In Sprint 1, we transitioned from establishing a vision to a focus on execution velocity. Using patterns like "Yesterday’s Weather," we analyzed our performance from Sprint 0 to create a realistic Sprint Backlog that avoided over-commitment. We ensured the backlog contained no epics, only "Small Items" that were ready for immediate action. Through "Pigs Estimate," the team members actually responsible for the code provided the estimates, leading to a much higher level of accuracy and ownership over our sprint goals.
+
+Our workflow matured through a strict "Low WiP" (Work in Progress) policy and collaborative patterns. We managed our tasks on the GitHub Projects board, ensuring that items were only assigned to a pair, trio, or larger group at the moment work actually started. This prevented tasks from being "paused" and ensured that knowledge was shared across the team, preventing technical silos and improving the overall quality of the v1 release.
+
+A major highlight of this phase was the "Sprint Review," where we demonstrated the new product increment to our stakeholders, including the teacher. The feedback provided was immediately recorded in our repository and used to adapt the Product Backlog. This ensured that our development remained aligned with user expectations, specifically regarding how we display charity impact and rewards.
+We reached a significant milestone with the release of v1. While the Vertical Prototype (v0) proved the core loop, v1 focused on expanding the app's robustness.
+
+We ran into some trouble figuring out the best group sizes for our tasks. It was a bit of a learning curve to decide when we needed a pair versus a trio. Some of the easier UI tasks actually took longer because there were too many of us trying to do the same thing at once. On the other hand, the harder logic stuff was way easier with three people checking for mistakes. After solving that it wasmuch easier to keep our work on track and making sure we didn't slow ourselves down.
+
+Another challenge was PBI Granularity for Complex Features: As we moved beyond the simple prototype, breaking down integrated features like "SDG-based Charity Filtering" into 1–3 day tasks proved difficult. It required multiple refinement sessions to ensure these items met our "Definition of Ready" without becoming too large to manage within the sprint.
+
+Sprint 1 Retrospective
+
+Did Well:
+
+•Pair Programming: Collaborative coding significantly reduced our defect rate and ensured that everyone understood the core architecture.
+
+•Realistic Planning: Using "Yesterday's Weather" and "Pigs Estimate" meant we completed our Sprint Backlog without any "overflow" items, boosting team morale.
+
+•Feedback Integration: The Sprint Review process was highly effective at identifying small UI friction points that we hadn't noticed during development.
+
+Do Differently:
+
+•Release Timing: We waited until the very end of the sprint to finalize the v1 .apk. In the next sprint, we should aim for "Nightly Builds" or mid-sprint internal releases to avoid a last-minute rush.
+
+•Meeting Efficiency: Our refinement sessions were occasionally too long. We need to implement stricter time-boxing for PBI discussions to keep the team focused.
+
+Puzzles:
+
+•State Management Scalability: We are still debating if our current AppUiState model will become too "bloated." We need to investigate if splitting it into smaller, feature-specific states is the right move for Sprint 2.
+
+•Testing Coverage Priorities: We are unsure if we should prioritize deep UI testing or focus more on the edge cases of the reward calculation logic.
+
+Improvements for Sprint 2:
+
+•Continuous Deployment Strategy: We will implement a verifiable strategy to build the APK automatically after every major merge to ensure the release is always ready.
+
+•Refined "Definition of Done": We will add "Cross-pair Code Review" to our DoD to ensure that even work done in pairs is verified by someone outside that specific group.
+
 ### Sprint 2
 
 ### Sprint 3
