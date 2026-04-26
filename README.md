@@ -434,6 +434,37 @@ You can find below information and references related with the project managemen
 
 ### Sprint 0
 
+The project began with a high-level "Vision" aimed at transforming digital engagement into social impact. The goal was to create an intuitive "Ad Wallet" where users could interact with advertisements to earn rewards, which could then be directed toward charitable causes. We prioritized clarity and motivation, ensuring the mission—connecting brands, users, and charities—was at the core of every design decision.
+
+We transitioned from a vision to a formal structure by defining our Domain Concepts. This involved creating a robust UML model that mapped out the relationships between Users, Ads, and Charities. By focusing on the domain first, we ensured that the logic (e.g., how a reward from an Ad translates into a balance) was well-described and technically sound before full-scale implementation.
+
+Using patterns like "Small Items" and "Definition of Ready," we built a comprehensive Product Backlog. Every User Story was crafted to meet the INVEST criteria (Independent, Negotiable, Valuable, Estimable, Small, and Testable). This phase established our "Enabling Specification" process, where epics were broken down into actionable 1–3 day tasks, complete with mockups and acceptance tests to ensure the team was never blocked.
+
+The project reached a milestone with the release of a Vertical Prototype. Instead of focusing on standard features like Login, we implemented the unique core loop: viewing ads and managing rewards. This was supported by a growing suite of Unit and Integration tests to ensure the correctness of our functional requirements from day one.
+
+We encountered some difficulties like defining the "Unique" Core: In the early stages, it was difficult to decide which functionality to prioritize for the Vertical Prototype. There was a strong temptation to build "standard" features like authentication first, but we had to pivot to ensure the most characteristic part of the "Ad Wallet" worked perfectly first.
+
+Another challenge was balancing Modeling with Development: Maintaining high-quality UML diagrams (Logical and Physical) while the code was evolving rapidly required disciplined synchronization. Ensuring the "textual description supported the UML" was a constant exercise in technical writing.
+
+Sprint 0 Retrospective
+
+Did Well:
+◦ Domain Modeling: We successfully modeled the domain concepts early on. The UML diagrams and textual descriptions provided a clear roadmap that kept the code clean.
+◦Vision Clarity: The "Vision" pattern worked well to keep the team motivated and focused on the "why" of the project rather than just the "how."
+◦User Story Quality: Applying the INVEST criteria early meant that our tasks were actionable and testable from day one.
+
+Do Differently:
+◦Architecture vs. Prototyping Balance: We spent a significant amount of time on the Logical and Physical Architecture (UML diagrams). In the next sprint, we should try to balance documentation time more closely with active coding to avoid bottlenecks.
+◦Mockup Detail: While our UI mockups were explicit, some transitions were missing, leading to slight confusion during the prototype implementation.
+
+Puzzles:
+◦UML Synchronization: We are still figuring out the best way to keep our UML Package and Deployment diagrams perfectly in sync with the code as the project evolves rapidly.
+◦Testing Scope: We aren't yet sure if our Acceptance Tests are too broad or if they should be more granular for specific UI components.
+
+Improvements for Sprint 1:
+◦Refine UI Navigation: We will explicitly map every button click in the mockups to a specific navigation event in the code.
+◦Daily Sync on "Definition of Ready": Ensure that even bugs/improvements include screenshots of intended behavior before they are moved to "In Progress."
+
 ### Sprint 1
 
 ### Sprint 2
