@@ -433,6 +433,21 @@ You can find below information and references related with the project managemen
 -->
 
 ### Sprint 0
+### Functional Prototype
+
+The v0 vertical prototype successfully demonstrated the core value proposition of AdWallet: allowing users to watch an advertisement, answer a brief questionnaire, and immediately receive a monetary reward in their virtual wallet. This specific flow was prioritized over standard initialization features like user registration or login because it represents the fundamental interaction loop that differentiates AdWallet from other applications. Proving that this core interaction is seamless and rewarding was critical to validating the project's viability.
+
+The prototype was developed using Jetpack Compose for the UI and an MVVM architecture with in-memory state management. This allowed us to quickly implement the logic for calculating rewards and updating the wallet balance without the overhead of setting up a persistent database early on. The focus was entirely on user experience and the reliability of the reward transaction.
+
+This vertical slice was officially tagged and released as v0 on GitHub. The release includes the compiled `.apk` file, allowing stakeholders to install and test the core ad-watching and earning flow directly on their Android devices. You can view the release here: [v0 — Sprint 0 Prototype](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/releases/tag/v0).
+
+### Change Management
+
+During Sprints 0 and 1, the team utilized a simplified Git strategy, pushing commits directly to the `main` branch. This approach was highly appropriate for the rapid prototyping phase, where the primary objective was to quickly build the foundational architecture and the v0 vertical prototype. The low overhead allowed us to iterate quickly without the ceremony of pull requests.
+
+However, as the team transitioned into implementing distinct, parallel features in Sprint 2, this direct-commit approach became a bottleneck. It limited our ability to work concurrently without merge conflicts and bypassed formal code reviews. To address this, starting from Sprint 2, the team adopted a strict "branch-per-feature" workflow.
+
+Under this new system, every feature is developed on an independent branch (e.g., `feature/25-watch-ads`) and merged into `main` exclusively via Pull Requests. This ensures that all code is reviewed, tested via our CI/CD pipeline, and validated before integration, significantly improving code quality and collaboration stability.
 
 The project began with a high-level "Vision" aimed at transforming digital engagement into social impact. The goal was to create an intuitive "Ad Wallet" where users could interact with advertisements to earn rewards, which could then be directed toward charitable causes. We prioritized clarity and motivation, ensuring the mission—connecting brands, users, and charities—was at the core of every design decision.
 
@@ -474,49 +489,52 @@ Improvements for Sprint 1:
 
 ◦Daily Sync on "Definition of Ready": Ensure that even bugs/improvements include screenshots of intended behavior before they are moved to "In Progress."
 
-### Sprint 1
+## Sprint 1
+### Development Environment Setup
 
-In Sprint 1, we transitioned from establishing a vision to a focus on execution velocity. Using patterns like "Yesterday’s Weather," we analyzed our performance from Sprint 0 to create a realistic Sprint Backlog that avoided over-commitment. We ensured the backlog contained no epics, only "Small Items" that were ready for immediate action. Through "Pigs Estimate," the team members actually responsible for the code provided the estimates, leading to a much higher level of accuracy and ownership over our sprint goals.
+AdWallet is built using modern Android development tools. To set up the development environment, ensure you have the following versions: Android Studio (latest stable release), Kotlin 2.0.21, Android Gradle Plugin 9.0.1, and Jetpack Compose BOM 2024.09.00.
 
-Our workflow matured through a strict "Low WiP" (Work in Progress) policy and collaborative patterns. We managed our tasks on the GitHub Projects board, ensuring that items were only assigned to a pair, trio, or larger group at the moment work actually started. This prevented tasks from being "paused" and ensured that knowledge was shared across the team, preventing technical silos and improving the overall quality of the v1 release.
+1. Download and install [Android Studio](https://developer.android.com/studio).
+2. Clone the repository: `git clone https://github.com/LEIC-ES-2025-26-2LEIC03/T5.git`
+3. Open the cloned `T5` directory in Android Studio.
+4. Allow Gradle to sync and download dependencies automatically (no additional configuration is required).
+5. Build and run the project using the "Run" button (Shift+F10) on an emulator or physical device.
 
-A major highlight of this phase was the "Sprint Review," where we demonstrated the new product increment to our stakeholders, including the teacher. The feedback provided was immediately recorded in our repository and used to adapt the Product Backlog. This ensured that our development remained aligned with user expectations, specifically regarding how we display charity impact and rewards.
-We reached a significant milestone with the release of v1. While the Vertical Prototype (v0) proved the core loop, v1 focused on expanding the app's robustness.
+### Responsible Use of Agentic AI
 
-We ran into some trouble figuring out the best group sizes for our tasks. It was a bit of a learning curve to decide when we needed a pair versus a trio. Some of the easier UI tasks actually took longer because there were too many of us trying to do the same thing at once. On the other hand, the harder logic stuff was way easier with three people checking for mistakes. After solving that it wasmuch easier to keep our work on track and making sure we didn't slow ourselves down.
+Throughout the development process, the team utilized AI tools (specifically ChatGPT) to support code generation, troubleshoot compilation errors, and assist with boilerplate UI structuring. This allowed the team to maintain a high velocity while focusing on the core business logic and architectural design of the application.
 
-Another challenge was PBI Granularity for Complex Features: As we moved beyond the simple prototype, breaking down integrated features like "SDG-based Charity Filtering" into 1–3 day tasks proved difficult. It required multiple refinement sessions to ensure these items met our "Definition of Ready" without becoming too large to manage within the sprint.
+It is important to note that while AI assisted in generating implementation code, all unit and acceptance tests were written manually by the team members. This ensures that human oversight remains the ultimate validator of the system's correctness and alignment with our user stories.
 
-Sprint 1 Retrospective
+To maintain transparency, as required by the course guidelines, all AI-assisted code contributions are clearly identified. In early sprints, this was marked using `// MisterAI` comments directly within the source files. From Sprint 2 onwards, we standardized this practice by prefixing the relevant Git commit messages with the `[MisterAI]` tag, providing a clear audit trail of AI involvement in the project history.
 
-Did Well:
+In Sprint 1, the team successfully transitioned from a proof-of-concept to a robust application by implementing essential user features, including comprehensive user registration, a functioning donations system, a dedicated charities screen, and a settings interface with a system-wide theme toggle, all accessible via a new bottom navigation bar. These features, along with automated APK builds via our GitHub Actions CI/CD pipeline, were bundled into the [v1 release](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/releases/tag/v1).
 
-•Pair Programming: Collaborative coding significantly reduced our defect rate and ensured that everyone understood the core architecture.
+## Sprint 2
+In Sprint 2, the team successfully closed the core value loop of AdWallet by fully implementing the ad interaction and reward system, alongside tools for advertisers. We transitioned to a professional branch-per-feature Git workflow, integrating 8 distinct features into `main` via formal Pull Requests, backed by comprehensive testing and automated CI/CD checks.
 
-•Realistic Planning: Using "Yesterday's Weather" and "Pigs Estimate" meant we completed our Sprint Backlog without any "overflow" items, boosting team morale.
+- Watch ads and answer questionnaires to earn wallet rewards ([#25](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/25))
+- Advertiser portal to upload advertisements for review ([#54](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/54))
+- Rate advertisements after watching with 1-5 star system ([#42](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/42))
+- Earnings history screen displaying all past earnings ([#44](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/44))
+- Donation confirmation dialog and success screen ([#52](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/52))
+- Donation history screen with total donated tracking ([#53](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/53))
+- Report inappropriate advertisements with reason selection ([#41](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/41))
+- Notification preferences screen with per-type toggles ([#49](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/49))
 
-•Feedback Integration: The Sprint Review process was highly effective at identifying small UI friction points that we hadn't noticed during development.
+**Key Results:**
+- Transitioned to strict **Branch-per-feature workflow**
+- Authored **57 unit tests** (all passing)
+- Authored **16 acceptance tests** (all passing)
 
-Do Differently:
+**Sprint Documentation:**
+- [Sprint Planning](docs/sprint2/planning.md)
+- [Sprint Review](docs/sprint2/review.md)
+- [Sprint Retrospective](docs/sprint2/retrospective.md)
+- [Happiness Meter](docs/sprint2/happiness.md)
+- [Defects Log](docs/sprint2/defects.md)
 
-•Release Timing: We waited until the very end of the sprint to finalize the v1 .apk. In the next sprint, we should aim for "Nightly Builds" or mid-sprint internal releases to avoid a last-minute rush.
-
-•Meeting Efficiency: Our refinement sessions were occasionally too long. We need to implement stricter time-boxing for PBI discussions to keep the team focused.
-
-Puzzles:
-
-•State Management Scalability: We are still debating if our current AppUiState model will become too "bloated." We need to investigate if splitting it into smaller, feature-specific states is the right move for Sprint 2.
-
-•Testing Coverage Priorities: We are unsure if we should prioritize deep UI testing or focus more on the edge cases of the reward calculation logic.
-
-Improvements for Sprint 2:
-
-•Continuous Deployment Strategy: We will implement a verifiable strategy to build the APK automatically after every major merge to ensure the release is always ready.
-
-•Refined "Definition of Done": We will add "Cross-pair Code Review" to our DoD to ensure that even work done in pairs is verified by someone outside that specific group.
-
-### Sprint 2
-
+All features have been integrated, verified by GitHub Actions, and packaged in the latest release. You can download and test the application here: [v2 — Sprint 2 Release](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/releases/tag/v2).
 ### Sprint 3
 
 ### Sprint 4
