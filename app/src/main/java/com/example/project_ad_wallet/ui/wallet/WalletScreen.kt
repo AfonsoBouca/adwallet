@@ -56,7 +56,7 @@ fun WalletScreen(
     val tabs = listOf("Balance", "Earnings", "Donations")
 
     Scaffold(
-        topBar = { AdWalletTopBar(balance = uiState.balance) },
+        topBar = { AdWalletTopBar(title = "Wallet", balance = uiState.balance) },
         bottomBar = { AdWalletBottomBar(navController = navController, items = bottomNavItems) },
     ) { innerPadding ->
         Column(

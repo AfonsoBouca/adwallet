@@ -27,6 +27,7 @@ import com.example.project_ad_wallet.ui.theme.WalletGray
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdWalletTopBar(
+    title: String = "AdWallet",
     balance: Double = 0.0,
     showBalance: Boolean = true,
     showBack: Boolean = false,
@@ -50,15 +51,17 @@ fun AdWalletTopBar(
         },
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.AccountBalanceWallet,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(22.dp),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+                if (title == "AdWallet") {
+                    Icon(
+                        imageVector = Icons.Default.AccountBalanceWallet,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(22.dp),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
                 Text(
-                    text = "AdWallet",
+                    text = title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,

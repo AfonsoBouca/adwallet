@@ -54,4 +54,17 @@ class SettingsViewModel(
         adRepository.reset()
         donationRepository.reset()
     }
+
+    fun onAddFunds(amount: Double) {
+        walletRepository.addFunds(amount)
+    }
+
+    fun onGenerateRandomHistory() {
+        val charities = donationRepository.instance.let { charityRepository.getCharities() }
+        // Actually CharityRepository is not in DonationRepository. 
+        // I'll use the charities from the provided list.
+        val charitiesList = charityRepository.getCharities()
+        walletRepository.generateRandomHistory(charitiesList)
+        donationRepository.generateRandomHistory(charitiesList)
+    }
 }

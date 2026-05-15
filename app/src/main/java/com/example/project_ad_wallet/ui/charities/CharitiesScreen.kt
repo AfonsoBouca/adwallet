@@ -73,7 +73,9 @@ fun CharitiesScreen(
     }
 
     Scaffold(
-        topBar = { AdWalletTopBar(balance = uiState.balance) },
+        topBar = {
+            AdWalletTopBar(title = "Charities", balance = uiState.balance)
+        },
         bottomBar = { AdWalletBottomBar(navController = navController, items = bottomNavItems) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->

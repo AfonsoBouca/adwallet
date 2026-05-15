@@ -67,7 +67,7 @@ fun SettingsScreen(
     var showEditProfile by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { AdWalletTopBar(showBalance = false) },
+        topBar = { AdWalletTopBar(title = "Settings", showBalance = false) },
         bottomBar = { AdWalletBottomBar(navController = navController, items = bottomNavItems) },
     ) { innerPadding ->
         Column(
@@ -192,19 +192,50 @@ private fun ThemeSection(currentMode: ThemeMode, onModeChanged: (ThemeMode) -> U
 }
 
 @Composable
-private fun DeveloperSection(onResetApp: () -> Unit) {
+private fun DeveloperSection(
+    onResetApp: () -> Unit,
+    onAddFunds: (Double) -> Unit,
+    onGenerateRandomHistory: () -> Unit,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         SectionHeader(icon = Icons.Default.Settings, title = "Developer Options")
-        OutlinedButton(
-            onClick = onResetApp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(50),
-            border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.error),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         ) {
-            Text("RESET APP STATE", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text("Wallet Management", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val modifier = Modifier.weight(1f)
+                    OutlinedButton(onClick = { onAddFunds(10.0) }, modifier = modifier, contentPadding = PaddingValues(0.dp)) { Text("+$10") }
+                    OutlinedButton(onClick = { onAddFunds(50.0) }, modifier = modifier, contentPadding = PaddingValues(0.dp)) { Text("+$50") }
+                    OutlinedButton(onClick = { onAddFunds(100.0) }, modifier = modifier, contentPadding = PaddingValues(0.dp)) { Text("+$100") }
+                }
+                
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+                
+                Text("Data Generation", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Button(
+                    onClick = onGenerateRandomHistory,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Text("GENERATE RANDOM HISTORY")
+                }
+                
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+
+                OutlinedButton(
+                    onClick = onResetApp,
+                    modifier = Modifier.fillMaxWidth(),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                ) {
+                    Text("RESET ALL APP DATA", fontWeight = FontWeight.Bold)
+                }
+            }
         }
     }
 }

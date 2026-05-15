@@ -1,41 +1,54 @@
 package com.example.project_ad_wallet
 
-import com.example.project_ad_wallet.domain.model.ThemeMode
-import com.example.project_ad_wallet.ui.viewmodel.WalletViewModel
+import com.example.project_ad_wallet.data.model.Earning
+import com.example.project_ad_wallet.data.repository.DonationRepository
+import com.example.project_ad_wallet.data.repository.WalletRepository
+import com.example.project_ad_wallet.ui.wallet.WalletViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class WalletUnitTest {
 
-    @Test
-    fun `wallet initial balance is correct`() {
-        val viewModel = WalletViewModel()
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private lateinit var walletRepo: WalletRepository
+    private lateinit var donationRepo: DonationRepository
+    private lateinit var viewModel: WalletViewModel
 
-        assertEquals(15.00, viewModel.uiState.value.balance, 0.001)
-        assertEquals(ThemeMode.System, viewModel.uiState.value.settings.themeMode)
+    @Before
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+        walletRepo = WalletRepository()
+        donationRepo = DonationRepository()
+        viewModel = WalletViewModel(walletRepo, donationRepo)
+    }
+
+    @After
+    fun teardown() {
+        Dispatchers.resetMain()
     }
 
     @Test
-    fun `claiming a survey reward updates the wallet balance`() {
-        val viewModel = WalletViewModel()
-
-        viewModel.claimSurveyReward("nike-running-shoes")
-
-        assertEquals(15.50, viewModel.uiState.value.balance, 0.001)
+    fun test_initialBalanceIsZero() {
+        assertEquals(0.0, viewModel.uiState.value.balance, 0.001)
     }
 
     @Test
-    fun `valid donation deducts balance and creates success banner`() {
-        val viewModel = WalletViewModel()
+    fun test_addEarningUpdatesBalance() {
+        walletRepo.addEarning(Earning(adId = "1", adTitle = "Ad", amount = 0.50))
+        assertEquals(0.50, viewModel.uiState.value.balance, 0.001)
+    }
 
-        val success = viewModel.donateToCharity("green-earth", 5.00)
-
-        assertTrue(success)
-        assertEquals(10.00, viewModel.uiState.value.balance, 0.001)
-        assertEquals(
-            "Thank you for supporting SDG 13!",
-            viewModel.uiState.value.donationBanner?.message
-        )
+    @Test
+    fun test_addFundsUpdatesBalance() {
+        walletRepo.addFunds(100.0)
+        assertEquals(100.0, viewModel.uiState.value.balance, 0.001)
     }
 }

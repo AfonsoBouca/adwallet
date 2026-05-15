@@ -353,8 +353,8 @@ AdWallet is a fully self-contained Android application with no backend or networ
 │  │  │            adwallet.apk                │  │   │
 │  │  │                                        │  │   │
 │  │  │  MainActivity  (Entry Point)           │  │   │
-│  │  │  AdWalletApp   (NavHost + Bottom Nav)  │  │   │
-│  │  │  WalletViewModel (State + Logic)       │  │   │
+│  │  │  AdWalletNavGraph (NavHost + Routes)   │  │   │
+│  │  │  ViewModels (Feature-specific)         │  │   │
 │  │  │  Screen Composables (UI Layer)         │  │   │
 │  │  │  AdWalletTheme (Material 3 Theming)    │  │   │
 │  │  └────────────────────────────────────────┘  │   │
@@ -376,11 +376,11 @@ AdWallet is a fully self-contained Android application with no backend or networ
 
 | Component | Role |
 |---|---|
-| `MainActivity` | Android entry point; applies the theme and hosts the Compose content tree |
-| `AdWalletApp` | Composition root; owns the `NavController` and navigation graph |
-| `WalletViewModel` | Lifecycle-scoped state holder; survives configuration changes (e.g. rotation) |
-| Screen Composables | Stateless UI functions for each screen; recompose on state changes |
-| `AdWalletTheme` | Applies the Material 3 colour scheme and typography to the entire tree |
+| `MainActivity` | Android entry point; determines theme and hosts the NavGraph |
+| `AdWalletNavGraph` | Composition root; defines routes and orchestrates navigation |
+| ViewModels | Lifecycle-scoped state holders for each feature; handle business logic |
+| Screen Composables | Stateless UI functions for each screen; react to ViewModel state |
+| `AdWalletTheme` | Applies consistent Material 3 styling and color palette |
 
 #### Technologies & Justification
 
@@ -547,3 +547,4 @@ All features have been integrated, verified by GitHub Actions, and packaged in t
 ### Sprint 4
 
 ### Final Release
+

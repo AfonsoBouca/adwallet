@@ -36,7 +36,7 @@ fun AdFeedScreen(
 
     Scaffold(
         topBar = {
-            AdWalletTopBar(balance = uiState.balance)
+            AdWalletTopBar(title = "Home", balance = uiState.balance)
         },
         bottomBar = {
             AdWalletBottomBar(navController = navController, items = bottomNavItems)

@@ -37,22 +37,79 @@ fun AdReportDialog(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    if (uiState.isSubmitted) {
-        AlertDialog(
-            onDismissRequest = {
+    AlertDialog(
+        onDismissRequest = {
+            if (uiState.isSubmitted) {
                 viewModel.reset()
-                onDismiss()
-            },
-            shape = RoundedCornerShape(20.dp),
-            title = { Text("Report Submitted", fontWeight = FontWeight.Bold) },
-            text = {
+            }
+            onDismiss()
+        },
+        shape = RoundedCornerShape(20.dp),
+        title = {
+            Text(
+                text = if (uiState.isSubmitted) "Report Submitted" else "Report Advertisement",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        },
+        text = {
+            if (uiState.isSubmitted) {
                 Text(
                     text = "Thank you. We will review this ad shortly.",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.testTag("report_submitted_message"),
                 )
-            },
-            confirmButton = {
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        text = "Why are you reporting this ad?",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    REPORT_REASONS.forEach { reason ->
+                        val isSelected = reason == uiState.selectedReason
+                        if (isSelected) {
+                            Button(
+                                onClick = { viewModel.selectReason(reason) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag("reason_$reason"),
+                                shape = RoundedCornerShape(10.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = Color.White,
+                                ),
+                            ) { Text(reason) }
+                        } else {
+                            OutlinedButton(
+                                onClick = { viewModel.selectReason(reason) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag("reason_$reason"),
+                                shape = RoundedCornerShape(10.dp),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onSurface,
+                                ),
+                            ) { Text(reason) }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedTextField(
+                        value = uiState.comment,
+                        onValueChange = { viewModel.onCommentChanged(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("report_comment_field"),
+                        placeholder = { Text("Additional comments (optional)") },
+                        shape = RoundedCornerShape(12.dp),
+                        maxLines = 3,
+                        colors = adWalletTextFieldColors(),
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            if (uiState.isSubmitted) {
                 Button(
                     onClick = {
                         viewModel.reset()
@@ -62,90 +119,30 @@ fun AdReportDialog(
                 ) {
                     Text("OK")
                 }
-            },
-        )
-        return
-    }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(20.dp),
-        title = {
-            Text(
-                text = "Report Advertisement",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-            )
-        },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(
-                    text = "Why are you reporting this ad?",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                REPORT_REASONS.forEach { reason ->
-                    val isSelected = reason == uiState.selectedReason
-                    if (isSelected) {
-                        Button(
-                            onClick = { viewModel.selectReason(reason) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("reason_$reason"),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = Color.White,
-                            ),
-                        ) { Text(reason) }
-                    } else {
-                        OutlinedButton(
-                            onClick = { viewModel.selectReason(reason) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("reason_$reason"),
-                            shape = RoundedCornerShape(10.dp),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onSurface,
-                            ),
-                        ) { Text(reason) }
-                    }
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = uiState.comment,
-                    onValueChange = { viewModel.onCommentChanged(it) },
+            } else {
+                Button(
+                    onClick = { viewModel.submitReport(adId) },
+                    enabled = uiState.selectedReason != null,
+                    shape = RoundedCornerShape(50),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("report_comment_field"),
-                    placeholder = { Text("Additional comments (optional)") },
-                    shape = RoundedCornerShape(12.dp),
-                    maxLines = 3,
-                    colors = adWalletTextFieldColors(),
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = { viewModel.submitReport(adId) },
-                enabled = uiState.selectedReason != null,
-                shape = RoundedCornerShape(50),
-                modifier = Modifier
-                    .padding(bottom = 4.dp)
-                    .testTag("submit_report_button"),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = Color.White,
-                    disabledContainerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.38f),
-                    disabledContentColor = Color.White.copy(alpha = 0.60f),
-                ),
-            ) {
-                Text("Submit Report", fontWeight = FontWeight.Bold)
+                        .padding(bottom = 4.dp)
+                        .testTag("submit_report_button"),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = Color.White,
+                        disabledContainerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.38f),
+                        disabledContentColor = Color.White.copy(alpha = 0.60f),
+                    ),
+                ) {
+                    Text("Submit Report", fontWeight = FontWeight.Bold)
+                }
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (!uiState.isSubmitted) {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
         },
     )

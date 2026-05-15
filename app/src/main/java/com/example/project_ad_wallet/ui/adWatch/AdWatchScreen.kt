@@ -4,6 +4,8 @@ import android.net.Uri
 import android.widget.MediaController
 import android.widget.VideoView
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -225,10 +227,20 @@ private fun VideoPlayer(
     }
 
     AndroidView(
-        factory = { videoView },
+        factory = { 
+            videoView.apply {
+                layoutParams = android.view.ViewGroup.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            }
+        },
         modifier = Modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .padding(vertical = 8.dp)
+            .background(Color.Black, RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(12.dp))
+            .aspectRatio(16/9f),
     )
 }
 
