@@ -39,7 +39,7 @@ class RegistrationViewModel(
         userRepository.saveUser(
             User(
                 name = state.fullName.trim(),
-                age = state.age.trim(),
+                age = state.age.trim().toIntOrNull() ?: 0,
                 gender = state.gender,
             )
         )

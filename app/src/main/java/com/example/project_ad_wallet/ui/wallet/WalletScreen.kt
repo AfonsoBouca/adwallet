@@ -246,9 +246,23 @@ private fun DonationRow(donation: Donation) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = donation.charityName,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
+                Spacer(modifier = Modifier.height(4.dp))
+                Surface(
+                    shape = RoundedCornerShape(4.dp),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                ) {
+                    Text(
+                        text = "SDG ${donation.sdgNumber} — ${donation.sdgName}",
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = formatRelativeTime(donation.timestamp),
                     fontSize = 12.sp,

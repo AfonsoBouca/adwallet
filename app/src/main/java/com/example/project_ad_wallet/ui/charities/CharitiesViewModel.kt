@@ -93,6 +93,8 @@ class CharitiesViewModel(
                 charityId = charity.id,
                 charityName = charity.name,
                 amount = amount,
+                sdgNumber = charity.sdgNumber,
+                sdgName = charity.sdgName,
             )
         )
 

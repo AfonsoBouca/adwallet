@@ -64,25 +64,44 @@ fun NotificationPrefsScreen(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
             )
+            
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            ) {
+                NotifToggleRow(
+                    label = "Enable All Notifications",
+                    description = "Master switch for all app notifications",
+                    checked = uiState.masterEnabled,
+                    onCheckedChange = viewModel::setMasterEnabled,
+                    testTag = "toggle_master",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+
             Text(
-                text = "Choose which notifications you'd like to receive.",
+                text = "Specific Notifications",
                 fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(0.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             ) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     NotifToggleRow(
                         label = "New Ads Available",
                         description = "Get notified when new ads are ready to watch",
                         checked = uiState.newAdsEnabled,
                         onCheckedChange = viewModel::setNewAdsEnabled,
+                        enabled = uiState.masterEnabled,
                         testTag = "toggle_new_ads",
                     )
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline)
@@ -91,6 +110,7 @@ fun NotificationPrefsScreen(
                         description = "Know when your balance changes",
                         checked = uiState.earningsEnabled,
                         onCheckedChange = viewModel::setEarningsEnabled,
+                        enabled = uiState.masterEnabled,
                         testTag = "toggle_earnings",
                     )
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline)
@@ -99,6 +119,7 @@ fun NotificationPrefsScreen(
                         description = "Reminders to donate your balance to charity",
                         checked = uiState.donationRemindersEnabled,
                         onCheckedChange = viewModel::setDonationRemindersEnabled,
+                        enabled = uiState.masterEnabled,
                         testTag = "toggle_donation_reminders",
                     )
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline)
@@ -107,7 +128,17 @@ fun NotificationPrefsScreen(
                         description = "A weekly summary of your activity",
                         checked = uiState.weeklyDigestEnabled,
                         onCheckedChange = viewModel::setWeeklyDigestEnabled,
+                        enabled = uiState.masterEnabled,
                         testTag = "toggle_weekly_digest",
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                    NotifToggleRow(
+                        label = "Promotions and Updates",
+                        description = "Stay updated with special campaigns",
+                        checked = uiState.promotionsEnabled,
+                        onCheckedChange = viewModel::setPromotionsEnabled,
+                        enabled = uiState.masterEnabled,
+                        testTag = "toggle_promotions",
                     )
                 }
             }
@@ -122,9 +153,11 @@ private fun NotifToggleRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     testTag: String,
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -134,17 +167,18 @@ private fun NotifToggleRow(
                 text = label,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
             )
             Text(
                 text = description,
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (enabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
             )
         }
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
+            enabled = enabled,
             modifier = Modifier.testTag(testTag),
         )
     }

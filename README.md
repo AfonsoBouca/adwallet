@@ -518,14 +518,21 @@ In Sprint 2, the team successfully closed the core value loop of AdWallet by ful
 - Rate advertisements after watching with 1-5 star system ([#42](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/42))
 - Earnings history screen displaying all past earnings ([#44](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/44))
 - Donation confirmation dialog and success screen ([#52](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/52))
-- Donation history screen with total donated tracking ([#53](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/53))
-- Report inappropriate advertisements with reason selection ([#41](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/41))
-- Notification preferences screen with per-type toggles ([#49](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/49))
+- [Donation history screen with total donated tracking](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/53)
+- [Report inappropriate advertisements with reason selection](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/41)
+- [Notification preferences screen with per-type toggles](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/49)
+
+**Sprint 2 Audit Remediation:**
+Following a comprehensive code audit, the following improvements were implemented to ensure 100% specification compliance:
+- **Feature #49 (Notifications):** Added master toggle logic, missing "Promotions" toggle, and persistent storage via `SharedPreferences`.
+- **Feature #53 (Donations):** Integrated SDG badges into the donation history records.
+- **Architecture & Style:** Standardized all data models and aligned theme colors with specific hex codes.
+- **Testing:** Upgraded to **Robolectric** to support advanced unit testing of Android components.
 
 **Key Results:**
 - Transitioned to strict **Branch-per-feature workflow**
-- Authored **57 unit tests** (all passing)
-- Authored **16 acceptance tests** (all passing)
+- Authored **60+ unit tests** (all passing)
+- Authored **16+ acceptance tests** (all passing)
 
 **Sprint Documentation:**
 - [Sprint Planning](docs/sprint2/planning.md)

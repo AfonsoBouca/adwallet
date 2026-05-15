@@ -5,5 +5,7 @@ data class Donation(
     val charityId: String,
     val charityName: String,
     val amount: Double,
+    val sdgNumber: Int,
+    val sdgName: String,
     val timestamp: Long = System.currentTimeMillis(),
 )

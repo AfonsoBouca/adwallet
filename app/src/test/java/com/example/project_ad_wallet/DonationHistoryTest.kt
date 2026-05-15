@@ -34,7 +34,15 @@ class DonationHistoryTest {
     }
 
     private fun makeDonation(id: String, charityId: String, charityName: String, amount: Double, timestamp: Long = System.currentTimeMillis()) =
-        Donation(id = id, charityId = charityId, charityName = charityName, amount = amount, timestamp = timestamp)
+        Donation(
+            id = id,
+            charityId = charityId,
+            charityName = charityName,
+            amount = amount,
+            sdgNumber = 1,
+            sdgName = "Test SDG",
+            timestamp = timestamp
+        )
 
     @Test
     fun test_isEmptyWhenNoDonations() {

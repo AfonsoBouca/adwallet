@@ -14,10 +14,18 @@ All notable changes to this project will be documented in this file.
 - Report inappropriate advertisements with reason selection (#41)
 - Notification preferences screen with per-type toggles (#49)
 
+### Fixed & Improved (Post-Audit)
+
+- **Notification Preferences:** Implemented Master Toggle logic, added missing "Promotions" toggle, and added `SharedPreferences` persistence (#49).
+- **Donation History:** Added SDG badges to each donation record in the history list (#53).
+- **Data Models:** Standardized `User`, `AdRating`, `AdReport`, and `Donation` models with correct types and missing IDs.
+- **Visual Identity:** Updated theme colors to match exact specification hex codes (#0D1117 / #238636).
+- **Test Infrastructure:** Upgraded unit test suite with **Robolectric** for robust Android component testing.
+
 ### Tests
 
-- 57 unit tests covering all features
-- 16 acceptance tests for user workflows
+- 60+ unit tests covering all features and edge cases
+- 16+ acceptance tests for user workflows
 - CI/CD pipeline green on all merges
 
 ## [v1] - Sprint 1
