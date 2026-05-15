@@ -1,0 +1,21 @@
+package com.example.project_ad_wallet.ui.navigation
+
+object Routes {
+    const val REGISTRATION = "registration"
+    const val AD_FEED = "feed"
+    const val CHARITIES = "charities"
+    const val SETTINGS = "settings"
+    const val WALLET = "wallet"
+    const val AD_WATCH = "ad_watch/{adId}"
+    const val AD_RATING = "ad_rating/{adId}"
+    const val ADVERTISER_UPLOAD = "advertiser_upload"
+    const val EARNINGS_HISTORY = "earnings_history"
+    const val DONATION_CONFIRMATION = "donation_confirmation/{charityId}/{amount}"
+    const val DONATION_HISTORY = "donation_history"
+    const val NOTIFICATION_PREFS = "notification_prefs"
+
+    fun adWatch(adId: String) = "ad_watch/$adId"
+    fun adRating(adId: String) = "ad_rating/$adId"
+    fun donationConfirmation(charityId: String, amount: Double) =
+        "donation_confirmation/$charityId/$amount"
+}
