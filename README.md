@@ -181,75 +181,76 @@ In this section you should start by briefly describing the components of the pro
 
 ### Architecture Overview
 
-The system is organised into three logical layers, following the Clean Architecture principles:
+The system is organised into three logical layers:
 
 ```
 ┌─────────────────────────────────────────┐
 │              UI Layer                   │
 │  RegistrationScreen  AdFeedScreen       │
-│  AdWatchScreen       CharitiesScreen    │
+│  SurveyScreen        CharitiesScreen    │
 │  SettingsScreen      MainActivity       │
 ├─────────────────────────────────────────┤
 │           ViewModel Layer               │
-│      Feature-specific ViewModels        │
-│    (AdWatchVM, WalletVM, SettingsVM)    │
+│           WalletViewModel               │
+│    (balance, ads, charities, user)      │
 ├─────────────────────────────────────────┤
 │             Data Layer                  │
-│    Repositories (Ad, Wallet, User)      │
-│    In-memory state (StateFlow)          │
+│   In-memory state (StateFlow)           │
+│   Ad list · Charity list                │
+│   DemographicState                      │
 └─────────────────────────────────────────┘
 ```
 
-**Feature-specific ViewModels** — Each major screen or feature has its own dedicated ViewModel. This ensures high cohesion and low coupling, making the app easier to maintain and scale. State is exposed via `StateFlow` and managed reactively.
+**`WalletViewModel`** is the single source of truth for the entire application. It holds all mutable state as `StateFlow` objects and exposes business operations (`registerUser`, `addReward`, `donate`, `setThemeOverride`). By centralising state in one ViewModel scoped to the Activity lifecycle, any screen can observe changes without explicit coordination.
 
-**Screen Composables** (`RegistrationScreen`, `AdFeedScreen`, `AdWatchScreen`, `CharitiesScreen`, `SettingsScreen`) are stateless — they receive data from their respective ViewModels and report user intent via callbacks, making them independently testable.
+**Screen Composables** (`RegistrationScreen`, `AdFeedScreen`, `SurveyScreen`, `CharitiesScreen`, `SettingsScreen`) are stateless — they receive data and callbacks as parameters and never own mutable state themselves, making each screen independently testable.
 
-**Repositories** — Centralise data access and business logic. Repositories manage the application's data (Ads, Charities, Wallet transactions) and provide a clean API for ViewModels, abstracting away the underlying storage details.
+**`MainActivity`** acts as the composition root: it creates the ViewModel, collects state from its flows, and wires together the navigation graph using Jetpack Navigation Compose.
 
 ### Navigation & Data Flow
 
 Navigation follows a linear onboarding flow followed by a tabbed main area:
 
 ```
-Registration ──► AdFeed ──► AdWatch
+Registration ──► AdFeed ──► Survey
                   │
            (Bottom Nav)
                   │
-           Wallet ── Settings
+           Charities ── Settings
 ```
 
-State changes propagate reactively: ViewModels expose `StateFlow` values, which screens collect with `collectAsState()`. User interactions trigger callbacks that call ViewModel methods, which in turn interact with Repositories to update the application state — an implementation of the **Unidirectional Data Flow (UDF)** pattern.
+State changes propagate reactively: the ViewModel exposes `StateFlow` values, `MainActivity` collects them with `collectAsState()`, and passes them down as immutable parameters to composables. User interactions trigger callbacks that call ViewModel methods, which update the flows, causing Compose to automatically recompose only the affected parts of the UI — an application of the **Observer pattern**.
 
 #### Example end-to-end flow — watching an ad and earning a reward
 
-1. User clicks an Ad card in `AdFeedScreen` → navigates to `AdWatchScreen` with the ad's ID.
-2. `AdWatchViewModel` loads the ad and tracks progress.
-3. User completes the questionnaire → `completeQuestionnaire()` called in ViewModel.
-4. `WalletRepository` updates balance; `WalletViewModel` reflects this change in the Wallet tab instantly.
+1. User clicks an Ad card in `AdFeedScreen` → navigates to `SurveyScreen` with the ad's data.
+2. User completes the survey → `onSurveySubmit(reward)` callback fires.
+3. `WalletViewModel.addReward()` updates `_balance` StateFlow.
+4. All screens observing the balance (Feed AppBar, Charities dialog) recompose instantly.
 
 ### Design Patterns
 
 | Pattern | Where Used | Why |
 |---|---|---|
-| **MVVM** | ViewModels + Screen composables | Decouples UI from business logic; enables unit testing of state transitions without a running UI |
-| **Repository** | Data access layer | Centralises data management; makes the system easier to test and swap storage implementations |
-| **Observer (Reactive Streams)** | `StateFlow` + `collectAsState()` | UI always reflects current state without manual refresh calls |
-| **Single Activity** | `MainActivity` only | Modern Android standard; simplifies navigation and lifecycle management |
-| **UDF (Unidirectional Data Flow)** | Entire app | Ensures predictable state changes and simplifies debugging |
+| **MVVM** | `WalletViewModel` + Screen composables | Decouples UI from business logic; enables unit testing of state transitions without a running UI |
+| **Observer (Reactive Streams)** | `StateFlow` + `collectAsState()` | Eliminates manual UI refresh calls; UI always reflects current state |
+| **Single Activity** | `MainActivity` only | Modern Android best practice; simplifies back-stack management with Compose Navigation |
+| **Callback / Event Delegation** | `onRegisterSuccess`, `onDonate`, `onSurveySubmit` | Keeps composables dumb; they report intent upward, ViewModel decides effect |
+| **Scaffold + NavHost** | `MainActivity` | Standard Compose pattern for hosting bottom navigation with a changing content area |
 
 ### Notable Design Decisions
 
-#### Repository Pattern for Data Access
-All data management (Ads, User profile, Wallet balance, Donations) is encapsulated within Repositories. This decouples the business logic from data storage, making it easy to swap in-memory storage for a persistent database (e.g., Room) in the future without affecting the ViewModels.
+#### In-memory state only
+There is no database or persistence layer (no Room, no SharedPreferences). All state lives in `WalletViewModel` and is reset when the app process dies. This was appropriate for a prototype/demo context and keeps the architecture simple — adding a Repository backed by Room would be the natural next step for a production version.
 
-#### Modular ViewModel Architecture
-Instead of a single global ViewModel, the app uses **feature-specific ViewModels**. This approach prevents the "God Object" anti-pattern, ensures that each ViewModel only handles data relevant to its domain, and significantly improves code readability and maintainability as the app scales.
+#### Global ViewModel
+A single `WalletViewModel` serves all screens, rather than per-screen ViewModels. This avoids the need to pass data between screens via navigation arguments for most state (e.g., balance is visible everywhere without re-fetching). The trade-off is that the ViewModel grows larger as the app scales, but for this scope it keeps the design straightforward.
 
-#### Composition Root (NavGraph)
-All screen instantiation and ViewModel injection happen at the navigation level in `AdWalletNavGraph.kt`. This centralises the "wiring" of the application, keeping screens focused purely on UI rendering and ViewModels focused on state management.
+#### Input validation at entry point
+`RegistrationScreen` filters keystrokes in real-time (name allows only letters/spaces; age only digits) rather than validating on submit. This prevents invalid data from ever entering the ViewModel, keeping the model clean without defensive checks throughout the business layer.
 
-#### Standardized Models with UUIDs
-Following a data audit, all domain models (`User`, `AdRating`, `AdReport`, `Donation`) were standardized with unique IDs and correct data types. This ensures data integrity across all layers of the system.
+#### Theme control via ViewModel
+The dark/light mode preference is stored in `WalletViewModel` as a nullable `Boolean?` (`null` = follow system). `MainActivity` observes this and passes it into the custom `TPC3Theme`, so changing the setting from `SettingsScreen` immediately repaints the entire app — a clean demonstration of how a single reactive state change can cascade through the whole UI tree.
 
 ### Logical Architecture
 
@@ -268,15 +269,15 @@ The application is decomposed into four logical packages arranged in horizontal 
 ```
 ┌──────────────────────────────────────────────┐
 │               navigation                     │
-│          MainActivity · AdWalletNavGraph     │
+│          MainActivity · AdWalletApp          │
 └───────────┬──────────────┬───────────────────┘
             │              │
             ▼              ▼
 ┌───────────────┐  ┌───────────────────────────┐
 │   viewmodel   │  │         ui.screens        │
-│   (Multiple)  │  │ RegistrationScreen        │
+│WalletViewModel│  │ RegistrationScreen        │
 │               │  │ AdFeedScreen              │
-│               │  │ AdWatchScreen              │
+│               │  │ SurveyScreen              │
 │               │  │ CharitiesScreen           │
 │               │  │ SettingsScreen            │
 └───────┬───────┘  └──────────┬────────────────┘
@@ -293,24 +294,26 @@ The application is decomposed into four logical packages arranged in horizontal 
         ┌──────────────────────┐
         │        model         │
         │  Ad · Charity        │
-        │  User · Earning      │
+        │  DemographicState    │
         └──────────────────────┘
 ```
 
-**`model` — Domain layer**
-Pure Kotlin data classes representing the core entities: `Ad`, `Charity`, `User`, `Earning`, `AdRating`, and `AdReport`. This layer is the stable foundation, containing no platform dependencies.
+#### Package Descriptions
 
-**`repository` — Data access layer**
-Encapsulates data retrieval and persistence logic. Repositories (`AdRepository`, `WalletRepository`, etc.) act as a buffer between the domain logic and data sources, using `StateFlow` to provide reactive data updates to the ViewModels.
+**`model` — Domain layer**
+Pure data classes with no dependencies on Android or UI frameworks. Contains `Ad` (an advertisement with a reward value), `Charity` (a cause users can donate to), and `DemographicState` (the registered user's profile). The stable base on which all other layers build.
 
 **`viewmodel` — Business logic layer**
-Feature-specific ViewModels that manage UI state and handle user interactions. They interact with Repositories to perform business operations and expose state to the UI layer via read-only `StateFlow` objects.
+`WalletViewModel` is the single application-wide state holder. It owns all mutable state as `StateFlow` objects (`balance`, `availableAds`, `charities`, `demographics`, `themePreference`) and exposes the only operations that may change that state (`registerUser`, `addReward`, `donate`, `setThemeOverride`). Depends only on `model` and the Android ViewModel lifecycle library.
 
 **`ui.screens` — Presentation layer**
-Stateless `@Composable` functions that define the user interface. They react to state changes from ViewModels and delegate user events back to them, ensuring a clear separation of concerns.
+Each screen is a stateless `@Composable` function that receives data and event callbacks as parameters — screens never hold mutable state or talk to the ViewModel directly. This makes each screen independently testable and reusable. Depends on `model` (for parameter types) and `ui.theme` (for colour and typography tokens).
+
+**`ui.theme` — Styling layer**
+`Color.kt` defines the colour palette for both light and dark schemes; `Type.kt` defines the typography scale; `Theme.kt` composes these into the `TPC3Theme` Composable that wraps the entire app. All visual tokens are centralised here so that a single theme change propagates everywhere.
 
 **`navigation` — Composition root**
-`MainActivity` initializes the app and hosts the `AdWalletNavGraph`, which defines all routes, arguments, and screen-ViewModel pairings. This layer orchestrates the application's overall structure and flow.
+`MainActivity` creates the `WalletViewModel`, observes the theme preference, and applies `TPC3Theme`. `AdWalletApp` owns the `NavController`, defines the navigation graph (routes, arguments, back-stack rules), collects state from the ViewModel, and wires it into the correct screen Composable. The only layer that knows about both the ViewModel and the individual screens.
 
 #### Dependency Direction
 
@@ -350,8 +353,8 @@ AdWallet is a fully self-contained Android application with no backend or networ
 │  │  │            adwallet.apk                │  │   │
 │  │  │                                        │  │   │
 │  │  │  MainActivity  (Entry Point)           │  │   │
-│  │  │  AdWalletNavGraph (NavHost + Routes)   │  │   │
-│  │  │  ViewModels (Feature-specific)         │  │   │
+│  │  │  AdWalletApp   (NavHost + Bottom Nav)  │  │   │
+│  │  │  WalletViewModel (State + Logic)       │  │   │
 │  │  │  Screen Composables (UI Layer)         │  │   │
 │  │  │  AdWalletTheme (Material 3 Theming)    │  │   │
 │  │  └────────────────────────────────────────┘  │   │
@@ -373,11 +376,11 @@ AdWallet is a fully self-contained Android application with no backend or networ
 
 | Component | Role |
 |---|---|
-| `MainActivity` | Android entry point; determines theme and hosts the NavGraph |
-| `AdWalletNavGraph` | Composition root; defines routes and orchestrates navigation |
-| ViewModels | Lifecycle-scoped state holders for each feature; handle business logic |
-| Screen Composables | Stateless UI functions for each screen; react to ViewModel state |
-| `AdWalletTheme` | Applies consistent Material 3 styling and color palette |
+| `MainActivity` | Android entry point; applies the theme and hosts the Compose content tree |
+| `AdWalletApp` | Composition root; owns the `NavController` and navigation graph |
+| `WalletViewModel` | Lifecycle-scoped state holder; survives configuration changes (e.g. rotation) |
+| Screen Composables | Stateless UI functions for each screen; recompose on state changes |
+| `AdWalletTheme` | Applies the Material 3 colour scheme and typography to the entire tree |
 
 #### Technologies & Justification
 
@@ -397,54 +400,17 @@ AdWallet is a fully self-contained Android application with no backend or networ
 
 ### Functional Prototype
 
-<!--
-To help on validating all the architectural, design and technological decisions made, we usually implement a functional prototype, a thin vertical slice of the system integrating as much technologies as we can.
-
-In this subsection please describe which feature, or part of it, you have implemented, and how, together with a snapshot of the user interface, if applicable.
-
-At this phase, instead of a complete user story, you can simply implement a small part of a feature that demonstrates that you can use the technology, for example, show a screen with the app credits (name and authors).
--->
-
----
-
-## Project Management
-
-<!--
-Software project management is the art and science of planning and leading software projects, in which they are planned, implemented, monitored and controlled.
-
-In the context of ESOF, we recommend each team to adopt a set of project management practices and tools capable of registering tasks, assigning tasks to team members, adding estimations to tasks, monitor tasks progress, and therefore being able to track their projects.
-
-Common practices of managing agile software development with Scrum are: backlog management, release management, estimation, Sprint planning, Sprint development, acceptance tests, and Sprint retrospectives.
-
-You can find below information and references related with the project management:
-
-* Backlog management: Product backlog and Sprint backlog in a [Github Projects board](https://github.com/orgs/FEUP-LEIC-ES-2023-24/projects/64);
-* Release management: [v0](#), v1, v2, v3, ...;
-* Sprint planning and retrospectives:
-  * plans: screenshots of Github Projects board at begin and end of each Sprint;
-  * retrospectives: meeting notes in a document in the repository, addressing the following questions:
-    * Did well: things we did well and should continue;
-    * Do differently: things we should do differently and how;
-    * Puzzles: things we don't know yet if they are right or wrong;
-    * list of a few improvements to implement next Sprint;
--->
-
-### Sprint 0
-### Functional Prototype
-
 The v0 vertical prototype successfully demonstrated the core value proposition of AdWallet: allowing users to watch an advertisement, answer a brief questionnaire, and immediately receive a monetary reward in their virtual wallet. This specific flow was prioritized over standard initialization features like user registration or login because it represents the fundamental interaction loop that differentiates AdWallet from other applications. Proving that this core interaction is seamless and rewarding was critical to validating the project's viability.
 
 The prototype was developed using Jetpack Compose for the UI and an MVVM architecture with in-memory state management. This allowed us to quickly implement the logic for calculating rewards and updating the wallet balance without the overhead of setting up a persistent database early on. The focus was entirely on user experience and the reliability of the reward transaction.
 
 This vertical slice was officially tagged and released as v0 on GitHub. The release includes the compiled `.apk` file, allowing stakeholders to install and test the core ad-watching and earning flow directly on their Android devices. You can view the release here: [v0 — Sprint 0 Prototype](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/releases/tag/v0).
 
-### Change Management
+---
 
-During Sprints 0 and 1, the team utilized a simplified Git strategy, pushing commits directly to the `main` branch. This approach was highly appropriate for the rapid prototyping phase, where the primary objective was to quickly build the foundational architecture and the v0 vertical prototype. The low overhead allowed us to iterate quickly without the ceremony of pull requests.
+## Project Management
 
-However, as the team transitioned into implementing distinct, parallel features in Sprint 2, this direct-commit approach became a bottleneck. It limited our ability to work concurrently without merge conflicts and bypassed formal code reviews. To address this, starting from Sprint 2, the team adopted a strict "branch-per-feature" workflow.
-
-Under this new system, every feature is developed on an independent branch (e.g., `feature/25-watch-ads`) and merged into `main` exclusively via Pull Requests. This ensures that all code is reviewed, tested via our CI/CD pipeline, and validated before integration, significantly improving code quality and collaboration stability.
+### Sprint 0
 
 The project began with a high-level "Vision" aimed at transforming digital engagement into social impact. The goal was to create an intuitive "Ad Wallet" where users could interact with advertisements to earn rewards, which could then be directed toward charitable causes. We prioritized clarity and motivation, ensuring the mission—connecting brands, users, and charities—was at the core of every design decision.
 
@@ -458,56 +424,59 @@ We encountered some difficulties like defining the "Unique" Core: In the early s
 
 Another challenge was balancing Modeling with Development: Maintaining high-quality UML diagrams (Logical and Physical) while the code was evolving rapidly required disciplined synchronization. Ensuring the "textual description supported the UML" was a constant exercise in technical writing.
 
-Sprint 0 Retrospective
+#### Sprint 0 Retrospective
 
-Did Well:
-
+**Did Well:**
 ◦ Domain Modeling: We successfully modeled the domain concepts early on. The UML diagrams and textual descriptions provided a clear roadmap that kept the code clean.
+◦ Vision Clarity: The "Vision" pattern worked well to keep the team motivated and focused on the "why" of the project rather than just the "how."
+◦ User Story Quality: Applying the INVEST criteria early meant that our tasks were actionable and testable from day one.
 
-◦Vision Clarity: The "Vision" pattern worked well to keep the team motivated and focused on the "why" of the project rather than just the "how."
+**Do Differently:**
+◦ Architecture vs. Prototyping Balance: We spent a significant amount of time on the Logical and Physical Architecture (UML diagrams). In the next sprint, we should try to balance documentation time more closely with active coding to avoid bottlenecks.
+◦ Mockup Detail: While our UI mockups were explicit, some transitions were missing, leading to slight confusion during the prototype implementation.
 
-◦User Story Quality: Applying the INVEST criteria early meant that our tasks were actionable and testable from day one.
+**Puzzles:**
+◦ UML Synchronization: We are still figuring out the best way to keep our UML Package and Deployment diagrams perfectly in sync with the code as the project evolves rapidly.
+◦ Testing Scope: We aren't yet sure if our Acceptance Tests are too broad or if they should be more granular for specific UI components.
 
-Do Differently:
+**Improvements for Sprint 1:**
+◦ Refine UI Navigation: We will explicitly map every button click in the mockups to a specific navigation event in the code.
+◦ Daily Sync on "Definition of Ready": Ensure that even bugs/improvements include screenshots of intended behavior before they are moved to "In Progress."
 
-◦Architecture vs. Prototyping Balance: We spent a significant amount of time on the Logical and Physical Architecture (UML diagrams). In the next sprint, we should try to balance documentation time more closely with active coding to avoid bottlenecks.
+### Sprint 1
 
-◦Mockup Detail: While our UI mockups were explicit, some transitions were missing, leading to slight confusion during the prototype implementation.
+In Sprint 1, we transitioned from establishing a vision to a focus on execution velocity. Using patterns like "Yesterday’s Weather," we analyzed our performance from Sprint 0 to create a realistic Sprint Backlog that avoided over-commitment. We ensured the backlog contained no epics, only "Small Items" that were ready for immediate action. Through "Pigs Estimate," the team members actually responsible for the code provided the estimates, leading to a much higher level of accuracy and ownership over our sprint goals.
 
-Puzzles:
+Our workflow matured through a strict "Low WiP" (Work in Progress) policy and collaborative patterns. We managed our tasks on the GitHub Projects board, ensuring that items were only assigned to a pair, trio, or larger group at the moment work actually started. This prevented tasks from being "paused" and ensured that knowledge was shared across the team, preventing technical silos and improving the overall quality of the v1 release.
 
-◦UML Synchronization: We are still figuring out the best way to keep our UML Package and Deployment diagrams perfectly in sync with the code as the project evolves rapidly.
+A major highlight of this phase was the "Sprint Review," where we demonstrated the new product increment to our stakeholders, including the teacher. The feedback provided was immediately recorded in our repository and used to adapt the Product Backlog. This ensured that our development remained aligned with user expectations, specifically regarding how we display charity impact and rewards.
+We reached a significant milestone with the release of v1. While the Vertical Prototype (v0) proved the core loop, v1 focused on expanding the app's robustness.
 
-◦Testing Scope: We aren't yet sure if our Acceptance Tests are too broad or if they should be more granular for specific UI components.
+We ran into some trouble figuring out the best group sizes for our tasks. It was a bit of a learning curve to decide when we needed a pair versus a trio. Some of the easier UI tasks actually took longer because there were too many of us trying to do the same thing at once. On the other hand, the harder logic stuff was way easier with three people checking for mistakes. After solving that it wasmuch easier to keep our work on track and making sure we didn't slow ourselves down.
 
-Improvements for Sprint 1:
+Another challenge was PBI Granularity for Complex Features: As we moved beyond the simple prototype, breaking down integrated features like "SDG-based Charity Filtering" into 1–3 day tasks proved difficult. It required multiple refinement sessions to ensure these items met our "Definition of Ready" without becoming too large to manage within the sprint.
 
-◦Refine UI Navigation: We will explicitly map every button click in the mockups to a specific navigation event in the code.
+#### Sprint 1 Retrospective
 
-◦Daily Sync on "Definition of Ready": Ensure that even bugs/improvements include screenshots of intended behavior before they are moved to "In Progress."
+**Did Well:**
+• Pair Programming: Collaborative coding significantly reduced our defect rate and ensured that everyone understood the core architecture.
+• Realistic Planning: Using "Yesterday's Weather" and "Pigs Estimate" meant we completed our Sprint Backlog without any "overflow" items, boosting team morale.
+• Feedback Integration: The Sprint Review process was highly effective at identifying small UI friction points that we hadn't noticed during development.
 
-## Sprint 1
-### Development Environment Setup
+**Do Differently:**
+• Release Timing: We waited until the very end of the sprint to finalize the v1 .apk. In the next sprint, we should aim for "Nightly Builds" or mid-sprint internal releases to avoid a last-minute rush.
+• Meeting Efficiency: Our refinement sessions were occasionally too long. We need to implement stricter time-boxing for PBI discussions to keep the team focused.
 
-AdWallet is built using modern Android development tools. To set up the development environment, ensure you have the following versions: Android Studio (latest stable release), Kotlin 2.0.21, Android Gradle Plugin 9.0.1, and Jetpack Compose BOM 2024.09.00.
+**Puzzles:**
+• State Management Scalability: We are still debating if our current AppUiState model will become too "bloated." We need to investigate if splitting it into smaller, feature-specific states is the right move for Sprint 2.
+• Testing Coverage Priorities: We are unsure if we should prioritize deep UI testing or focus more on the edge cases of the reward calculation logic.
 
-1. Download and install [Android Studio](https://developer.android.com/studio).
-2. Clone the repository: `git clone https://github.com/LEIC-ES-2025-26-2LEIC03/T5.git`
-3. Open the cloned `T5` directory in Android Studio.
-4. Allow Gradle to sync and download dependencies automatically (no additional configuration is required).
-5. Build and run the project using the "Run" button (Shift+F10) on an emulator or physical device.
+**Improvements for Sprint 2:**
+• Continuous Deployment Strategy: We will implement a verifiable strategy to build the APK automatically after every major merge to ensure the release is always ready.
+• Refined "Definition of Done": We will add "Cross-pair Code Review" to our DoD to ensure that even work done in pairs is verified by someone outside that specific group.
 
-### Responsible Use of Agentic AI
+### Sprint 2
 
-Throughout the development process, the team utilized AI tools (specifically ChatGPT) to support code generation, troubleshoot compilation errors, and assist with boilerplate UI structuring. This allowed the team to maintain a high velocity while focusing on the core business logic and architectural design of the application.
-
-It is important to note that while AI assisted in generating implementation code, all unit and acceptance tests were written manually by the team members. This ensures that human oversight remains the ultimate validator of the system's correctness and alignment with our user stories.
-
-To maintain transparency, as required by the course guidelines, all AI-assisted code contributions are clearly identified. In early sprints, this was marked using `// MisterAI` comments directly within the source files. From Sprint 2 onwards, we standardized this practice by prefixing the relevant Git commit messages with the `[MisterAI]` tag, providing a clear audit trail of AI involvement in the project history.
-
-In Sprint 1, the team successfully transitioned from a proof-of-concept to a robust application by implementing essential user features, including comprehensive user registration, a functioning donations system, a dedicated charities screen, and a settings interface with a system-wide theme toggle, all accessible via a new bottom navigation bar. These features, along with automated APK builds via our GitHub Actions CI/CD pipeline, were bundled into the [v1 release](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/releases/tag/v1).
-
-## Sprint 2
 In Sprint 2, the team successfully closed the core value loop of AdWallet by fully implementing the ad interaction and reward system, alongside tools for advertisers. We transitioned to a professional branch-per-feature Git workflow, integrating 8 distinct features into `main` via formal Pull Requests, backed by comprehensive testing and automated CI/CD checks.
 
 - Watch ads and answer questionnaires to earn wallet rewards ([#25](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/25))
@@ -515,21 +484,14 @@ In Sprint 2, the team successfully closed the core value loop of AdWallet by ful
 - Rate advertisements after watching with 1-5 star system ([#42](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/42))
 - Earnings history screen displaying all past earnings ([#44](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/44))
 - Donation confirmation dialog and success screen ([#52](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/52))
-- [Donation history screen with total donated tracking](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/53)
-- [Report inappropriate advertisements with reason selection](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/41)
-- [Notification preferences screen with per-type toggles](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/49)
-
-**Sprint 2 Audit Remediation:**
-Following a comprehensive code audit, the following improvements were implemented to ensure 100% specification compliance:
-- **Feature #49 (Notifications):** Added master toggle logic, missing "Promotions" toggle, and persistent storage via `SharedPreferences`.
-- **Feature #53 (Donations):** Integrated SDG badges into the donation history records.
-- **Architecture & Style:** Standardized all data models and aligned theme colors with specific hex codes.
-- **Testing:** Upgraded to **Robolectric** to support advanced unit testing of Android components.
+- Donation history screen with total donated tracking ([#53](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/53))
+- Report inappropriate advertisements with reason selection ([#41](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/41))
+- Notification preferences screen with per-type toggles ([#49](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/issues/49))
 
 **Key Results:**
 - Transitioned to strict **Branch-per-feature workflow**
-- Authored **60+ unit tests** (all passing)
-- Authored **16+ acceptance tests** (all passing)
+- Authored **57 unit tests** (all passing)
+- Authored **16 acceptance tests** (all passing)
 
 **Sprint Documentation:**
 - [Sprint Planning](docs/sprint2/planning.md)
@@ -539,19 +501,9 @@ Following a comprehensive code audit, the following improvements were implemente
 - [Defects Log](docs/sprint2/defects.md)
 
 All features have been integrated, verified by GitHub Actions, and packaged in the latest release. You can download and test the application here: [v2 — Sprint 2 Release](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/releases/tag/v2).
+
 ### Sprint 3
 
 ### Sprint 4
 
 ### Final Release
-
-iness.md)
-- [Defects Log](docs/sprint2/defects.md)
-
-All features have been integrated, verified by GitHub Actions, and packaged in the latest release. You can download and test the application here: [v2 — Sprint 2 Release](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/releases/tag/v2).
-### Sprint 3
-
-### Sprint 4
-
-### Final Release
-

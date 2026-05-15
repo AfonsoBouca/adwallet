@@ -3,48 +3,36 @@
 All notable changes to this project will be documented in this file.
 
 ## [v2] - Sprint 2
+
 ### Added
-
-- Watch ads and answer questionnaires to earn wallet rewards (#25)
-- Advertiser portal to upload advertisements for review (#54)
-- Rate advertisements after watching with 1-5 star system (#42)
-- Earnings history screen displaying all past earnings (#44)
-- Donation confirmation dialog and success screen (#52)
-- Donation history screen with total donated tracking (#53)
-- Report inappropriate advertisements with reason selection (#41)
-- Notification preferences screen with per-type toggles (#49)
-
-### Fixed & Improved (Post-Audit)
-
-- **Notification Preferences:** Implemented Master Toggle logic, added missing "Promotions" toggle, and added `SharedPreferences` persistence (#49).
-- **Donation History:** Added SDG badges to each donation record in the history list (#53).
-- **Data Models:** Standardized `User`, `AdRating`, `AdReport`, and `Donation` models with correct types and missing IDs.
-- **Visual Identity:** Updated theme colors to match exact specification hex codes (#0D1117 / #238636).
-- **Test Infrastructure:** Upgraded unit test suite with **Robolectric** for robust Android component testing.
-
-### Tests
-
-- 60+ unit tests covering all features and edge cases
-- 16+ acceptance tests for user workflows
-- CI/CD pipeline green on all merges
+- Architecture refactor — monolithic `AdWalletApp.kt` split into per-screen ViewModels and composables (MVVM, repository pattern with singleton instances)
+- Feature #25 — Watch Ads: video playback via `VideoView`, progress tracking, 80% skip gate, questionnaire with colour feedback, earn reward on completion
+- Feature #54 — Advertiser Upload: full ad submission form with validation (title, company, category, description, reward 0.01–1.00), confirmation dialog, ad added to feed
+- Feature #42 — Rate Advertisements: 1–5 star rating screen shown after watching an ad; rating saved to repository
+- Feature #44 — Earnings History: sortable earnings list with total earned summary, empty state view
+- Feature #52 — Donation Confirmation: success screen shown after a donation, displaying amount donated, new balance, and navigation to charity or donation history
+- Feature #53 — Donation History: full donation history list sorted by most recent, with total donated summary card and empty state
+- Feature #41 — Report Inappropriate Advertisements: flag button in ad watch screen opens a report dialog with five selectable reasons and an optional comment
+- Feature #49 — Notification Preferences: settings screen with four toggleable notification types (new ads, earnings, donation reminders, weekly digest)
+- Wallet screen consolidated into Balance / Earnings / Donations tabs
+- All features include unit tests and UI acceptance tests
 
 ## [v1] - Sprint 1
-### Added
 
-- User registration with demographic information (name, age, gender)
-- Donations system allowing wallet balance transfers to charities
-- Charities screen displaying SDG-aligned organizations
+### Added
+- Donations system — users can donate wallet balance to verified charities
+- Charities screen with SDG-aligned organisations
 - Settings screen with light/dark/system theme toggle
-- Bottom navigation bar for tabbed screen navigation
+- Bottom navigation bar for tabbed navigation between main screens
+- User registration screen with demographic information (name, age, gender)
 
 ## [v0] - Sprint 0
-### Added
 
-- Project initialized with Kotlin and Jetpack Compose
-- CI/CD pipeline configured with GitHub Actions
-- MVVM architecture with Clean Architecture patterns
-- Core ad feed screen listing available advertisements
-- Quick Survey flow: watch ad → answer questionnaire → earn reward
-- Virtual wallet balance management via ViewModel
-- Unit tests for wallet and survey logic
-- Acceptance tests for user interactions
+### Added
+- Project initialized with Kotlin and Jetpack Compose # PBI: MisterAI
+- CI/CD pipeline with GitHub Actions # PBI: MisterAI
+- Basic directory structure for MVVM/Clean Architecture # PBI: MisterAI
+- Core ad feed screen with available advertisements
+- Quick Survey flow — watch an ad, answer a questionnaire, earn a reward
+- Virtual wallet balance management using ViewModel
+- Unit and acceptance tests for wallet and survey logic # PBI: MisterAI
