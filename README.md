@@ -181,76 +181,75 @@ In this section you should start by briefly describing the components of the pro
 
 ### Architecture Overview
 
-The system is organised into three logical layers:
+The system is organised into three logical layers, following the Clean Architecture principles:
 
 ```
 ┌─────────────────────────────────────────┐
 │              UI Layer                   │
 │  RegistrationScreen  AdFeedScreen       │
-│  SurveyScreen        CharitiesScreen    │
+│  AdWatchScreen       CharitiesScreen    │
 │  SettingsScreen      MainActivity       │
 ├─────────────────────────────────────────┤
 │           ViewModel Layer               │
-│           WalletViewModel               │
-│    (balance, ads, charities, user)      │
+│      Feature-specific ViewModels        │
+│    (AdWatchVM, WalletVM, SettingsVM)    │
 ├─────────────────────────────────────────┤
 │             Data Layer                  │
-│   In-memory state (StateFlow)           │
-│   Ad list · Charity list                │
-│   DemographicState                      │
+│    Repositories (Ad, Wallet, User)      │
+│    In-memory state (StateFlow)          │
 └─────────────────────────────────────────┘
 ```
 
-**`WalletViewModel`** is the single source of truth for the entire application. It holds all mutable state as `StateFlow` objects and exposes business operations (`registerUser`, `addReward`, `donate`, `setThemeOverride`). By centralising state in one ViewModel scoped to the Activity lifecycle, any screen can observe changes without explicit coordination.
+**Feature-specific ViewModels** — Each major screen or feature has its own dedicated ViewModel. This ensures high cohesion and low coupling, making the app easier to maintain and scale. State is exposed via `StateFlow` and managed reactively.
 
-**Screen Composables** (`RegistrationScreen`, `AdFeedScreen`, `SurveyScreen`, `CharitiesScreen`, `SettingsScreen`) are stateless — they receive data and callbacks as parameters and never own mutable state themselves, making each screen independently testable.
+**Screen Composables** (`RegistrationScreen`, `AdFeedScreen`, `AdWatchScreen`, `CharitiesScreen`, `SettingsScreen`) are stateless — they receive data from their respective ViewModels and report user intent via callbacks, making them independently testable.
 
-**`MainActivity`** acts as the composition root: it creates the ViewModel, collects state from its flows, and wires together the navigation graph using Jetpack Navigation Compose.
+**Repositories** — Centralise data access and business logic. Repositories manage the application's data (Ads, Charities, Wallet transactions) and provide a clean API for ViewModels, abstracting away the underlying storage details.
 
 ### Navigation & Data Flow
 
 Navigation follows a linear onboarding flow followed by a tabbed main area:
 
 ```
-Registration ──► AdFeed ──► Survey
+Registration ──► AdFeed ──► AdWatch
                   │
            (Bottom Nav)
                   │
-           Charities ── Settings
+           Wallet ── Settings
 ```
 
-State changes propagate reactively: the ViewModel exposes `StateFlow` values, `MainActivity` collects them with `collectAsState()`, and passes them down as immutable parameters to composables. User interactions trigger callbacks that call ViewModel methods, which update the flows, causing Compose to automatically recompose only the affected parts of the UI — an application of the **Observer pattern**.
+State changes propagate reactively: ViewModels expose `StateFlow` values, which screens collect with `collectAsState()`. User interactions trigger callbacks that call ViewModel methods, which in turn interact with Repositories to update the application state — an implementation of the **Unidirectional Data Flow (UDF)** pattern.
 
 #### Example end-to-end flow — watching an ad and earning a reward
 
-1. User clicks an Ad card in `AdFeedScreen` → navigates to `SurveyScreen` with the ad's data.
-2. User completes the survey → `onSurveySubmit(reward)` callback fires.
-3. `WalletViewModel.addReward()` updates `_balance` StateFlow.
-4. All screens observing the balance (Feed AppBar, Charities dialog) recompose instantly.
+1. User clicks an Ad card in `AdFeedScreen` → navigates to `AdWatchScreen` with the ad's ID.
+2. `AdWatchViewModel` loads the ad and tracks progress.
+3. User completes the questionnaire → `completeQuestionnaire()` called in ViewModel.
+4. `WalletRepository` updates balance; `WalletViewModel` reflects this change in the Wallet tab instantly.
 
 ### Design Patterns
 
 | Pattern | Where Used | Why |
 |---|---|---|
-| **MVVM** | `WalletViewModel` + Screen composables | Decouples UI from business logic; enables unit testing of state transitions without a running UI |
-| **Observer (Reactive Streams)** | `StateFlow` + `collectAsState()` | Eliminates manual UI refresh calls; UI always reflects current state |
-| **Single Activity** | `MainActivity` only | Modern Android best practice; simplifies back-stack management with Compose Navigation |
-| **Callback / Event Delegation** | `onRegisterSuccess`, `onDonate`, `onSurveySubmit` | Keeps composables dumb; they report intent upward, ViewModel decides effect |
-| **Scaffold + NavHost** | `MainActivity` | Standard Compose pattern for hosting bottom navigation with a changing content area |
+| **MVVM** | ViewModels + Screen composables | Decouples UI from business logic; enables unit testing of state transitions without a running UI |
+| **Repository** | Data access layer | Centralises data management; makes the system easier to test and swap storage implementations |
+| **Observer (Reactive Streams)** | `StateFlow` + `collectAsState()` | UI always reflects current state without manual refresh calls |
+| **Single Activity** | `MainActivity` only | Modern Android standard; simplifies navigation and lifecycle management |
+| **UDF (Unidirectional Data Flow)** | Entire app | Ensures predictable state changes and simplifies debugging |
 
 ### Notable Design Decisions
 
-#### In-memory state only
-There is no database or persistence layer (no Room, no SharedPreferences). All state lives in `WalletViewModel` and is reset when the app process dies. This was appropriate for a prototype/demo context and keeps the architecture simple — adding a Repository backed by Room would be the natural next step for a production version.
+#### Repository Pattern for Data Access
+All data management (Ads, User profile, Wallet balance, Donations) is encapsulated within Repositories. This decouples the business logic from data storage, making it easy to swap in-memory storage for a persistent database (e.g., Room) in the future without affecting the ViewModels.
 
-#### Global ViewModel
-A single `WalletViewModel` serves all screens, rather than per-screen ViewModels. This avoids the need to pass data between screens via navigation arguments for most state (e.g., balance is visible everywhere without re-fetching). The trade-off is that the ViewModel grows larger as the app scales, but for this scope it keeps the design straightforward.
+#### Modular ViewModel Architecture
+Instead of a single global ViewModel, the app uses **feature-specific ViewModels**. This approach prevents the "God Object" anti-pattern, ensures that each ViewModel only handles data relevant to its domain, and significantly improves code readability and maintainability as the app scales.
 
-#### Input validation at entry point
-`RegistrationScreen` filters keystrokes in real-time (name allows only letters/spaces; age only digits) rather than validating on submit. This prevents invalid data from ever entering the ViewModel, keeping the model clean without defensive checks throughout the business layer.
+#### Composition Root (NavGraph)
+All screen instantiation and ViewModel injection happen at the navigation level in `AdWalletNavGraph.kt`. This centralises the "wiring" of the application, keeping screens focused purely on UI rendering and ViewModels focused on state management.
 
-#### Theme control via ViewModel
-The dark/light mode preference is stored in `WalletViewModel` as a nullable `Boolean?` (`null` = follow system). `MainActivity` observes this and passes it into the custom `TPC3Theme`, so changing the setting from `SettingsScreen` immediately repaints the entire app — a clean demonstration of how a single reactive state change can cascade through the whole UI tree.
+#### Standardized Models with UUIDs
+Following a data audit, all domain models (`User`, `AdRating`, `AdReport`, `Donation`) were standardized with unique IDs and correct data types. This ensures data integrity across all layers of the system.
 
 ### Logical Architecture
 
@@ -269,15 +268,15 @@ The application is decomposed into four logical packages arranged in horizontal 
 ```
 ┌──────────────────────────────────────────────┐
 │               navigation                     │
-│          MainActivity · AdWalletApp          │
+│          MainActivity · AdWalletNavGraph     │
 └───────────┬──────────────┬───────────────────┘
             │              │
             ▼              ▼
 ┌───────────────┐  ┌───────────────────────────┐
 │   viewmodel   │  │         ui.screens        │
-│WalletViewModel│  │ RegistrationScreen        │
+│   (Multiple)  │  │ RegistrationScreen        │
 │               │  │ AdFeedScreen              │
-│               │  │ SurveyScreen              │
+│               │  │ AdWatchScreen              │
 │               │  │ CharitiesScreen           │
 │               │  │ SettingsScreen            │
 └───────┬───────┘  └──────────┬────────────────┘
