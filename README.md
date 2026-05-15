@@ -294,26 +294,24 @@ The application is decomposed into four logical packages arranged in horizontal 
         ┌──────────────────────┐
         │        model         │
         │  Ad · Charity        │
-        │  DemographicState    │
+        │  User · Earning      │
         └──────────────────────┘
 ```
 
-#### Package Descriptions
-
 **`model` — Domain layer**
-Pure data classes with no dependencies on Android or UI frameworks. Contains `Ad` (an advertisement with a reward value), `Charity` (a cause users can donate to), and `DemographicState` (the registered user's profile). The stable base on which all other layers build.
+Pure Kotlin data classes representing the core entities: `Ad`, `Charity`, `User`, `Earning`, `AdRating`, and `AdReport`. This layer is the stable foundation, containing no platform dependencies.
+
+**`repository` — Data access layer**
+Encapsulates data retrieval and persistence logic. Repositories (`AdRepository`, `WalletRepository`, etc.) act as a buffer between the domain logic and data sources, using `StateFlow` to provide reactive data updates to the ViewModels.
 
 **`viewmodel` — Business logic layer**
-`WalletViewModel` is the single application-wide state holder. It owns all mutable state as `StateFlow` objects (`balance`, `availableAds`, `charities`, `demographics`, `themePreference`) and exposes the only operations that may change that state (`registerUser`, `addReward`, `donate`, `setThemeOverride`). Depends only on `model` and the Android ViewModel lifecycle library.
+Feature-specific ViewModels that manage UI state and handle user interactions. They interact with Repositories to perform business operations and expose state to the UI layer via read-only `StateFlow` objects.
 
 **`ui.screens` — Presentation layer**
-Each screen is a stateless `@Composable` function that receives data and event callbacks as parameters — screens never hold mutable state or talk to the ViewModel directly. This makes each screen independently testable and reusable. Depends on `model` (for parameter types) and `ui.theme` (for colour and typography tokens).
-
-**`ui.theme` — Styling layer**
-`Color.kt` defines the colour palette for both light and dark schemes; `Type.kt` defines the typography scale; `Theme.kt` composes these into the `TPC3Theme` Composable that wraps the entire app. All visual tokens are centralised here so that a single theme change propagates everywhere.
+Stateless `@Composable` functions that define the user interface. They react to state changes from ViewModels and delegate user events back to them, ensuring a clear separation of concerns.
 
 **`navigation` — Composition root**
-`MainActivity` creates the `WalletViewModel`, observes the theme preference, and applies `TPC3Theme`. `AdWalletApp` owns the `NavController`, defines the navigation graph (routes, arguments, back-stack rules), collects state from the ViewModel, and wires it into the correct screen Composable. The only layer that knows about both the ViewModel and the individual screens.
+`MainActivity` initializes the app and hosts the `AdWalletNavGraph`, which defines all routes, arguments, and screen-ViewModel pairings. This layer orchestrates the application's overall structure and flow.
 
 #### Dependency Direction
 
@@ -539,6 +537,16 @@ Following a comprehensive code audit, the following improvements were implemente
 - [Sprint Review](docs/sprint2/review.md)
 - [Sprint Retrospective](docs/sprint2/retrospective.md)
 - [Happiness Meter](docs/sprint2/happiness.md)
+- [Defects Log](docs/sprint2/defects.md)
+
+All features have been integrated, verified by GitHub Actions, and packaged in the latest release. You can download and test the application here: [v2 — Sprint 2 Release](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/releases/tag/v2).
+### Sprint 3
+
+### Sprint 4
+
+### Final Release
+
+iness.md)
 - [Defects Log](docs/sprint2/defects.md)
 
 All features have been integrated, verified by GitHub Actions, and packaged in the latest release. You can download and test the application here: [v2 — Sprint 2 Release](https://github.com/LEIC-ES-2025-26-2LEIC03/T5/releases/tag/v2).
