@@ -40,21 +40,23 @@ class NotificationPrefsViewModel(application: Application) : AndroidViewModel(ap
     }
 
     fun setMasterEnabled(enabled: Boolean) {
-        _uiState.update { 
-            it.copy(
-                masterEnabled = enabled,
-                newAdsEnabled = if (!enabled) false else it.newAdsEnabled,
-                earningsEnabled = if (!enabled) false else it.earningsEnabled,
-                donationRemindersEnabled = if (!enabled) false else it.donationRemindersEnabled,
-                weeklyDigestEnabled = if (!enabled) false else it.weeklyDigestEnabled,
-                promotionsEnabled = if (!enabled) false else it.promotionsEnabled,
-            ) 
+        if (enabled) {
+            // Restore from storage
+            _uiState.value = loadPrefs().copy(masterEnabled = true)
+        } else {
+            // Disable all in UI, but keep storage as is
+            _uiState.update { 
+                it.copy(
+                    masterEnabled = false,
+                    newAdsEnabled = false,
+                    earningsEnabled = false,
+                    donationRemindersEnabled = false,
+                    weeklyDigestEnabled = false,
+                    promotionsEnabled = false,
+                ) 
+            }
         }
         savePref("master_enabled", enabled)
-        // If we disable master, we don't necessarily want to wipe the other prefs in storage
-        // But the requirement says "Master OFF -> disables and greys out all individual toggles"
-        // And "Master ON -> restores individual toggle states to previous values"
-        // So we should probably keep the individual ones in storage and only update the UI state.
     }
 
     fun setNewAdsEnabled(enabled: Boolean) {

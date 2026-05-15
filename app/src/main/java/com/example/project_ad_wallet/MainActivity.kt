@@ -10,6 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.project_ad_wallet.ui.navigation.AdWalletNavGraph
 import com.example.project_ad_wallet.data.repository.UserRepository
+import com.example.project_ad_wallet.data.model.ThemeMode
+import com.example.project_ad_wallet.ui.theme.Project_Ad_WalletTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

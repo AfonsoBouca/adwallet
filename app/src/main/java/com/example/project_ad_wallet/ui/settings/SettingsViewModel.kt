@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.project_ad_wallet.data.model.ThemeMode
 import com.example.project_ad_wallet.data.model.User
 import com.example.project_ad_wallet.data.repository.AdRepository
+import com.example.project_ad_wallet.data.repository.CharityRepository
 import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
@@ -26,6 +27,7 @@ class SettingsViewModel(
     private val walletRepository: WalletRepository = WalletRepository.instance,
     private val adRepository: AdRepository = AdRepository.instance,
     private val donationRepository: DonationRepository = DonationRepository.instance,
+    private val charityRepository: CharityRepository = CharityRepository.instance,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -40,8 +42,8 @@ class SettingsViewModel(
         }.launchIn(viewModelScope)
     }
 
-    fun updateProfile(name: String, age: String, gender: String) {
-        userRepository.saveUser(User(name = name.trim(), age = age.trim(), gender = gender))
+    fun updateProfile(name: String, age: Int, gender: String) {
+        userRepository.saveUser(User(name = name.trim(), age = age, gender = gender))
     }
 
     fun setThemeMode(mode: ThemeMode) {
@@ -60,9 +62,6 @@ class SettingsViewModel(
     }
 
     fun onGenerateRandomHistory() {
-        val charities = donationRepository.instance.let { charityRepository.getCharities() }
-        // Actually CharityRepository is not in DonationRepository. 
-        // I'll use the charities from the provided list.
         val charitiesList = charityRepository.getCharities()
         walletRepository.generateRandomHistory(charitiesList)
         donationRepository.generateRandomHistory(charitiesList)

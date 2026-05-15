@@ -2,6 +2,7 @@ package com.example.project_ad_wallet.ui.registration
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -34,14 +35,16 @@ import com.example.project_ad_wallet.data.model.User
 fun EditProfileDialog(
     initialUser: User,
     onDismiss: () -> Unit,
-    onSave: (String, String, String) -> Unit,
+    onSave: (String, Int, String) -> Unit,
 ) {
     var fullName by rememberSaveable(initialUser.name) { mutableStateOf(initialUser.name) }
-    var age by rememberSaveable(initialUser.age) { mutableStateOf(initialUser.age) }
+    var age by rememberSaveable(initialUser.age) { mutableStateOf(initialUser.age.toString()) }
     var gender by rememberSaveable(initialUser.gender) { mutableStateOf(initialUser.gender) }
     var expanded by remember { mutableStateOf(false) }
     val genders = listOf("Male", "Female", "Other", "Prefer not to say")
-    val saveEnabled = fullName.isNotBlank() && age.isNotBlank() && gender.isNotBlank()
+    
+    val ageInt = age.toIntOrNull() ?: 0
+    val saveEnabled = fullName.isNotBlank() && age.isNotBlank() && gender.isNotBlank() && ageInt > 0
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -53,7 +56,9 @@ fun EditProfileDialog(
                     Text("Full Name *", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     OutlinedTextField(
                         value = fullName,
-                        onValueChange = { fullName = it.filter { c -> c.isLetter() || c.isWhitespace() } },
+                        onValueChange = { input -> 
+                            fullName = input.filter { c -> c.isLetter() || c.isWhitespace() } 
+                        },
                         modifier = Modifier,
                         placeholder = { Text("Enter your full name") },
                         singleLine = true,
@@ -65,7 +70,9 @@ fun EditProfileDialog(
                     Text("Age *", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     OutlinedTextField(
                         value = age,
-                        onValueChange = { age = it.filter { c -> c.isDigit() } },
+                        onValueChange = { input -> 
+                            age = input.filter { c -> c.isDigit() } 
+                        },
                         placeholder = { Text("Enter your age") },
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp),
@@ -104,7 +111,7 @@ fun EditProfileDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onSave(fullName, age, gender) },
+                onClick = { onSave(fullName, ageInt, gender) },
                 enabled = saveEnabled,
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(

@@ -14,6 +14,8 @@ class CharityRepository {
     private val _charities = MutableStateFlow(sampleCharities())
     val charities: StateFlow<List<Charity>> = _charities.asStateFlow()
 
+    fun getCharities(): List<Charity> = _charities.value
+
     fun getCharityById(id: String): Charity? = _charities.value.firstOrNull { it.id == id }
 }
 

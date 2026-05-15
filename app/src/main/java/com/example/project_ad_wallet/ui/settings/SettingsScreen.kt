@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -98,6 +99,8 @@ fun SettingsScreen(
                     viewModel.resetApp()
                     onResetApp()
                 },
+                onAddFunds = viewModel::onAddFunds,
+                onGenerateRandomHistory = viewModel::onGenerateRandomHistory,
             )
         }
     }
@@ -128,7 +131,7 @@ private fun ProfileSection(user: User, onEdit: () -> Unit) {
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 ProfileItem("Name", user.name)
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-                ProfileItem("Age", user.age)
+                ProfileItem("Age", user.age.toString())
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                 ProfileItem("Gender", user.gender)
             }

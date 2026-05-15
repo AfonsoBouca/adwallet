@@ -42,7 +42,7 @@ class WalletUnitTest {
 
     @Test
     fun test_addEarningUpdatesBalance() {
-        walletRepo.addEarning(Earning(adId = "1", adTitle = "Ad", amount = 0.50))
+        walletRepo.addEarning(Earning(id = "e1", adId = "1", adTitle = "Ad", amount = 0.50))
         assertEquals(0.50, viewModel.uiState.value.balance, 0.001)
     }
 
