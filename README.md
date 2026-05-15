@@ -445,6 +445,24 @@ Another challenge was balancing Modeling with Development: Maintaining high-qual
 
 ### Sprint 1
 
+### Development Environment Setup
+
+AdWallet is built using modern Android development tools. To set up the development environment, ensure you have the following versions: Android Studio (latest stable release), Kotlin 2.0.21, Android Gradle Plugin 9.0.1, and Jetpack Compose BOM 2024.09.00.
+
+1. Download and install [Android Studio](https://developer.android.com/studio).
+2. Clone the repository: \`git clone https://github.com/LEIC-ES-2025-26-2LEIC03/T5.git\`
+3. Open the cloned \`T5\` directory in Android Studio.
+4. Allow Gradle to sync and download dependencies automatically (no additional configuration is required).
+5. Build and run the project using the "Run" button (Shift+F10) on an emulator or physical device.
+
+### Responsible Use of Agentic AI
+
+Throughout the development process, the team utilized AI tools (specifically ChatGPT) to support code generation, troubleshoot compilation errors, and assist with boilerplate UI structuring. This allowed the team to maintain a high velocity while focusing on the core business logic and architectural design of the application.
+
+It is important to note that while AI assisted in generating implementation code, all unit and acceptance tests were written manually by the team members. This ensures that human oversight remains the ultimate validator of the system's correctness and alignment with our user stories.
+
+To maintain transparency, as required by the course guidelines, all AI-assisted code contributions are clearly identified. In early sprints, this was marked using \`// MisterAI\` comments directly within the source files. From Sprint 2 onwards, we standardized this practice by prefixing the relevant Git commit messages with the \`[MisterAI]\` tag, providing a clear audit trail of AI involvement in the project history.
+
 In Sprint 1, we transitioned from establishing a vision to a focus on execution velocity. Using patterns like "Yesterday’s Weather," we analyzed our performance from Sprint 0 to create a realistic Sprint Backlog that avoided over-commitment. We ensured the backlog contained no epics, only "Small Items" that were ready for immediate action. Through "Pigs Estimate," the team members actually responsible for the code provided the estimates, leading to a much higher level of accuracy and ownership over our sprint goals.
 
 Our workflow matured through a strict "Low WiP" (Work in Progress) policy and collaborative patterns. We managed our tasks on the GitHub Projects board, ensuring that items were only assigned to a pair, trio, or larger group at the moment work actually started. This prevented tasks from being "paused" and ensured that knowledge was shared across the team, preventing technical silos and improving the overall quality of the v1 release.
@@ -457,6 +475,24 @@ We ran into some trouble figuring out the best group sizes for our tasks. It was
 Another challenge was PBI Granularity for Complex Features: As we moved beyond the simple prototype, breaking down integrated features like "SDG-based Charity Filtering" into 1–3 day tasks proved difficult. It required multiple refinement sessions to ensure these items met our "Definition of Ready" without becoming too large to manage within the sprint.
 
 #### Sprint 1 Retrospective
+
+### Development Environment Setup
+
+AdWallet is built using modern Android development tools. To set up the development environment, ensure you have the following versions: Android Studio (latest stable release), Kotlin 2.0.21, Android Gradle Plugin 9.0.1, and Jetpack Compose BOM 2024.09.00.
+
+1. Download and install [Android Studio](https://developer.android.com/studio).
+2. Clone the repository: \`git clone https://github.com/LEIC-ES-2025-26-2LEIC03/T5.git\`
+3. Open the cloned \`T5\` directory in Android Studio.
+4. Allow Gradle to sync and download dependencies automatically (no additional configuration is required).
+5. Build and run the project using the "Run" button (Shift+F10) on an emulator or physical device.
+
+### Responsible Use of Agentic AI
+
+Throughout the development process, the team utilized AI tools (specifically ChatGPT) to support code generation, troubleshoot compilation errors, and assist with boilerplate UI structuring. This allowed the team to maintain a high velocity while focusing on the core business logic and architectural design of the application.
+
+It is important to note that while AI assisted in generating implementation code, all unit and acceptance tests were written manually by the team members. This ensures that human oversight remains the ultimate validator of the system's correctness and alignment with our user stories.
+
+To maintain transparency, as required by the course guidelines, all AI-assisted code contributions are clearly identified. In early sprints, this was marked using \`// MisterAI\` comments directly within the source files. From Sprint 2 onwards, we standardized this practice by prefixing the relevant Git commit messages with the \`[MisterAI]\` tag, providing a clear audit trail of AI involvement in the project history.
 
 **Did Well:**
 • Pair Programming: Collaborative coding significantly reduced our defect rate and ensured that everyone understood the core architecture.
