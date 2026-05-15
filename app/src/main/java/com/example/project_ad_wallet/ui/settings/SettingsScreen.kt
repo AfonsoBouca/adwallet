@@ -1,0 +1,270 @@
+package com.example.project_ad_wallet.ui.settings
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.project_ad_wallet.data.model.ThemeMode
+import com.example.project_ad_wallet.data.model.User
+import com.example.project_ad_wallet.ui.components.AdWalletBottomBar
+import com.example.project_ad_wallet.ui.components.AdWalletTopBar
+import com.example.project_ad_wallet.ui.components.BottomNavItem
+import com.example.project_ad_wallet.ui.navigation.Routes
+import com.example.project_ad_wallet.ui.registration.EditProfileDialog
+
+@Composable
+fun SettingsScreen(
+    navController: NavHostController,
+    bottomNavItems: List<BottomNavItem>,
+    onThemeModeChanged: (ThemeMode) -> Unit,
+    onResetApp: () -> Unit,
+    viewModel: SettingsViewModel = viewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    var showEditProfile by rememberSaveable { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = { AdWalletTopBar(showBalance = false) },
+        bottomBar = { AdWalletBottomBar(navController = navController, items = bottomNavItems) },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+        ) {
+            ProfileSection(
+                user = uiState.user,
+                onEdit = { showEditProfile = true },
+            )
+
+            NotificationsSection(navController = navController)
+
+            ThemeSection(
+                currentMode = uiState.themeMode,
+                onModeChanged = {
+                    viewModel.setThemeMode(it)
+                    onThemeModeChanged(it)
+                },
+            )
+
+            DeveloperSection(
+                onResetApp = {
+                    viewModel.resetApp()
+                    onResetApp()
+                },
+            )
+        }
+    }
+
+    if (showEditProfile) {
+        EditProfileDialog(
+            initialUser = uiState.user,
+            onDismiss = { showEditProfile = false },
+            onSave = { name, age, gender ->
+                viewModel.updateProfile(name, age, gender)
+                showEditProfile = false
+            },
+        )
+    }
+}
+
+@Composable
+private fun ProfileSection(user: User, onEdit: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SectionHeader(icon = Icons.Default.Person, title = "Profile", actionLabel = "Edit", onActionClick = onEdit)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            elevation = CardDefaults.cardElevation(0.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                ProfileItem("Name", user.name)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                ProfileItem("Age", user.age)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                ProfileItem("Gender", user.gender)
+            }
+        }
+    }
+}
+
+@Composable
+private fun NotificationsSection(navController: NavHostController) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SectionHeader(icon = Icons.Default.Notifications, title = "Notifications")
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { navController.navigate(Routes.NOTIFICATION_PREFS) },
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            elevation = CardDefaults.cardElevation(0.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Notification Preferences",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                Text(
+                    text = ">",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ThemeSection(currentMode: ThemeMode, onModeChanged: (ThemeMode) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SectionHeader(icon = Icons.Default.Settings, title = "Appearance")
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            elevation = CardDefaults.cardElevation(0.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                ThemeModeRow("System default", currentMode == ThemeMode.System) { onModeChanged(ThemeMode.System) }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                ThemeModeRow("Light mode", currentMode == ThemeMode.Light) { onModeChanged(ThemeMode.Light) }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                ThemeModeRow("Dark mode", currentMode == ThemeMode.Dark) { onModeChanged(ThemeMode.Dark) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DeveloperSection(onResetApp: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SectionHeader(icon = Icons.Default.Settings, title = "Developer Options")
+        OutlinedButton(
+            onClick = onResetApp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(50),
+            border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.error),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+        ) {
+            Text("RESET APP STATE", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    icon: ImageVector,
+    title: String,
+    actionLabel: String? = null,
+    onActionClick: (() -> Unit)? = null,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Text(text = title, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+        Spacer(modifier = Modifier.weight(1f))
+        if (actionLabel != null && onActionClick != null) {
+            TextButton(onClick = onActionClick) {
+                Icon(Icons.Default.Edit, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(actionLabel, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileItem(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = value.ifBlank { "Not set" },
+            color = if (value.isBlank()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.SemiBold,
+        )
+    }
+}
+
+@Composable
+private fun ThemeModeRow(title: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = title, color = MaterialTheme.colorScheme.onSurface)
+        Spacer(modifier = Modifier.weight(1f))
+        if (selected) {
+            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+        }
+    }
+}
