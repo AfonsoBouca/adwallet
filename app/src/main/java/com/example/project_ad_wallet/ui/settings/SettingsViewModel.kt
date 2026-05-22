@@ -9,6 +9,7 @@ import com.example.project_ad_wallet.data.repository.CharityRepository
 import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import com.example.project_ad_wallet.data.repository.WithdrawalRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +29,7 @@ class SettingsViewModel(
     private val adRepository: AdRepository = AdRepository.instance,
     private val donationRepository: DonationRepository = DonationRepository.instance,
     private val charityRepository: CharityRepository = CharityRepository.instance,
+    private val withdrawalRepository: WithdrawalRepository = WithdrawalRepository.instance,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -55,6 +57,7 @@ class SettingsViewModel(
         walletRepository.reset()
         adRepository.reset()
         donationRepository.reset()
+        withdrawalRepository.reset()
     }
 
     fun onAddFunds(amount: Double) {
@@ -65,5 +68,6 @@ class SettingsViewModel(
         val charitiesList = charityRepository.getCharities()
         walletRepository.generateRandomHistory(charitiesList)
         donationRepository.generateRandomHistory(charitiesList)
+        withdrawalRepository.generateSampleWithdrawals()
     }
 }

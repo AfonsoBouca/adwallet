@@ -13,6 +13,7 @@ object Routes {
     const val DONATION_CONFIRMATION = "donation_confirmation/{charityId}/{amount}"
     const val DONATION_HISTORY = "donation_history"
     const val NOTIFICATION_PREFS = "notification_prefs"
+    const val WITHDRAWAL_STATUS = "withdrawal_status"
 
     fun adWatch(adId: String) = "ad_watch/$adId"
     fun adRating(adId: String) = "ad_rating/$adId"
