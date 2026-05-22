@@ -42,12 +42,12 @@ import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.data.model.Donation
 import com.example.project_ad_wallet.data.model.Earning
 import com.example.project_ad_wallet.data.model.WithdrawalRequest
-import com.example.project_ad_wallet.data.model.WithdrawalStatus
 import com.example.project_ad_wallet.ui.components.AdWalletBottomBar
 import com.example.project_ad_wallet.ui.components.AdWalletTopBar
 import com.example.project_ad_wallet.ui.components.BottomNavItem
 import com.example.project_ad_wallet.ui.components.EmptyStateView
 import com.example.project_ad_wallet.ui.components.asCurrency
+import com.example.project_ad_wallet.ui.withdrawals.toDisplayInfo
 
 @Composable
 fun WalletScreen(
@@ -316,18 +316,7 @@ private fun WithdrawalsTab(withdrawals: List<WithdrawalRequest>) {
 
 @Composable
 private fun WithdrawalRow(withdrawal: WithdrawalRequest) {
-    val statusColor = when (withdrawal.status) {
-        WithdrawalStatus.PENDING -> androidx.compose.ui.graphics.Color(0xFFF59E0B)
-        WithdrawalStatus.PROCESSING -> androidx.compose.ui.graphics.Color(0xFF3B82F6)
-        WithdrawalStatus.COMPLETED -> androidx.compose.ui.graphics.Color(0xFF22C55E)
-        WithdrawalStatus.REJECTED -> androidx.compose.ui.graphics.Color(0xFFEF4444)
-    }
-    val statusLabel = when (withdrawal.status) {
-        WithdrawalStatus.PENDING -> "Pending"
-        WithdrawalStatus.PROCESSING -> "Processing"
-        WithdrawalStatus.COMPLETED -> "Completed"
-        WithdrawalStatus.REJECTED -> "Rejected"
-    }
+    val statusInfo = withdrawal.status.toDisplayInfo()
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -354,14 +343,14 @@ private fun WithdrawalRow(withdrawal: WithdrawalRequest) {
             }
             Surface(
                 shape = RoundedCornerShape(8.dp),
-                color = statusColor.copy(alpha = 0.12f),
+                color = statusInfo.color.copy(alpha = 0.12f),
             ) {
                 Text(
-                    text = statusLabel,
+                    text = statusInfo.label,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = statusColor,
+                    color = statusInfo.color,
                 )
             }
         }

@@ -16,10 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.HourglassTop
-import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -30,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -154,7 +151,13 @@ private fun WithdrawalSummaryCard(uiState: WithdrawalStatusUiState) {
 
 @Composable
 private fun WithdrawalRequestItem(withdrawal: WithdrawalRequest) {
-    val statusInfo = getStatusInfo(withdrawal.status)
+    val statusInfo = withdrawal.status.toDisplayInfo()
+    val dateTimeFormatter = remember {
+        SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+    }
+    val dateFormatter = remember {
+        SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    }
 
     Card(
         modifier = Modifier
@@ -183,8 +186,7 @@ private fun WithdrawalRequestItem(withdrawal: WithdrawalRequest) {
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
-                            .format(Date(withdrawal.timestamp)),
+                        text = dateTimeFormatter.format(Date(withdrawal.timestamp)),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -203,10 +205,7 @@ private fun WithdrawalRequestItem(withdrawal: WithdrawalRequest) {
                 withdrawal.estimatedCompletionDate?.let { estimatedDate ->
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Estimated completion: ${
-                            SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-                                .format(Date(estimatedDate))
-                        }",
+                        text = "Estimated completion: ${dateFormatter.format(Date(estimatedDate))}",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.testTag("withdrawal_estimated_${withdrawal.id}"),
@@ -252,36 +251,5 @@ private fun StatusBadge(label: String, icon: ImageVector, color: Color) {
                 color = color,
             )
         }
-    }
-}
-
-private data class StatusDisplayInfo(
-    val label: String,
-    val icon: ImageVector,
-    val color: Color,
-)
-
-private fun getStatusInfo(status: WithdrawalStatus): StatusDisplayInfo {
-    return when (status) {
-        WithdrawalStatus.PENDING -> StatusDisplayInfo(
-            label = "Pending",
-            icon = Icons.Default.HourglassTop,
-            color = Color(0xFFF59E0B),
-        )
-        WithdrawalStatus.PROCESSING -> StatusDisplayInfo(
-            label = "Processing",
-            icon = Icons.Default.Sync,
-            color = Color(0xFF3B82F6),
-        )
-        WithdrawalStatus.COMPLETED -> StatusDisplayInfo(
-            label = "Completed",
-            icon = Icons.Default.CheckCircle,
-            color = Color(0xFF22C55E),
-        )
-        WithdrawalStatus.REJECTED -> StatusDisplayInfo(
-            label = "Rejected",
-            icon = Icons.Default.Cancel,
-            color = Color(0xFFEF4444),
-        )
     }
 }
