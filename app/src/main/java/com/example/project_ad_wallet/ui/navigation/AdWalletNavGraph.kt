@@ -62,7 +62,16 @@ fun AdWalletNavGraph(
                 },
             )
         }
-
+        
+        composable(Routes.ADMIN_USERS) {
+            val walletRepo = com.example.project_ad_wallet.data.repository.UserRepository.instance
+            val users by walletRepo.allUsers.collectAsState()
+            AdminUsersScreen(
+                users = users,
+                onToggleBlock = { userId -> walletRepo.toggleBlockStatus(userId) },
+                onBack = { navController.popBackStack() }
+            )
+        }       
         composable(Routes.AD_FEED) {
             AdFeedScreen(
                 navController = navController,
