@@ -74,7 +74,7 @@ fun AdWalletNavGraph(
                 onBack = { navController.popBackStack() }
             )
         }
-          
+
         composable(Routes.AD_FEED) {
             AdFeedScreen(
                 navController = navController,

@@ -1,4 +1,4 @@
-package com.example.project_ad_wallet.ui.screens
+package com.example.project_ad_wallet.ui.admin
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
