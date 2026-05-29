@@ -1,5 +1,6 @@
 package com.example.project_ad_wallet
 
+import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.data.repository.AdRepository
 import com.example.project_ad_wallet.ui.advertiserUpload.AdvertiserUploadViewModel
 import org.junit.Assert.assertEquals
@@ -38,7 +39,7 @@ class AdvertiserUploadViewModelTest {
         assertEquals(initialCount + 1, adRepo.ads.value.size)
         val newAd = adRepo.ads.value.last()
         assertEquals("Great Product", newAd.title)
-        assertEquals(false, newAd.isActive)
+        assertEquals(AdStatus.PENDING, newAd.status) // <-- Alterado para o novo Enum!
     }
 
     @Test
@@ -82,13 +83,13 @@ class AdvertiserUploadViewModelTest {
     }
 
     @Test
-    fun test_adIsSubmittedWithIsActiveFalse() {
+    fun test_adIsSubmittedWithStatusPending() {
         fillValidForm()
         viewModel.submitAd()
         viewModel.confirmUpload()
 
         val newAd = adRepo.ads.value.last()
-        assertEquals(false, newAd.isActive)
+        assertEquals(AdStatus.PENDING, newAd.status) // <-- Alterado para o novo Enum!
     }
 
     @Test

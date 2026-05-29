@@ -4,6 +4,7 @@ import com.example.project_ad_wallet.R
 import com.example.project_ad_wallet.data.model.Ad
 import com.example.project_ad_wallet.data.model.AdRating
 import com.example.project_ad_wallet.data.model.AdReport
+import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.data.model.Question
 import com.example.project_ad_wallet.data.model.QuestionOption
 import com.example.project_ad_wallet.data.model.QuestionnaireResponse
@@ -48,6 +49,24 @@ class AdRepository {
         _ads.update { it + ad }
     }
 
+    // --- NOVAS FUNÇÕES PARA O ADMINISTRADOR ---
+    fun approveAd(adId: String) {
+        _ads.update { currentList ->
+            currentList.map { ad ->
+                if (ad.id == adId) ad.copy(status = AdStatus.APPROVED) else ad
+            }
+        }
+    }
+
+    fun rejectAd(adId: String) {
+        _ads.update { currentList ->
+            currentList.map { ad ->
+                if (ad.id == adId) ad.copy(status = AdStatus.REJECTED) else ad
+            }
+        }
+    }
+    // ------------------------------------------
+
     fun addRating(rating: AdRating) {
         _ratings.update { it + rating }
     }
@@ -85,6 +104,7 @@ private fun sampleAds() = listOf(
         category = "Sustainability",
             durationSeconds = 30,
         isActive = true,
+        status = AdStatus.APPROVED, // Alterado aqui
     ),
     Ad(
         id = "2",
@@ -97,6 +117,7 @@ private fun sampleAds() = listOf(
         category = "Education",
             durationSeconds = 45,
         isActive = true,
+        status = AdStatus.APPROVED, // Alterado aqui
     ),
     Ad(
         id = "3",
@@ -110,10 +131,10 @@ private fun sampleAds() = listOf(
             durationSeconds = 55,
         isActive = true,
     ),
-    Ad(
-        id = "4",
-        title = "FoodBank Porto — Help End Hunger",
-        description = "Every euro buys a meal.",
+    Ad( // Vamos criar um pendente falso para o Admin ter algo para aprovar
+        id = "6",
+        title = "Suspicious Crypto App",
+        description = "Double your money in 5 minutes! No risks involved.",
         thumbnailResId = R.drawable.ad_thumb_4,
         videoResId = R.raw.ad_video_4,
         rewardAmount = 0.05,

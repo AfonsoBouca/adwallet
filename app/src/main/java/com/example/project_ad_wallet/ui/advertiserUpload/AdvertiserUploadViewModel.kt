@@ -3,6 +3,7 @@ package com.example.project_ad_wallet.ui.advertiserUpload
 import androidx.lifecycle.ViewModel
 import com.example.project_ad_wallet.R
 import com.example.project_ad_wallet.data.model.Ad
+import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.data.repository.AdRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

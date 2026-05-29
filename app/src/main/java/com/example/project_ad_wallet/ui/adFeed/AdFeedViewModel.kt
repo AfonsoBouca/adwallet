@@ -3,6 +3,7 @@ package com.example.project_ad_wallet.ui.adFeed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project_ad_wallet.data.model.Ad
+import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.data.repository.AdRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +35,7 @@ class AdFeedViewModel(
             adRepository.watchedAdIds,
         ) { ads, balance, watched ->
             AdFeedUiState(
-                ads = ads.filter { it.isActive },
+                ads = ads.filter { it.status == AdStatus.APPROVED }, // Aqui está a alteração!
                 balance = balance,
                 watchedAdIds = watched,
             )
