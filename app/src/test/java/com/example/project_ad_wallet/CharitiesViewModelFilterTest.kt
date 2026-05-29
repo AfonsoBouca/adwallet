@@ -15,7 +15,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertEquals
 import com.example.project_ad_wallet.data.model.Donation
-import com.example.project_ad_wallet.data.model.Charity
 import org.junit.Before
 import org.junit.Test
 
