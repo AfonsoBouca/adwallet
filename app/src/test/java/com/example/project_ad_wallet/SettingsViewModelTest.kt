@@ -40,4 +40,25 @@ class SettingsViewModelTest {
         assertEquals("", user.gender)
         assertEquals(ThemeMode.Dark, userRepository.themeMode.value)
     }
+
+    @Test
+    fun deleteAccount_clearsAllUserData() {
+        viewModel.deleteAccount()
+
+        val user = userRepository.user.value
+        assertEquals("", user.name)
+        assertEquals(0, user.age)
+        assertEquals("", user.gender)
+        assertEquals(ThemeMode.System, userRepository.themeMode.value)
+    }
+
+    @Test
+    fun deleteAccount_resetsWalletBalance() {
+        val walletRepository = com.example.project_ad_wallet.data.repository.WalletRepository.instance
+        walletRepository.addFunds(50.0)
+
+        viewModel.deleteAccount()
+
+        assertEquals(0.0, walletRepository.balance.value, 0.001)
+    }
 }
