@@ -102,6 +102,8 @@ private fun sampleAds() = listOf(
         rewardAmount = 0.10,
         advertiserName = "EcoBottle Ltd",
         category = "Sustainability",
+            durationSeconds = 30,
+        isActive = true,
         status = AdStatus.APPROVED, // Alterado aqui
     ),
     Ad(
@@ -113,6 +115,8 @@ private fun sampleAds() = listOf(
         rewardAmount = 0.15,
         advertiserName = "LearnFast Inc",
         category = "Education",
+            durationSeconds = 45,
+        isActive = true,
         status = AdStatus.APPROVED, // Alterado aqui
     ),
     Ad(
@@ -124,7 +128,8 @@ private fun sampleAds() = listOf(
         rewardAmount = 0.20,
         advertiserName = "GreenEnergy Co",
         category = "Energy",
-        status = AdStatus.APPROVED, // Alterado aqui
+            durationSeconds = 55,
+        isActive = true,
     ),
     Ad( // Vamos criar um pendente falso para o Admin ter algo para aprovar
         id = "6",
@@ -132,10 +137,23 @@ private fun sampleAds() = listOf(
         description = "Double your money in 5 minutes! No risks involved.",
         thumbnailResId = R.drawable.ad_thumb_4,
         videoResId = R.raw.ad_video_4,
-        rewardAmount = 0.50,
-        advertiserName = "CryptoBros LLC",
-        category = "Other",
-        status = AdStatus.PENDING, // Este vai aparecer para o Admin
+        rewardAmount = 0.05,
+        advertiserName = "FoodBank Porto",
+        category = "Charity",
+            durationSeconds = 20,
+        isActive = true,
+    ),
+    Ad(
+        id = "5",
+        title = "Onda Atlântica — Surf School",
+        description = "Learn to surf this summer.",
+        thumbnailResId = R.drawable.ad_thumb_5,
+        videoResId = R.raw.ad_video_5,
+        rewardAmount = 0.12,
+        advertiserName = "Onda Atlântica",
+        category = "Sports",
+            durationSeconds = 40,
+        isActive = true,
     ),
 )
 
