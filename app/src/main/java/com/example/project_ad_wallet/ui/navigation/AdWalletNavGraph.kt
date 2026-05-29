@@ -27,7 +27,9 @@ import com.example.project_ad_wallet.ui.donations.DonationConfirmationScreen
 import com.example.project_ad_wallet.ui.donations.DonationHistoryScreen
 import com.example.project_ad_wallet.ui.notifications.NotificationPrefsScreen
 import com.example.project_ad_wallet.ui.components.BottomNavItem
+import com.example.project_ad_wallet.ui.registration.LoginScreen
 import com.example.project_ad_wallet.ui.registration.RegistrationScreen
+import com.example.project_ad_wallet.ui.registration.ResetPasswordScreen
 import com.example.project_ad_wallet.ui.settings.SettingsScreen
 import com.example.project_ad_wallet.ui.settings.SettingsViewModel
 import com.example.project_ad_wallet.ui.wallet.WalletScreen
@@ -62,6 +64,36 @@ fun AdWalletNavGraph(
                         popUpTo(Routes.REGISTRATION) { inclusive = true }
                     }
                 },
+                onLoginRequested = {
+                    navController.navigate(Routes.LOGIN)
+                },
+            )
+        }
+
+        composable(Routes.LOGIN) {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Routes.AD_FEED) {
+                        popUpTo(Routes.REGISTRATION) { inclusive = true }
+                    }
+                },
+                onCreateAccount = {
+                    navController.navigate(Routes.REGISTRATION)
+                },
+                onResetPassword = {
+                    navController.navigate(Routes.RESET_PASSWORD)
+                },
+            )
+        }
+
+        composable(Routes.RESET_PASSWORD) {
+            ResetPasswordScreen(
+                onPasswordReset = {
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(Routes.RESET_PASSWORD) { inclusive = true }
+                    }
+                },
+                onBack = { navController.popBackStack() },
             )
         }
 
@@ -99,7 +131,7 @@ fun AdWalletNavGraph(
                     }
                 },
                 onLogout = {
-                    navController.navigate(Routes.REGISTRATION) {
+                    navController.navigate(Routes.LOGIN) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }

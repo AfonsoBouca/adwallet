@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -50,6 +51,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun RegistrationScreen(
     onRegistered: () -> Unit,
+    onLoginRequested: () -> Unit,
     viewModel: RegistrationViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -169,6 +171,38 @@ fun RegistrationScreen(
                         }
                     }
                 }
+
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    FieldLabel("Email")
+                    OutlinedTextField(
+                        value = uiState.email,
+                        onValueChange = viewModel::onEmailChanged,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("registration_email"),
+                        placeholder = { Text("Optional: enter your email") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        colors = adWalletTextFieldColors(),
+                    )
+                }
+
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    FieldLabel("Password")
+                    OutlinedTextField(
+                        value = uiState.password,
+                        onValueChange = viewModel::onPasswordChanged,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("registration_password"),
+                        placeholder = { Text("Optional: set a password") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        colors = adWalletTextFieldColors(),
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -194,6 +228,15 @@ fun RegistrationScreen(
                     fontSize = 16.sp,
                     letterSpacing = 1.sp,
                 )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            TextButton(
+                onClick = onLoginRequested,
+                modifier = Modifier.testTag("registration_login_link"),
+            ) {
+                Text("Already have an account? Log in")
             }
         }
     }

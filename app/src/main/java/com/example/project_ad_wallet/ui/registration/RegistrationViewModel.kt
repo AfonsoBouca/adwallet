@@ -12,6 +12,8 @@ data class RegistrationUiState(
     val fullName: String = "",
     val age: String = "",
     val gender: String = "",
+    val email: String = "",
+    val password: String = "",
     val isRegistered: Boolean = false,
 )
 
@@ -34,13 +36,23 @@ class RegistrationViewModel(
         _uiState.update { it.copy(gender = value) }
     }
 
+    fun onEmailChanged(value: String) {
+        _uiState.update { it.copy(email = value) }
+    }
+
+    fun onPasswordChanged(value: String) {
+        _uiState.update { it.copy(password = value) }
+    }
+
     fun register() {
         val state = _uiState.value
-        userRepository.saveUser(
+        userRepository.registerUser(
             User(
                 name = state.fullName.trim(),
                 age = state.age.trim().toIntOrNull() ?: 0,
                 gender = state.gender,
+                email = state.email.trim(),
+                password = state.password,
             )
         )
         _uiState.update { it.copy(isRegistered = true) }
