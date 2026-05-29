@@ -21,9 +21,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -175,6 +177,51 @@ fun AdvertiserUploadScreen(
                 keyboardType = KeyboardType.Decimal,
                 testTag = "upload_reward",
             )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // --- SECÇÃO DO QUESTIONÁRIO ---
+            Text("Engagement Questionnaire", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text("Add a question to verify users watched your ad.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+
+            FormField(
+                label = "Question",
+                value = uiState.questionText,
+                onValueChange = viewModel::onQuestionChanged,
+                error = uiState.questionError,
+                testTag = "upload_question"
+            )
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Answer Options (Select the correct one) *", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                uiState.optionsError?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
+
+                uiState.options.forEachIndexed { index, optionText ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        RadioButton(
+                            selected = uiState.correctOptionIndex == index,
+                            onClick = { viewModel.onCorrectOptionSelected(index) }
+                        )
+                        OutlinedTextField(
+                            value = optionText,
+                            onValueChange = { viewModel.onOptionChanged(index, it) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("upload_option_$index"),
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true,
+                            colors = adWalletTextFieldColors(),
+                            placeholder = { Text("Option ${index + 1}") }
+                        )
+                    }
+                }
+            }
+            
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            // ------------------------------
 
             Row(
                 modifier = Modifier.fillMaxWidth(),

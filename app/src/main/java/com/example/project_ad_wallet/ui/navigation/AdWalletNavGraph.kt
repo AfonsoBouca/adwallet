@@ -36,6 +36,8 @@ import com.example.project_ad_wallet.ui.withdrawals.WithdrawalStatusScreen
 import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.ui.admin.AdminAdsScreen
 import com.example.project_ad_wallet.ui.admin.AdminUsersScreen
+import com.example.project_ad_wallet.data.model.CharityStatus
+import com.example.project_ad_wallet.ui.admin.AdminCharitiesScreen
 
 @Composable
 fun AdWalletNavGraph(
@@ -75,6 +77,20 @@ fun AdWalletNavGraph(
             AdminUsersScreen(
                 users = users,
                 onToggleBlock = { userId: String -> walletRepo.toggleBlockStatus(userId) }, // Adicionado ": String" aqui
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.ADMIN_CHARITIES) {
+            val charityRepo = com.example.project_ad_wallet.data.repository.CharityRepository.instance
+            val charities by charityRepo.charities.collectAsState()
+
+            val pendingCharities = charities.filter { it.status == com.example.project_ad_wallet.data.model.CharityStatus.PENDING }
+
+            AdminCharitiesScreen(
+                pendingCharities = pendingCharities,
+                onApprove = { charityId -> charityRepo.approveCharity(charityId) },
+                onReject = { charityId -> charityRepo.rejectCharity(charityId) },
                 onBack = { navController.popBackStack() }
             )
         }
@@ -127,6 +143,12 @@ fun AdWalletNavGraph(
                     }
                 },
                 onLogout = {
+                    navController.navigate(Routes.REGISTRATION) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onDeleteAccount = {
                     navController.navigate(Routes.REGISTRATION) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true

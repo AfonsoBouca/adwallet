@@ -74,4 +74,12 @@ class SettingsViewModel(
     fun logout() {
         userRepository.logout()
     }
+
+    fun deleteAccount() {
+        userRepository.reset()
+        walletRepository.reset()
+        adRepository.reset()
+        donationRepository.reset()
+        withdrawalRepository.reset()
+    }
 }

@@ -3,7 +3,8 @@ package com.example.project_ad_wallet.ui.advertiserUpload
 import androidx.lifecycle.ViewModel
 import com.example.project_ad_wallet.R
 import com.example.project_ad_wallet.data.model.Ad
-import com.example.project_ad_wallet.data.model.AdStatus
+import com.example.project_ad_wallet.data.model.Question
+import com.example.project_ad_wallet.data.model.QuestionOption
 import com.example.project_ad_wallet.data.repository.AdRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +21,15 @@ data class AdvertiserUploadUiState(
     val durationSeconds: String = "",
     val selectedThumbnailIndex: Int = 0,
     val selectedVideoIndex: Int = 0,
+    
+    // --- Novos campos para o Questionário ---
+    val questionText: String = "",
+    val options: List<String> = listOf("", "", "", ""),
+    val correctOptionIndex: Int = 0,
+    val questionError: String? = null,
+    val optionsError: String? = null,
+    // ----------------------------------------
+    
     val titleError: String? = null,
     val companyNameError: String? = null,
     val categoryError: String? = null,
@@ -66,6 +76,19 @@ class AdvertiserUploadViewModel(
     fun onRewardAmountChanged(value: String) = _uiState.update { it.copy(rewardAmount = value, rewardAmountError = null) }
     fun onDurationSecondsChanged(value: String) = _uiState.update { it.copy(durationSeconds = value, durationSecondsError = null) }
 
+    // --- Novas funções do Questionário ---
+    fun onQuestionChanged(value: String) = _uiState.update { it.copy(questionText = value, questionError = null) }
+    
+    fun onOptionChanged(index: Int, value: String) {
+        _uiState.update { state ->
+            val newOptions = state.options.toMutableList().apply { set(index, value) }
+            state.copy(options = newOptions, optionsError = null)
+        }
+    }
+    
+    fun onCorrectOptionSelected(index: Int) = _uiState.update { it.copy(correctOptionIndex = index) }
+    // -------------------------------------
+
     fun cycleThumbnail() {
         _uiState.update { it.copy(selectedThumbnailIndex = (it.selectedThumbnailIndex + 1) % THUMBNAIL_RES_IDS.size) }
     }
@@ -98,7 +121,20 @@ class AdvertiserUploadViewModel(
             else -> null
         }
 
-        hasError = listOf(titleError, companyError, categoryError, descError, rewardError, durationError).any { it != null }
+        // Validação do Questionário
+        val qError = if (state.questionText.isBlank()) "Question is required" else null
+        val optError = if (state.options.any { it.isBlank() }) "All 4 options must be filled" else null
+
+        hasError = listOf(
+            titleError,
+            companyError,
+            categoryError,
+            descError,
+            rewardError,
+            durationError,
+            qError,
+            optError,
+        ).any { it != null }
 
         _uiState.update {
             it.copy(
@@ -108,6 +144,8 @@ class AdvertiserUploadViewModel(
                 descriptionError = descError,
                 rewardAmountError = rewardError,
                 durationSecondsError = durationError,
+                questionError = qError,
+                optionsError = optError,
                 showConfirmDialog = !hasError,
             )
         }
@@ -117,8 +155,9 @@ class AdvertiserUploadViewModel(
         val state = _uiState.value
         val reward = state.rewardAmount.toDoubleOrNull() ?: return
         val duration = state.durationSeconds.toIntOrNull() ?: return
+        val adId = UUID.randomUUID().toString()
         val ad = Ad(
-            id = UUID.randomUUID().toString(),
+            id = adId,
             title = state.title.trim(),
             description = state.description.trim(),
             thumbnailResId = THUMBNAIL_RES_IDS[state.selectedThumbnailIndex],
@@ -129,7 +168,17 @@ class AdvertiserUploadViewModel(
             durationSeconds = duration,
             isActive = false,
         )
+        
+        // Construir as opções e a pergunta
+        val questionOptions = state.options.mapIndexed { index, text ->
+            QuestionOption(text = text.trim(), isCorrect = index == state.correctOptionIndex)
+        }
+        val question = Question(text = state.questionText.trim(), options = questionOptions)
+        
+        // Guardar no repositório
         adRepository.addAd(ad)
+        adRepository.addQuestionnaire(adId, listOf(question))
+        
         _uiState.update { it.copy(showConfirmDialog = false, isSubmitted = true) }
     }
 
