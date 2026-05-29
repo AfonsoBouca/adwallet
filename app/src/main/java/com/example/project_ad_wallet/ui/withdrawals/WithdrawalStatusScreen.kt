@@ -190,6 +190,14 @@ private fun WithdrawalRequestItem(withdrawal: WithdrawalRequest) {
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                    if (withdrawal.bankAccount.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Account ••••${withdrawal.bankAccount.takeLast(4)}",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
                 StatusBadge(
                     label = statusInfo.label,
