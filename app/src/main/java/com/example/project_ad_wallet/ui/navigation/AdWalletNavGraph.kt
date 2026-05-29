@@ -31,6 +31,8 @@ import com.example.project_ad_wallet.ui.settings.SettingsScreen
 import com.example.project_ad_wallet.ui.settings.SettingsViewModel
 import com.example.project_ad_wallet.ui.wallet.WalletScreen
 import com.example.project_ad_wallet.ui.withdrawals.WithdrawalStatusScreen
+import com.example.project_ad_wallet.data.model.AdStatus
+import com.example.project_ad_wallet.ui.admin.AdminAdsScreen
 
 @Composable
 fun AdWalletNavGraph(
@@ -60,6 +62,20 @@ fun AdWalletNavGraph(
                         popUpTo(Routes.REGISTRATION) { inclusive = true }
                     }
                 },
+            )
+        }
+
+        composable(Routes.ADMIN_ADS) {
+            val adRepo = com.example.project_ad_wallet.data.repository.AdRepository.instance
+            val ads by adRepo.ads.collectAsState()
+    
+            val pendingAds = ads.filter { it.status == AdStatus.PENDING }
+
+            AdminAdsScreen(
+                pendingAds = pendingAds,
+                onApprove = { adId -> adRepo.approveAd(adId) },
+                onReject = { adId -> adRepo.rejectAd(adId) },
+                onBack = { navController.popBackStack() }
             )
         }
 
