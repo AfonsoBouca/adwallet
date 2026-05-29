@@ -34,6 +34,7 @@ import com.example.project_ad_wallet.ui.withdrawals.WithdrawalRequestScreen
 import com.example.project_ad_wallet.ui.withdrawals.WithdrawalStatusScreen
 import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.ui.admin.AdminAdsScreen
+import com.example.project_ad_wallet.ui.admin.AdminUsersScreen
 
 @Composable
 fun AdWalletNavGraph(
