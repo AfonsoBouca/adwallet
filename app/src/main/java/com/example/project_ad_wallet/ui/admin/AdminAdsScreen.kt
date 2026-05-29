@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import com.example.project_ad_wallet.ui.components.AdWalletTopBar
 import com.example.project_ad_wallet.ui.components.ConfirmationDialog
 import com.example.project_ad_wallet.ui.components.EmptyStateView
 import com.example.project_ad_wallet.ui.components.asCurrency
+import com.example.project_ad_wallet.ui.notifications.NotificationHelper
 
 @Composable
 fun AdminAdsScreen(
@@ -33,6 +35,7 @@ fun AdminAdsScreen(
     modifier: Modifier = Modifier
 ) {
     var adToConfirmAction by remember { mutableStateOf<Pair<Ad, Boolean>?>(null) } // Pair(Ad, isApprove)
+    val context = LocalContext.current // <-- Apanhamos o contexto para as notificações
 
     Scaffold(
         topBar = {
@@ -82,7 +85,13 @@ fun AdminAdsScreen(
             confirmLabel = "Yes, $actionText",
             dismissLabel = "Cancel",
             onConfirm = {
-                if (isApprove) onApprove(ad.id) else onReject(ad.id)
+                if (isApprove) {
+                    onApprove(ad.id)
+                    // <-- DISPARO DA NOTIFICAÇÃO AQUI!
+                    NotificationHelper.showNewAdNotification(context, ad.title)
+                } else {
+                    onReject(ad.id)
+                }
                 adToConfirmAction = null
             },
             onDismiss = {
