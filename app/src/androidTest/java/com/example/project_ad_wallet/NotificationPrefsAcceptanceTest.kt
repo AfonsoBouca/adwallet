@@ -1,6 +1,6 @@
 package com.example.project_ad_wallet
 
-import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -31,7 +31,7 @@ class NotificationPrefsAcceptanceTest {
         registerUser()
         composeTestRule.onNodeWithText("Profile").performClick()
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText("Notification Preferences").assertExists()
+        composeTestRule.onNodeWithText("Notification Preferences").assertIsDisplayed()
     }
 
     @Test
@@ -39,6 +39,6 @@ class NotificationPrefsAcceptanceTest {
         registerUser()
         composeTestRule.onNodeWithText("Profile").performClick()
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText("Notifications").assertExists()
+        composeTestRule.onNodeWithText("Notifications").assertIsDisplayed()
     }
 }

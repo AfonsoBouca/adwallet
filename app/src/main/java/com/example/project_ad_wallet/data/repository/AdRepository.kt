@@ -6,6 +6,7 @@ import com.example.project_ad_wallet.data.model.AdRating
 import com.example.project_ad_wallet.data.model.AdReport
 import com.example.project_ad_wallet.data.model.Question
 import com.example.project_ad_wallet.data.model.QuestionOption
+import com.example.project_ad_wallet.data.model.QuestionnaireResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +26,9 @@ class AdRepository {
 
     private val _reports = MutableStateFlow<List<AdReport>>(emptyList())
     val reports: StateFlow<List<AdReport>> = _reports.asStateFlow()
+
+    private val _questionnaireResponses = MutableStateFlow<List<QuestionnaireResponse>>(emptyList())
+    val questionnaireResponses: StateFlow<List<QuestionnaireResponse>> = _questionnaireResponses.asStateFlow()
 
     private val _watchedAdIds = MutableStateFlow<Set<String>>(emptySet())
     val watchedAdIds: StateFlow<Set<String>> = _watchedAdIds.asStateFlow()
@@ -52,6 +56,10 @@ class AdRepository {
         _reports.update { it + report }
     }
 
+    fun addQuestionnaireResponse(response: QuestionnaireResponse) {
+        _questionnaireResponses.update { it + response }
+    }
+
     fun markWatched(adId: String) {
         _watchedAdIds.update { it + adId }
     }
@@ -61,6 +69,7 @@ class AdRepository {
         _ratings.value = emptyList()
         _reports.value = emptyList()
         _watchedAdIds.value = emptySet()
+        _questionnaireResponses.value = emptyList()
     }
 }
 

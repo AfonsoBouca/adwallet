@@ -1,6 +1,6 @@
 package com.example.project_ad_wallet
 
-import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -19,10 +19,10 @@ class UserAcceptanceTest {
 
     @Test
     fun testRegistrationMandatoryFields() {
-        composeTestRule.onNodeWithText("Join AdWallet").assertExists()
+        composeTestRule.onNodeWithText("Join AdWallet").assertIsDisplayed()
 
         composeTestRule.onNodeWithTag("registration_button").performClick()
-        composeTestRule.onNodeWithText("Join AdWallet").assertExists()
+        composeTestRule.onNodeWithText("Join AdWallet").assertIsDisplayed()
 
         composeTestRule.onNodeWithTag("registration_full_name").performTextInput("John Doe")
         composeTestRule.onNodeWithTag("registration_age").performTextInput("25")
@@ -31,6 +31,6 @@ class UserAcceptanceTest {
 
         composeTestRule.onNodeWithTag("registration_button").performClick()
 
-        composeTestRule.onNodeWithText("Nike Running Shoes").assertExists()
+        composeTestRule.onNodeWithText("Nike Running Shoes").assertIsDisplayed()
     }
 }

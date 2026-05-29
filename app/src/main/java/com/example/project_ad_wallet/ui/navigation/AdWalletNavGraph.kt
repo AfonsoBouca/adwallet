@@ -21,6 +21,7 @@ import com.example.project_ad_wallet.ui.adFeed.AdFeedScreen
 import com.example.project_ad_wallet.ui.adWatch.AdWatchScreen
 import com.example.project_ad_wallet.ui.adRating.AdRatingScreen
 import com.example.project_ad_wallet.ui.advertiserUpload.AdvertiserUploadScreen
+import com.example.project_ad_wallet.ui.advertiser.AdvertiserResponsesScreen
 import com.example.project_ad_wallet.ui.charities.CharitiesScreen
 import com.example.project_ad_wallet.ui.donations.DonationConfirmationScreen
 import com.example.project_ad_wallet.ui.donations.DonationHistoryScreen
@@ -118,6 +119,10 @@ fun AdWalletNavGraph(
 
         composable(Routes.ADVERTISER_UPLOAD) {
             AdvertiserUploadScreen(navController = navController)
+        }
+
+        composable(Routes.ADVERTISER_RESPONSES) {
+            AdvertiserResponsesScreen()
         }
 
         composable(Routes.EARNINGS_HISTORY) {

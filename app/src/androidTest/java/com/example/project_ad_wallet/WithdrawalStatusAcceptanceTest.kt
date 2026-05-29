@@ -1,6 +1,6 @@
 package com.example.project_ad_wallet
 
-import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -36,7 +36,7 @@ class WithdrawalStatusAcceptanceTest {
         composeTestRule.onNodeWithText("Withdrawals").performClick()
         composeTestRule.waitForIdle()
         // Should see empty state
-        composeTestRule.onNodeWithText("No withdrawal requests yet").assertExists()
+        composeTestRule.onNodeWithText("No withdrawal requests yet").assertIsDisplayed()
     }
 
     @Test
@@ -45,6 +45,6 @@ class WithdrawalStatusAcceptanceTest {
         composeTestRule.onNodeWithText("Wallet").performClick()
         composeTestRule.waitForIdle()
         // Withdrawals tab should be visible
-        composeTestRule.onNodeWithText("Withdrawals").assertExists()
+        composeTestRule.onNodeWithText("Withdrawals").assertIsDisplayed()
     }
 }

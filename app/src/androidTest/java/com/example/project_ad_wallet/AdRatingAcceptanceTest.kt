@@ -1,6 +1,7 @@
 package com.example.project_ad_wallet
 
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -42,6 +43,6 @@ class AdRatingAcceptanceTest {
     fun testUserCanNavigateToAdFeed() {
         registerUser()
         composeTestRule.onNodeWithText("EcoBottle — Reusable Water Bottles")
-            .assertExists()
+            .assertIsDisplayed()
     }
 }

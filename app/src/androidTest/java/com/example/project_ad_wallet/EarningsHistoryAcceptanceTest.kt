@@ -1,6 +1,6 @@
 package com.example.project_ad_wallet
 
-import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -36,7 +36,7 @@ class EarningsHistoryAcceptanceTest {
         composeTestRule.onNodeWithText("Earnings").performClick()
         composeTestRule.waitForIdle()
         // Should see empty state
-        composeTestRule.onNodeWithText("No earnings yet. Watch an ad to earn!").assertExists()
+        composeTestRule.onNodeWithText("No earnings yet. Watch an ad to earn!").assertIsDisplayed()
     }
 
     @Test
@@ -45,6 +45,6 @@ class EarningsHistoryAcceptanceTest {
         composeTestRule.onNodeWithText("Wallet").performClick()
         composeTestRule.waitForIdle()
         // Balance tab should show $0.00
-        composeTestRule.onNodeWithText("Current Balance").assertExists()
+        composeTestRule.onNodeWithText("Current Balance").assertIsDisplayed()
     }
 }

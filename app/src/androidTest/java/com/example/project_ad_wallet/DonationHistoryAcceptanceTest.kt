@@ -1,6 +1,6 @@
 package com.example.project_ad_wallet
 
-import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -31,7 +31,7 @@ class DonationHistoryAcceptanceTest {
         registerUser()
         composeTestRule.onNodeWithText("Wallet").performClick()
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText("Donations").assertExists()
+        composeTestRule.onNodeWithText("Donations").assertIsDisplayed()
     }
 
     @Test
@@ -43,6 +43,6 @@ class DonationHistoryAcceptanceTest {
         composeTestRule.onNodeWithText("Donations").performClick()
         composeTestRule.waitForIdle()
         // With no donations, the empty state should be present
-        composeTestRule.onNodeWithText("No donations yet").assertExists()
+        composeTestRule.onNodeWithText("No donations yet").assertIsDisplayed()
     }
 }
