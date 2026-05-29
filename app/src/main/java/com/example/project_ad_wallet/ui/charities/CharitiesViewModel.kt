@@ -3,6 +3,7 @@ package com.example.project_ad_wallet.ui.charities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project_ad_wallet.data.model.Charity
+import com.example.project_ad_wallet.data.model.CharityStatus
 import com.example.project_ad_wallet.data.model.Donation
 import com.example.project_ad_wallet.data.repository.CharityRepository
 import com.example.project_ad_wallet.data.repository.DonationRepository
@@ -41,7 +42,8 @@ class CharitiesViewModel(
             charityRepository.charities,
             walletRepository.balance,
         ) { charities, balance ->
-            _uiState.update { it.copy(charities = charities, balance = balance) }
+            val verifiedCharities = charities.filter { it.status == CharityStatus.VERIFIED }
+            _uiState.update { it.copy(charities = verifiedCharities, balance = balance) }
         }.launchIn(viewModelScope)
     }
 

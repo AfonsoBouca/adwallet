@@ -103,8 +103,7 @@ private fun sampleAds() = listOf(
         advertiserName = "EcoBottle Ltd",
         category = "Sustainability",
         status = AdStatus.APPROVED,
-        durationSeconds = 30,
-        isActive = true,
+        durationSeconds = 30
     ),
     Ad(
         id = "2",
@@ -128,7 +127,6 @@ private fun sampleAds() = listOf(
         rewardAmount = 0.20,
         advertiserName = "GreenEnergy Co",
         category = "Energy",
-        status = AdStatus.APPROVED,
         durationSeconds = 55,
         isActive = true,
     ),
