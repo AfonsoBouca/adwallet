@@ -83,6 +83,7 @@ private fun sampleAds() = listOf(
         rewardAmount = 0.10,
         advertiserName = "EcoBottle Ltd",
         category = "Sustainability",
+            durationSeconds = 30,
         isActive = true,
     ),
     Ad(
@@ -94,6 +95,7 @@ private fun sampleAds() = listOf(
         rewardAmount = 0.15,
         advertiserName = "LearnFast Inc",
         category = "Education",
+            durationSeconds = 45,
         isActive = true,
     ),
     Ad(
@@ -105,6 +107,7 @@ private fun sampleAds() = listOf(
         rewardAmount = 0.20,
         advertiserName = "GreenEnergy Co",
         category = "Energy",
+            durationSeconds = 55,
         isActive = true,
     ),
     Ad(
@@ -116,6 +119,7 @@ private fun sampleAds() = listOf(
         rewardAmount = 0.05,
         advertiserName = "FoodBank Porto",
         category = "Charity",
+            durationSeconds = 20,
         isActive = true,
     ),
     Ad(
@@ -127,6 +131,7 @@ private fun sampleAds() = listOf(
         rewardAmount = 0.12,
         advertiserName = "Onda Atlântica",
         category = "Sports",
+            durationSeconds = 40,
         isActive = true,
     ),
 )

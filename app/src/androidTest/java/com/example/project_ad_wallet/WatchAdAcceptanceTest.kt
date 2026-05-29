@@ -39,6 +39,16 @@ class WatchAdAcceptanceTest {
     }
 
     @Test
+    fun testUserCanSeeAdDurationBeforeWatching() {
+        registerUser()
+
+        composeTestRule.onNodeWithText("EcoBottle — Reusable Water Bottles").performClick()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag("ad_duration_text").assertIsDisplayed()
+    }
+
+    @Test
     fun testSkipButtonIsDisabledAtStart() {
         registerUser()
 
