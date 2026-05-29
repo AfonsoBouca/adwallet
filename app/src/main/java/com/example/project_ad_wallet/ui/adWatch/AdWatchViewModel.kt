@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.project_ad_wallet.data.model.Ad
 import com.example.project_ad_wallet.data.model.Earning
 import com.example.project_ad_wallet.data.model.Question
+import com.example.project_ad_wallet.data.model.QuestionResult
 import com.example.project_ad_wallet.data.repository.AdRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,10 @@ data class AdWatchUiState(
     val rewardGranted: Boolean = false,
     val rewardAmount: Double = 0.0,
     val isComplete: Boolean = false,
+    val showFeedback: Boolean = false,
+    val questionResults: List<QuestionResult> = emptyList(),
+    val correctCount: Int = 0,
+    val totalQuestions: Int = 0,
 )
 
 class AdWatchViewModel(
@@ -63,10 +68,19 @@ class AdWatchViewModel(
         val state = _uiState.value
         val question = state.questions.getOrNull(state.currentQuestionIndex) ?: return
         val isCorrect = question.options.getOrNull(answerIndex)?.isCorrect == true
+        val selectedText = question.options.getOrNull(answerIndex)?.text ?: ""
+        val correctText = question.options.firstOrNull { it.isCorrect }?.text ?: ""
+        val result = QuestionResult(
+            questionText = question.text,
+            selectedAnswer = selectedText,
+            correctAnswer = correctText,
+            isCorrect = isCorrect,
+        )
         _uiState.update {
             it.copy(
                 selectedAnswerIndex = answerIndex,
                 isAnswerCorrect = isCorrect,
+                questionResults = it.questionResults + result,
             )
         }
     }
@@ -75,7 +89,7 @@ class AdWatchViewModel(
         val state = _uiState.value
         val nextIndex = state.currentQuestionIndex + 1
         if (nextIndex >= state.questions.size) {
-            completeQuestionnaire()
+            showFeedbackScreen()
         } else {
             _uiState.update {
                 it.copy(
@@ -85,6 +99,24 @@ class AdWatchViewModel(
                 )
             }
         }
+    }
+
+    private fun showFeedbackScreen() {
+        val state = _uiState.value
+        val correct = state.questionResults.count { it.isCorrect }
+        _uiState.update {
+            it.copy(
+                showFeedback = true,
+                showQuestionnaire = false,
+                correctCount = correct,
+                totalQuestions = state.questions.size,
+            )
+        }
+    }
+
+    fun dismissFeedback() {
+        _uiState.update { it.copy(showFeedback = false) }
+        completeQuestionnaire()
     }
 
     fun completeQuestionnaire() {
