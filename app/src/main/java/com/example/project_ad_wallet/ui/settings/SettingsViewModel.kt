@@ -70,4 +70,8 @@ class SettingsViewModel(
         donationRepository.generateRandomHistory(charitiesList)
         withdrawalRepository.generateSampleWithdrawals()
     }
+
+    fun logout() {
+        userRepository.logout()
+    }
 }

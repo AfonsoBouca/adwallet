@@ -98,6 +98,12 @@ fun AdWalletNavGraph(
                         launchSingleTop = true
                     }
                 },
+                onLogout = {
+                    navController.navigate(Routes.REGISTRATION) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
                 viewModel = settingsViewModel,
             )
         }

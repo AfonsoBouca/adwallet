@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,6 +63,7 @@ fun SettingsScreen(
     bottomNavItems: List<BottomNavItem>,
     onThemeModeChanged: (ThemeMode) -> Unit,
     onResetApp: () -> Unit,
+    onLogout: () -> Unit,
     viewModel: SettingsViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -101,6 +103,10 @@ fun SettingsScreen(
                 },
                 onAddFunds = viewModel::onAddFunds,
                 onGenerateRandomHistory = viewModel::onGenerateRandomHistory,
+                onLogout = {
+                    viewModel.logout()
+                    onLogout()
+                },
             )
         }
     }
@@ -199,6 +205,7 @@ private fun DeveloperSection(
     onResetApp: () -> Unit,
     onAddFunds: (Double) -> Unit,
     onGenerateRandomHistory: () -> Unit,
+    onLogout: () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         SectionHeader(icon = Icons.Default.Settings, title = "Developer Options")
@@ -237,6 +244,17 @@ private fun DeveloperSection(
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
                 ) {
                     Text("RESET ALL APP DATA", fontWeight = FontWeight.Bold)
+                }
+
+                OutlinedButton(
+                    onClick = onLogout,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("logout_button"),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+                ) {
+                    Text("LOG OUT", fontWeight = FontWeight.Bold)
                 }
             }
         }
