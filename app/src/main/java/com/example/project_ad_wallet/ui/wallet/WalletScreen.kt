@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,7 +84,7 @@ fun WalletScreen(
             when (selectedTab) {
                 0 -> BalanceTab(uiState) { navController.navigate(Routes.withdrawalRequest()) }
                 1 -> EarningsTab(uiState.earnings, uiState.totalEarned)
-                2 -> DonationsTab(uiState.donations, uiState.totalDonated)
+                2 -> DonationsTab(uiState.donations, uiState.totalDonated, navController)
                 3 -> WithdrawalsTab(uiState.withdrawals)
             }
         }
@@ -220,22 +221,48 @@ private fun EarningRow(earning: Earning) {
 }
 
 @Composable
-private fun DonationsTab(donations: List<Donation>, totalDonated: Double) {
+private fun DonationsTab(donations: List<Donation>, totalDonated: Double, navController: NavHostController) {
     if (donations.isEmpty()) {
-        EmptyStateView(
-            icon = Icons.Default.History,
-            message = "No donations yet. Make a difference today!",
-        )
+        Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            EmptyStateView(
+                icon = Icons.Default.History,
+                message = "No donations yet. Make a difference today!",
+                modifier = Modifier.weight(1f)
+            )
+            Button(
+                onClick = { navController.navigate(Routes.CHARITIES) },
+                modifier = Modifier.fillMaxWidth().height(56.dp).testTag("donate_button_wallet_empty"),
+                shape = RoundedCornerShape(50)
+            ) {
+                Text("Donate to Charities", fontWeight = FontWeight.Bold)
+            }
+        }
     } else {
         LazyColumn(contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             item {
-                Text(
-                    text = "Total donated: ${totalDonated.asCurrency()}",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Total donated: ${totalDonated.asCurrency()}",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                    Button(
+                        onClick = { navController.navigate(Routes.CHARITIES) },
+                        shape = RoundedCornerShape(50),
+                        modifier = Modifier.testTag("donate_button_wallet")
+                    ) {
+                        Text("Donate")
+                    }
+                }
             }
             items(donations) { donation ->
                 DonationRow(donation)
