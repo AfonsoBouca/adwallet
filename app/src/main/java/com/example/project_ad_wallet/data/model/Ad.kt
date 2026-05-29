@@ -12,4 +12,5 @@ data class Ad(
     val advertiserName: String,
     val category: String,
     val status: AdStatus = AdStatus.PENDING,
+    val durationSeconds: Int = 30,
 )

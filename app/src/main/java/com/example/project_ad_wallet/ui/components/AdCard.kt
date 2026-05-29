@@ -88,6 +88,12 @@ fun AdCard(
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.primary,
                 )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "${ad.durationSeconds}s",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = ad.category,

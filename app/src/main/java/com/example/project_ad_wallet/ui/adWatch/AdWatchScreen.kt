@@ -86,6 +86,16 @@ fun AdWatchScreen(
         return
     }
 
+    if (uiState.showFeedback) {
+        QuestionnaireFeedbackScreen(
+            correctCount = uiState.correctCount,
+            totalQuestions = uiState.totalQuestions,
+            questionResults = uiState.questionResults,
+            onContinue = { viewModel.dismissFeedback() },
+        )
+        return
+    }
+
     if (uiState.showQuestionnaire) {
         QuestionnaireScreen(
             adId = adId,
@@ -139,6 +149,14 @@ fun AdWatchScreen(
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Duration: ${formatDuration(ad.durationSeconds)}",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.testTag("ad_duration_text"),
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -220,6 +238,12 @@ fun AdWatchScreen(
             onDismiss = { showReportDialog = false },
         )
     }
+}
+
+private fun formatDuration(seconds: Int): String {
+    val minutes = seconds / 60
+    val remainder = seconds % 60
+    return "%d:%02d".format(minutes, remainder)
 }
 
 @Composable
