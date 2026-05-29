@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 
@@ -56,5 +57,24 @@ class AdFeedViewModelTest {
         assertTrue(hasApproved)
         assertEquals(false, hasPending)
         assertEquals(false, hasRejected)
+    }
+
+    @Test
+    fun test_feedHidesSkippedAds() {
+        val approvedAd1 = Ad(id = "test-1", title = "A", description = "D", thumbnailResId = 0, videoResId = 0, rewardAmount = 0.1, advertiserName = "A", category = "C", status = AdStatus.APPROVED)
+        val approvedAd2 = Ad(id = "test-2", title = "B", description = "D", thumbnailResId = 0, videoResId = 0, rewardAmount = 0.1, advertiserName = "A", category = "C", status = AdStatus.APPROVED)
+
+        adRepo.addAd(approvedAd1)
+        adRepo.addAd(approvedAd2)
+
+        // Skip one of the ads
+        adRepo.markSkipped("test-1")
+
+        val visibleAds = viewModel.uiState.value.ads
+        val hasAd1 = visibleAds.any { it.id == "test-1" }
+        val hasAd2 = visibleAds.any { it.id == "test-2" }
+
+        assertFalse(hasAd1)
+        assertTrue(hasAd2)
     }
 }

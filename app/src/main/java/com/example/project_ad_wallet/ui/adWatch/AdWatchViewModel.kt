@@ -110,4 +110,9 @@ class AdWatchViewModel(
     fun dismissReward() {
         _uiState.update { it.copy(isComplete = true) }
     }
+
+    fun skipAd() {
+        val ad = _uiState.value.ad ?: return
+        adRepository.markSkipped(ad.id)
+    }
 }

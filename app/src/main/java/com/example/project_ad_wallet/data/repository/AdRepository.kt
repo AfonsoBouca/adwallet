@@ -34,6 +34,9 @@ class AdRepository {
     private val _watchedAdIds = MutableStateFlow<Set<String>>(emptySet())
     val watchedAdIds: StateFlow<Set<String>> = _watchedAdIds.asStateFlow()
 
+    private val _skippedAdIds = MutableStateFlow<Set<String>>(emptySet())
+    val skippedAdIds: StateFlow<Set<String>> = _skippedAdIds.asStateFlow()
+
     private val questionnaires: MutableMap<String, List<Question>> =
         sampleQuestionnaires().toMutableMap()
 
@@ -83,11 +86,16 @@ class AdRepository {
         _watchedAdIds.update { it + adId }
     }
 
+    fun markSkipped(adId: String) {
+        _skippedAdIds.update { it + adId }
+    }
+
     fun reset() {
         _ads.value = sampleAds()
         _ratings.value = emptyList()
         _reports.value = emptyList()
         _watchedAdIds.value = emptySet()
+        _skippedAdIds.value = emptySet()
         _questionnaireResponses.value = emptyList()
     }
 }

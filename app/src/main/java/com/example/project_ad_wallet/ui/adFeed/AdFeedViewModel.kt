@@ -33,9 +33,10 @@ class AdFeedViewModel(
             adRepository.ads,
             walletRepository.balance,
             adRepository.watchedAdIds,
-        ) { ads, balance, watched ->
+            adRepository.skippedAdIds,
+        ) { ads, balance, watched, skipped ->
             AdFeedUiState(
-                ads = ads.filter { it.status == AdStatus.APPROVED }, // Aqui está a alteração!
+                ads = ads.filter { it.status == AdStatus.APPROVED && it.id !in skipped },
                 balance = balance,
                 watchedAdIds = watched,
             )

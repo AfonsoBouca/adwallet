@@ -125,4 +125,11 @@ class AdWatchViewModelTest {
         assertEquals(1, viewModel.uiState.value.currentQuestionIndex)
         assertNull(viewModel.uiState.value.selectedAnswerIndex)
     }
+
+    @Test
+    fun test_skipAdMarksAdAsSkipped() {
+        assertFalse(adRepo.skippedAdIds.value.contains("test-ad"))
+        viewModel.skipAd()
+        assertTrue(adRepo.skippedAdIds.value.contains("test-ad"))
+    }
 }
