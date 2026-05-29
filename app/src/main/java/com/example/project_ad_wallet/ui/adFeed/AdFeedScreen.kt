@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.ui.components.AdCard
@@ -42,13 +43,24 @@ fun AdFeedScreen(
             AdWalletBottomBar(navController = navController, items = bottomNavItems)
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { navController.navigate(Routes.ADVERTISER_UPLOAD) },
-                icon = { Icon(Icons.Default.Campaign, contentDescription = null) },
-                text = { Text("Advertiser? Upload Ad") },
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = MaterialTheme.colorScheme.primary,
-            )
+            androidx.compose.foundation.layout.Column {
+                ExtendedFloatingActionButton(
+                    onClick = { navController.navigate(Routes.ADVERTISER_UPLOAD) },
+                    icon = { Icon(Icons.Default.Campaign, contentDescription = null) },
+                    text = { Text("Advertiser? Upload Ad") },
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                )
+
+                ExtendedFloatingActionButton(
+                    onClick = { navController.navigate(Routes.ADVERTISER_RESPONSES) },
+                    icon = { Icon(Icons.Default.Campaign, contentDescription = null) },
+                    text = { Text("Advertiser? Responses") },
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.testTag("advertiser_responses_button"),
+                )
+            }
         },
     ) { innerPadding ->
         LazyColumn(

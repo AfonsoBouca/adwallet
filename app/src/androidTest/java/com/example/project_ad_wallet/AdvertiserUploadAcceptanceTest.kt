@@ -1,6 +1,6 @@
 package com.example.project_ad_wallet
 
-import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -32,7 +32,7 @@ class AdvertiserUploadAcceptanceTest {
     @Test
     fun testAdvertiserCanSeeUploadForm() {
         registerAndNavigateToUpload()
-        composeTestRule.onNodeWithText("Upload Your Advertisement").assertExists()
+        composeTestRule.onNodeWithText("Upload Your Advertisement").assertIsDisplayed()
     }
 
     @Test
@@ -45,7 +45,7 @@ class AdvertiserUploadAcceptanceTest {
         composeTestRule.onNodeWithTag("submit_ad_button").performClick()
         composeTestRule.waitForIdle()
         // Should still be on upload screen (error shown)
-        composeTestRule.onNodeWithText("Upload Your Advertisement").assertExists()
-        composeTestRule.onNodeWithText("Title is required").assertExists()
+        composeTestRule.onNodeWithText("Upload Your Advertisement").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Title is required").assertIsDisplayed()
     }
 }

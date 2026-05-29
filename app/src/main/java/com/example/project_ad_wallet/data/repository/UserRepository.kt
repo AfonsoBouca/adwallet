@@ -28,6 +28,10 @@ class UserRepository {
         _themeMode.value = mode
     }
 
+    fun logout() {
+        _user.value = User()
+    }
+
     fun reset() {
         _user.value = User()
         _themeMode.value = ThemeMode.System

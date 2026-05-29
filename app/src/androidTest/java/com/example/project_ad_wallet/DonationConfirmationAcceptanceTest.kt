@@ -1,6 +1,6 @@
 package com.example.project_ad_wallet
 
-import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -33,7 +33,7 @@ class DonationConfirmationAcceptanceTest {
         composeTestRule.onNodeWithText("Wallet").performClick()
         composeTestRule.waitForIdle()
         // Wallet screen should appear
-        composeTestRule.onNodeWithText("Current Balance").assertExists()
+        composeTestRule.onNodeWithText("Current Balance").assertIsDisplayed()
     }
 
     @Test
@@ -45,6 +45,6 @@ class DonationConfirmationAcceptanceTest {
         // We test the wallet screen is reachable
         composeTestRule.onNodeWithText("Wallet").performClick()
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText("Balance").assertExists()
+        composeTestRule.onNodeWithText("Balance").assertIsDisplayed()
     }
 }

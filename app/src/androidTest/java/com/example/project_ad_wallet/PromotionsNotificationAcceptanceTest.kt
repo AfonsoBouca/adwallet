@@ -1,7 +1,7 @@
 package com.example.project_ad_wallet
 
 import androidx.compose.ui.test.assertIsOn
-import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -21,7 +21,7 @@ class PromotionsNotificationAcceptanceTest {
     @Test
     fun promotionsTogglePersistsWhenEnabled() {
         // Complete registration to reach main screens
-        composeTestRule.onNodeWithText("Join AdWallet").assertExists()
+        composeTestRule.onNodeWithText("Join AdWallet").assertIsDisplayed()
         composeTestRule.onNodeWithTag("registration_full_name").performTextInput("Test User")
         composeTestRule.onNodeWithTag("registration_age").performTextInput("30")
         composeTestRule.onNodeWithText("Select your gender").performClick()
