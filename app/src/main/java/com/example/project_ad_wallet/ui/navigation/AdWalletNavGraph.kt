@@ -30,6 +30,7 @@ import com.example.project_ad_wallet.ui.registration.RegistrationScreen
 import com.example.project_ad_wallet.ui.settings.SettingsScreen
 import com.example.project_ad_wallet.ui.settings.SettingsViewModel
 import com.example.project_ad_wallet.ui.wallet.WalletScreen
+import com.example.project_ad_wallet.ui.withdrawals.WithdrawalRequestScreen
 import com.example.project_ad_wallet.ui.withdrawals.WithdrawalStatusScreen
 import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.ui.admin.AdminAdsScreen
@@ -168,6 +169,13 @@ fun AdWalletNavGraph(
 
         composable(Routes.WITHDRAWAL_STATUS) {
             WithdrawalStatusScreen(
+                navController = navController,
+                bottomNavItems = bottomNavItems,
+            )
+        }
+
+        composable(Routes.WITHDRAWAL_REQUEST) {
+            WithdrawalRequestScreen(
                 navController = navController,
                 bottomNavItems = bottomNavItems,
             )

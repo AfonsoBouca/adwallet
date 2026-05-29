@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -47,6 +48,7 @@ import com.example.project_ad_wallet.ui.components.AdWalletTopBar
 import com.example.project_ad_wallet.ui.components.BottomNavItem
 import com.example.project_ad_wallet.ui.components.EmptyStateView
 import com.example.project_ad_wallet.ui.components.asCurrency
+import com.example.project_ad_wallet.ui.navigation.Routes
 import com.example.project_ad_wallet.ui.withdrawals.toDisplayInfo
 
 @Composable
@@ -79,7 +81,7 @@ fun WalletScreen(
             }
 
             when (selectedTab) {
-                0 -> BalanceTab(uiState)
+                0 -> BalanceTab(uiState) { navController.navigate(Routes.withdrawalRequest()) }
                 1 -> EarningsTab(uiState.earnings, uiState.totalEarned)
                 2 -> DonationsTab(uiState.donations, uiState.totalDonated)
                 3 -> WithdrawalsTab(uiState.withdrawals)
@@ -89,7 +91,7 @@ fun WalletScreen(
 }
 
 @Composable
-private fun BalanceTab(uiState: WalletUiState) {
+private fun BalanceTab(uiState: WalletUiState, onRequestWithdrawal: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -122,6 +124,13 @@ private fun BalanceTab(uiState: WalletUiState) {
         ) {
             StatCard("Total Earned", uiState.totalEarned.asCurrency())
             StatCard("Total Donated", uiState.totalDonated.asCurrency())
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = onRequestWithdrawal,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Request Withdrawal")
         }
     }
 }
