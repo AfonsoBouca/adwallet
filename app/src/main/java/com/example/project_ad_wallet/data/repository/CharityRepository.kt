@@ -1,9 +1,11 @@
 package com.example.project_ad_wallet.data.repository
 
 import com.example.project_ad_wallet.data.model.Charity
+import com.example.project_ad_wallet.data.model.CharityStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class CharityRepository {
 
@@ -17,6 +19,22 @@ class CharityRepository {
     fun getCharities(): List<Charity> = _charities.value
 
     fun getCharityById(id: String): Charity? = _charities.value.firstOrNull { it.id == id }
+
+    fun approveCharity(id: String) {
+        _charities.update { currentList ->
+            currentList.map { charity ->
+                if (charity.id == id) charity.copy(status = CharityStatus.VERIFIED) else charity
+            }
+        }
+    }
+
+    fun rejectCharity(id: String) {
+        _charities.update { currentList ->
+            currentList.map { charity ->
+                if (charity.id == id) charity.copy(status = CharityStatus.REJECTED) else charity
+            }
+        }
+    }
 }
 
 private fun sampleCharities() = listOf(
@@ -26,6 +44,7 @@ private fun sampleCharities() = listOf(
         description = "Provides food to those in need across Portugal and beyond.",
         sdgNumber = 2,
         sdgName = "Zero Hunger",
+        status = CharityStatus.VERIFIED,
     ),
     Charity(
         id = "green-earth",
@@ -33,6 +52,7 @@ private fun sampleCharities() = listOf(
         description = "Focuses on climate action and reforestation.",
         sdgNumber = 13,
         sdgName = "Climate Action",
+        status = CharityStatus.VERIFIED,
     ),
     Charity(
         id = "clean-water-initiative",
@@ -40,6 +60,7 @@ private fun sampleCharities() = listOf(
         description = "Ensures access to clean water and sanitation.",
         sdgNumber = 6,
         sdgName = "Clean Water & Sanitation",
+        status = CharityStatus.VERIFIED,
     ),
     Charity(
         id = "quality-education-fund",
@@ -47,6 +68,7 @@ private fun sampleCharities() = listOf(
         description = "Supports inclusive and equitable education for all.",
         sdgNumber = 4,
         sdgName = "Quality Education",
+        status = CharityStatus.VERIFIED,
     ),
     Charity(
         id = "good-health-alliance",
@@ -54,5 +76,14 @@ private fun sampleCharities() = listOf(
         description = "Promotes well-being and access to healthcare.",
         sdgNumber = 3,
         sdgName = "Good Health & Well-being",
+        status = CharityStatus.VERIFIED,
+    ),
+    Charity(
+        id = "scam-foundation",
+        name = "Totally Real Foundation",
+        description = "We definitely give all our money to penguins.",
+        sdgNumber = 14,
+        sdgName = "Life Below Water",
+        status = CharityStatus.PENDING,
     ),
 )
