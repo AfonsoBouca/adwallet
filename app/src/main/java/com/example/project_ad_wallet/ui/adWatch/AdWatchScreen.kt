@@ -82,6 +82,16 @@ fun AdWatchScreen(
         return
     }
 
+    if (uiState.showFeedback) {
+        QuestionnaireFeedbackScreen(
+            correctCount = uiState.correctCount,
+            totalQuestions = uiState.totalQuestions,
+            questionResults = uiState.questionResults,
+            onContinue = { viewModel.dismissFeedback() },
+        )
+        return
+    }
+
     if (uiState.showQuestionnaire) {
         QuestionnaireScreen(
             adId = adId,
