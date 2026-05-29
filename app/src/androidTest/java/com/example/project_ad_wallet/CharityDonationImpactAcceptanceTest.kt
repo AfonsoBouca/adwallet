@@ -79,6 +79,6 @@ class CharityDonationImpactAcceptanceTest {
 
         // Assert we are back on Charities screen and the total donated has updated to $5.00!
         composeTestRule.onNodeWithTag("charity_total_donated_zero-hunger-foundation").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Total Donated: $5.00").assertIsDisplayed()
+        androidx.compose.ui.test.assertTextEquals(composeTestRule.onNodeWithTag("charity_total_donated_zero-hunger-foundation"), "Total Donated: $5.00")
     }
 }
