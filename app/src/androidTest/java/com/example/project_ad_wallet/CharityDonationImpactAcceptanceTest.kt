@@ -66,8 +66,7 @@ class CharityDonationImpactAcceptanceTest {
 
         // Enter donation amount of $5.00
         composeTestRule.onNodeWithText("Confirm Donation").assertIsDisplayed()
-        composeTestRule.onNodeWithText("+$5").performClick()
-        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("$5").performClick()
 
         // Click Confirm Donation
         composeTestRule.onNodeWithText("Confirm Donation").performClick()
