@@ -2,6 +2,8 @@ package com.example.project_ad_wallet.ui.navigation
 
 object Routes {
     const val REGISTRATION = "registration"
+    const val LOGIN = "login"
+    const val RESET_PASSWORD = "reset_password"
     const val AD_FEED = "feed"
     const val CHARITIES = "charities"
     const val SETTINGS = "settings"
