@@ -148,6 +148,12 @@ fun AdWalletNavGraph(
                         launchSingleTop = true
                     }
                 },
+                onDeleteAccount = {
+                    navController.navigate(Routes.REGISTRATION) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
                 viewModel = settingsViewModel,
             )
         }

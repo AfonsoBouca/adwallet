@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
@@ -54,6 +55,7 @@ import com.example.project_ad_wallet.data.model.User
 import com.example.project_ad_wallet.ui.components.AdWalletBottomBar
 import com.example.project_ad_wallet.ui.components.AdWalletTopBar
 import com.example.project_ad_wallet.ui.components.BottomNavItem
+import com.example.project_ad_wallet.ui.components.ConfirmationDialog
 import com.example.project_ad_wallet.ui.navigation.Routes
 import com.example.project_ad_wallet.ui.registration.EditProfileDialog
 
@@ -64,10 +66,12 @@ fun SettingsScreen(
     onThemeModeChanged: (ThemeMode) -> Unit,
     onResetApp: () -> Unit,
     onLogout: () -> Unit,
+    onDeleteAccount: () -> Unit,
     viewModel: SettingsViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showEditProfile by rememberSaveable { mutableStateOf(false) }
+    var showDeleteConfirm by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = { AdWalletTopBar(title = "Settings", showBalance = false) },
@@ -96,6 +100,10 @@ fun SettingsScreen(
                 },
             )
 
+            AccountSection(
+                onDeleteAccount = { showDeleteConfirm = true },
+            )
+
             DeveloperSection(
                 onResetApp = {
                     viewModel.resetApp()
@@ -119,6 +127,21 @@ fun SettingsScreen(
                 viewModel.updateProfile(name, age, gender)
                 showEditProfile = false
             },
+        )
+    }
+
+    if (showDeleteConfirm) {
+        ConfirmationDialog(
+            title = "Delete Account",
+            message = "Are you sure you want to permanently delete your account? All your data, earnings, and history will be removed. This action cannot be undone.",
+            confirmLabel = "Delete",
+            dismissLabel = "Cancel",
+            onConfirm = {
+                showDeleteConfirm = false
+                viewModel.deleteAccount()
+                onDeleteAccount()
+            },
+            onDismiss = { showDeleteConfirm = false },
         )
     }
 }
@@ -195,6 +218,50 @@ private fun ThemeSection(currentMode: ThemeMode, onModeChanged: (ThemeMode) -> U
                 ThemeModeRow("Light mode", currentMode == ThemeMode.Light) { onModeChanged(ThemeMode.Light) }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                 ThemeModeRow("Dark mode", currentMode == ThemeMode.Dark) { onModeChanged(ThemeMode.Dark) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AccountSection(
+    onDeleteAccount: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SectionHeader(icon = Icons.Default.Person, title = "Account")
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            elevation = CardDefaults.cardElevation(0.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Permanently delete your account and all associated data.",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 13.sp,
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(
+                    onClick = onDeleteAccount,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("delete_account_button"),
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = Color.White,
+                    ),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("DELETE ACCOUNT", fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
