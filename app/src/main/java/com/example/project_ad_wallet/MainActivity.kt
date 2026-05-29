@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.example.project_ad_wallet.data.model.ThemeMode
 import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.ui.navigation.AdWalletNavGraph
@@ -43,6 +44,23 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.Dark -> true
             }
             
+            val walletRepository = com.example.project_ad_wallet.data.repository.WalletRepository.instance
+            val balance by walletRepository.balance.collectAsState()
+            val context = androidx.compose.ui.platform.LocalContext.current
+
+            var previousBalance by androidx.compose.runtime.remember {
+                androidx.compose.runtime.mutableStateOf<Double?>(null)
+            }
+
+            androidx.compose.runtime.LaunchedEffect(balance) {
+                val prev = previousBalance
+                previousBalance = balance
+                if (prev != null && balance > prev) {
+                    val increaseAmount = balance - prev
+                    com.example.project_ad_wallet.ui.notifications.NotificationHelper.showBalanceIncreaseNotification(context, increaseAmount)
+                }
+            }
+
             Project_Ad_WalletTheme(darkTheme = darkTheme) {
                 AdWalletNavGraph(
                     onThemeModeChanged = { userRepository.setThemeMode(it) }
