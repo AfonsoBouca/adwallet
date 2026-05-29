@@ -58,7 +58,7 @@ class CharityDonationImpactAcceptanceTest {
 
         // Verify initial donated amount for Zero Hunger Foundation is $0.00
         composeTestRule.onNodeWithTag("charity_total_donated_zero-hunger-foundation").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Total Donated: $0.00").assertIsDisplayed()
+        androidx.compose.ui.test.assertTextEquals(composeTestRule.onNodeWithTag("charity_total_donated_zero-hunger-foundation"), "Total Donated: $0.00")
 
         // Click on Zero Hunger Foundation to open the donation dialog
         composeTestRule.onNodeWithText("Zero Hunger Foundation").performClick()
