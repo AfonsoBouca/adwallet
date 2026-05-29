@@ -11,6 +11,7 @@ data class Ad(
     val rewardAmount: Double,
     val advertiserName: String,
     val category: String,
+    val status: AdStatus = AdStatus.PENDING,
     val durationSeconds: Int = 30,
     val isActive: Boolean = true,
 )

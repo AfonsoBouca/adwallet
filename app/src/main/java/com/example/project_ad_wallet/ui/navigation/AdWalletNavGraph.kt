@@ -77,7 +77,7 @@ fun AdWalletNavGraph(
             LoginScreen(
                 onLoginSuccess = {
                     navController.navigate(Routes.AD_FEED) {
-                        popUpTo(Routes.REGISTRATION) { inclusive = true }
+                        popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 },
                 onCreateAccount = {

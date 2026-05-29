@@ -9,4 +9,5 @@ data class User(
     val gender: String = "",
     val email: String = "",
     val password: String = "",
+    val isBlocked: Boolean = false,
 )

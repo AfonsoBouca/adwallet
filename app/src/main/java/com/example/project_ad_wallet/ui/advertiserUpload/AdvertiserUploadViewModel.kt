@@ -126,6 +126,7 @@ class AdvertiserUploadViewModel(
             rewardAmount = reward,
             advertiserName = state.companyName.trim(),
             category = state.category,
+            status = AdStatus.PENDING,
             durationSeconds = duration,
             isActive = false,
         )
