@@ -1,6 +1,7 @@
 package com.example.project_ad_wallet
 
 import com.example.project_ad_wallet.data.model.Ad
+import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.data.model.Question
 import com.example.project_ad_wallet.data.model.QuestionOption
 import com.example.project_ad_wallet.data.repository.AdRepository
@@ -29,7 +30,7 @@ class AdWatchViewModelTest {
         rewardAmount = 0.20,
         advertiserName = "Test Co",
         category = "Test",
-        isActive = true,
+        status = AdStatus.APPROVED, // <-- A grande alteração está aqui!
     )
 
     private val fakeQuestions = listOf(

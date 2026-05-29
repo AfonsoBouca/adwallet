@@ -3,6 +3,7 @@ package com.example.project_ad_wallet.ui.advertiserUpload
 import androidx.lifecycle.ViewModel
 import com.example.project_ad_wallet.R
 import com.example.project_ad_wallet.data.model.Ad
+import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.data.repository.AdRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -113,7 +114,7 @@ class AdvertiserUploadViewModel(
             rewardAmount = reward,
             advertiserName = state.companyName.trim(),
             category = state.category,
-            isActive = false,
+            status = AdStatus.PENDING, // Aqui está a alteração!
         )
         adRepository.addAd(ad)
         _uiState.update { it.copy(showConfirmDialog = false, isSubmitted = true) }

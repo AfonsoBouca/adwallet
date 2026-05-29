@@ -1,5 +1,7 @@
 package com.example.project_ad_wallet.data.model
 
+enum class AdStatus { PENDING, APPROVED, REJECTED }
+
 data class Ad(
     val id: String,
     val title: String,
@@ -9,5 +11,5 @@ data class Ad(
     val rewardAmount: Double,
     val advertiserName: String,
     val category: String,
-    val isActive: Boolean = true,
+    val status: AdStatus = AdStatus.PENDING,
 )
