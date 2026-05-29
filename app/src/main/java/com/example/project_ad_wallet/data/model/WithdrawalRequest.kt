@@ -10,6 +10,7 @@ enum class WithdrawalStatus {
 data class WithdrawalRequest(
     val id: String,
     val amount: Double,
+    val bankAccount: String = "",
     val status: WithdrawalStatus = WithdrawalStatus.PENDING,
     val timestamp: Long = System.currentTimeMillis(),
     val estimatedCompletionDate: Long? = null,
