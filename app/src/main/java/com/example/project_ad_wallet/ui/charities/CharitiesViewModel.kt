@@ -26,6 +26,7 @@ data class CharitiesUiState(
     val successMessage: String? = null,
     val errorMessage: String? = null,
     val confirmedDonation: Pair<String, Double>? = null,
+    val charityDonations: Map<String, Double> = emptyMap(),
 )
 
 class CharitiesViewModel(
@@ -41,9 +42,18 @@ class CharitiesViewModel(
         combine(
             charityRepository.charities,
             walletRepository.balance,
-        ) { charities, balance ->
+            donationRepository.donations,
+        ) { charities, balance, donations ->
             val verifiedCharities = charities.filter { it.status == CharityStatus.VERIFIED }
-            _uiState.update { it.copy(charities = verifiedCharities, balance = balance) }
+            val donationTotals = donations.groupBy { it.charityId }
+                .mapValues { entry -> entry.value.sumOf { it.amount } }
+            _uiState.update {
+                it.copy(
+                    charities = verifiedCharities,
+                    balance = balance,
+                    charityDonations = donationTotals
+                )
+            }
         }.launchIn(viewModelScope)
     }
 

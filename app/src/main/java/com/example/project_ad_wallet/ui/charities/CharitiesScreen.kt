@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import com.example.project_ad_wallet.ui.navigation.Routes
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,6 +47,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.ui.components.AdWalletBottomBar
 import com.example.project_ad_wallet.ui.components.AdWalletTopBar
+import com.example.project_ad_wallet.ui.components.asCurrency
 import com.example.project_ad_wallet.ui.components.BottomNavItem
 import com.example.project_ad_wallet.ui.registration.adWalletTextFieldColors
 
@@ -110,16 +112,30 @@ fun CharitiesScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                            ) {
+                                Text(
+                                    text = "SDG ${charity.sdgNumber} — ${charity.sdgName}",
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                            val totalDonated = uiState.charityDonations[charity.id] ?: 0.0
                             Text(
-                                text = "SDG ${charity.sdgNumber} — ${charity.sdgName}",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.primary,
+                                text = "Total Donated: ${totalDonated.asCurrency()}",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.testTag("charity_total_donated_${charity.id}"),
                             )
                         }
                     }
