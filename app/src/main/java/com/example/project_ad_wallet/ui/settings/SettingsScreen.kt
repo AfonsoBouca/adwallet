@@ -48,7 +48,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.data.model.ThemeMode
 import com.example.project_ad_wallet.data.model.User
@@ -67,7 +67,7 @@ fun SettingsScreen(
     onResetApp: () -> Unit,
     onLogout: () -> Unit,
     onDeleteAccount: () -> Unit,
-    viewModel: SettingsViewModel = viewModel(),
+    viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showEditProfile by rememberSaveable { mutableStateOf(false) }

@@ -1,19 +1,25 @@
 package com.example.project_ad_wallet.data.repository
 
+import com.example.project_ad_wallet.data.local.dao.UserProfileDao
 import com.example.project_ad_wallet.data.model.ThemeMode
 import com.example.project_ad_wallet.data.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserRepository {
+@Singleton
+class UserRepository @Inject constructor(
+    private val userProfileDao: UserProfileDao? = null
+) {
 
     companion object {
+        // Para retrocompatibilidade enquanto não mudamos tudo
         val instance = UserRepository()
     }
 
-    // --- Lógica do Utilizador Ativo (Existente) ---
     private val _user = MutableStateFlow(User())
     val user: StateFlow<User> = _user.asStateFlow()
 
@@ -72,10 +78,8 @@ class UserRepository {
         _themeMode.value = ThemeMode.System
     }
 
-    // --- Lógica do Administrador: Gerir todos os utilizadores (Nova) ---
     private val _allUsers = MutableStateFlow<List<User>>(
         listOf(
-            // Dados mockados para podermos testar a UI do Admin
             User(name = "João Silva", age = 22, gender = "M", isBlocked = false),
             User(name = "Ana Costa", age = 28, gender = "F", isBlocked = true),
             User(name = "Carlos Martins", age = 35, gender = "M", isBlocked = false)

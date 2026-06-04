@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import com.example.project_ad_wallet.data.model.Ad
 import com.example.project_ad_wallet.data.model.AdRating
 import com.example.project_ad_wallet.data.repository.AdRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 data class AdRatingUiState(
     val ad: Ad? = null,
@@ -16,8 +18,9 @@ data class AdRatingUiState(
     val isSkipped: Boolean = false,
 )
 
-class AdRatingViewModel(
-    private val adRepository: AdRepository = AdRepository.instance,
+@HiltViewModel
+class AdRatingViewModel @Inject constructor(
+    private val adRepository: AdRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdRatingUiState())

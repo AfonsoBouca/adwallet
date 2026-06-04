@@ -1,12 +1,20 @@
 package com.example.project_ad_wallet.data.repository
 
+import com.example.project_ad_wallet.data.local.dao.DonationsDao
+import com.example.project_ad_wallet.data.local.dao.UserProfileDao
 import com.example.project_ad_wallet.data.model.Donation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class DonationRepository {
+@Singleton
+class DonationRepository @Inject constructor(
+    private val donationsDao: DonationsDao? = null,
+    private val userProfileDao: UserProfileDao? = null
+) {
 
     companion object {
         val instance = DonationRepository()

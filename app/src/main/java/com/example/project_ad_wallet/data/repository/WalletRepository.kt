@@ -1,12 +1,20 @@
 package com.example.project_ad_wallet.data.repository
 
+import com.example.project_ad_wallet.data.local.dao.EarningsDao
+import com.example.project_ad_wallet.data.local.dao.UserProfileDao
 import com.example.project_ad_wallet.data.model.Earning
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class WalletRepository {
+@Singleton
+class WalletRepository @Inject constructor(
+    private val earningsDao: EarningsDao? = null,
+    private val userProfileDao: UserProfileDao? = null
+) {
 
     companion object {
         val instance = WalletRepository()
@@ -54,11 +62,6 @@ class WalletRepository {
         val totalEarned = randomEarnings.sumOf { it.amount }
         val totalDonated = randomDonations.sumOf { it.amount }
         _balance.update { it + totalEarned - totalDonated }
-        
-        // We need to notify DonationRepository as well, but since we don't have a shared state, 
-        // we'll just update WalletRepository's balance. 
-        // In a real app, this would be handled by a use case or a shared database.
-        // For now, I'll just add a way to inject donations if needed, but let's stick to balance/earnings.
     }
 
     private fun ClosedRange<Double>.random() = 

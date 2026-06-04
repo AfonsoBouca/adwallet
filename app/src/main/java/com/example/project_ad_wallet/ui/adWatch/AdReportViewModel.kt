@@ -3,10 +3,12 @@ package com.example.project_ad_wallet.ui.adWatch
 import androidx.lifecycle.ViewModel
 import com.example.project_ad_wallet.data.model.AdReport
 import com.example.project_ad_wallet.data.repository.AdRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 val REPORT_REASONS = listOf(
     "Misleading content",
@@ -22,8 +24,9 @@ data class AdReportUiState(
     val isSubmitted: Boolean = false,
 )
 
-class AdReportViewModel(
-    private val adRepository: AdRepository = AdRepository.instance,
+@HiltViewModel
+class AdReportViewModel @Inject constructor(
+    private val adRepository: AdRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdReportUiState())

@@ -10,12 +10,14 @@ import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.data.repository.WithdrawalRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
 data class WalletUiState(
     val balance: Double = 0.0,
@@ -27,11 +29,12 @@ data class WalletUiState(
     val users: List<User> = emptyList(), // Nova propriedade para a UI do Admin
 )
 
-class WalletViewModel(
-    private val walletRepository: WalletRepository = WalletRepository.instance,
-    private val donationRepository: DonationRepository = DonationRepository.instance,
-    private val withdrawalRepository: WithdrawalRepository = WithdrawalRepository.instance,
-    private val userRepository: UserRepository = UserRepository.instance // Novo repositório de utilizadores
+@HiltViewModel
+class WalletViewModel @Inject constructor(
+    private val walletRepository: WalletRepository,
+    private val donationRepository: DonationRepository,
+    private val withdrawalRepository: WithdrawalRepository,
+    private val userRepository: UserRepository // Novo repositório de utilizadores
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WalletUiState())

@@ -28,7 +28,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.ui.components.AdWalletBottomBar
 import com.example.project_ad_wallet.ui.components.AdWalletTopBar
@@ -43,7 +43,7 @@ import java.util.Locale
 fun DonationHistoryScreen(
     navController: NavHostController,
     bottomNavItems: List<BottomNavItem>,
-    viewModel: DonationHistoryViewModel = viewModel(),
+    viewModel: DonationHistoryViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

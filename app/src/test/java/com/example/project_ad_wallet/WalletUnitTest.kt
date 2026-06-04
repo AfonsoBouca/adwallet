@@ -2,7 +2,9 @@ package com.example.project_ad_wallet
 
 import com.example.project_ad_wallet.data.model.Earning
 import com.example.project_ad_wallet.data.repository.DonationRepository
+import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import com.example.project_ad_wallet.data.repository.WithdrawalRepository
 import com.example.project_ad_wallet.ui.wallet.WalletViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +22,8 @@ class WalletUnitTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var walletRepo: WalletRepository
     private lateinit var donationRepo: DonationRepository
+    private lateinit var withdrawalRepo: WithdrawalRepository
+    private lateinit var userRepo: UserRepository
     private lateinit var viewModel: WalletViewModel
 
     @Before
@@ -27,7 +31,9 @@ class WalletUnitTest {
         Dispatchers.setMain(testDispatcher)
         walletRepo = WalletRepository()
         donationRepo = DonationRepository()
-        viewModel = WalletViewModel(walletRepo, donationRepo)
+        withdrawalRepo = WithdrawalRepository()
+        userRepo = UserRepository()
+        viewModel = WalletViewModel(walletRepo, donationRepo, withdrawalRepo, userRepo)
     }
 
     @After

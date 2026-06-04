@@ -8,6 +8,7 @@ import com.example.project_ad_wallet.data.model.Donation
 import com.example.project_ad_wallet.data.repository.CharityRepository
 import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.util.UUID
+import javax.inject.Inject
 
 data class CharitiesUiState(
     val charities: List<Charity> = emptyList(),
@@ -29,10 +31,11 @@ data class CharitiesUiState(
     val charityDonations: Map<String, Double> = emptyMap(),
 )
 
-class CharitiesViewModel(
-    private val charityRepository: CharityRepository = CharityRepository.instance,
-    private val walletRepository: WalletRepository = WalletRepository.instance,
-    private val donationRepository: DonationRepository = DonationRepository.instance,
+@HiltViewModel
+class CharitiesViewModel @Inject constructor(
+    private val charityRepository: CharityRepository,
+    private val walletRepository: WalletRepository,
+    private val donationRepository: DonationRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CharitiesUiState())

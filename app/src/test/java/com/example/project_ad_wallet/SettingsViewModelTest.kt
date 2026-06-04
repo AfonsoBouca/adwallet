@@ -2,7 +2,12 @@ package com.example.project_ad_wallet
 
 import com.example.project_ad_wallet.data.model.ThemeMode
 import com.example.project_ad_wallet.data.model.User
+import com.example.project_ad_wallet.data.repository.AdRepository
+import com.example.project_ad_wallet.data.repository.CharityRepository
+import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.data.repository.UserRepository
+import com.example.project_ad_wallet.data.repository.WalletRepository
+import com.example.project_ad_wallet.data.repository.WithdrawalRepository
 import com.example.project_ad_wallet.ui.settings.SettingsViewModel
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -15,19 +20,39 @@ import org.robolectric.RobolectricTestRunner
 class SettingsViewModelTest {
 
     private val userRepository = UserRepository.instance
+    private val walletRepository = WalletRepository.instance
+    private val adRepository = AdRepository.instance
+    private val donationRepository = DonationRepository.instance
+    private val charityRepository = CharityRepository()
+    private val withdrawalRepository = WithdrawalRepository.instance
     private lateinit var viewModel: SettingsViewModel
 
     @Before
     fun setup() {
         userRepository.reset()
+        walletRepository.reset()
+        adRepository.reset()
+        donationRepository.reset()
+        withdrawalRepository.reset()
         userRepository.saveUser(User(name = "Alice", age = 28, gender = "Female"))
         userRepository.setThemeMode(ThemeMode.Dark)
-        viewModel = SettingsViewModel()
+        viewModel = SettingsViewModel(
+            userRepository = userRepository,
+            walletRepository = walletRepository,
+            adRepository = adRepository,
+            donationRepository = donationRepository,
+            charityRepository = charityRepository,
+            withdrawalRepository = withdrawalRepository,
+        )
     }
 
     @After
     fun tearDown() {
         userRepository.reset()
+        walletRepository.reset()
+        adRepository.reset()
+        donationRepository.reset()
+        withdrawalRepository.reset()
     }
 
     @Test
@@ -54,7 +79,6 @@ class SettingsViewModelTest {
 
     @Test
     fun deleteAccount_resetsWalletBalance() {
-        val walletRepository = com.example.project_ad_wallet.data.repository.WalletRepository.instance
         walletRepository.addFunds(50.0)
 
         viewModel.deleteAccount()
