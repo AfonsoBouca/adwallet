@@ -28,6 +28,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var walletRepository: WalletRepository
 
+    @Inject
+    lateinit var authRepository: com.example.project_ad_wallet.data.auth.AuthRepository
+
     // Registar a chamada do sistema para pedir a permissão
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -71,7 +74,8 @@ class MainActivity : ComponentActivity() {
 
             Project_Ad_WalletTheme(darkTheme = darkTheme) {
                 AdWalletNavGraph(
-                    onThemeModeChanged = { userRepository.setThemeMode(it) }
+                    onThemeModeChanged = { userRepository.setThemeMode(it) },
+                    authRepository = authRepository
                 )
             }
         }

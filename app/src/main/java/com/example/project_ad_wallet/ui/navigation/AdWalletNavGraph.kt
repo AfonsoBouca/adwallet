@@ -27,7 +27,9 @@ import com.example.project_ad_wallet.ui.donations.DonationConfirmationScreen
 import com.example.project_ad_wallet.ui.donations.DonationHistoryScreen
 import com.example.project_ad_wallet.ui.notifications.NotificationPrefsScreen
 import com.example.project_ad_wallet.ui.components.BottomNavItem
-import com.example.project_ad_wallet.ui.registration.LoginScreen
+import com.example.project_ad_wallet.ui.auth.LoginScreen
+import com.example.project_ad_wallet.ui.admin.AdminDashboardScreen
+import com.example.project_ad_wallet.ui.advertiser.AdvertiserDashboardScreen
 import com.example.project_ad_wallet.ui.registration.RegistrationScreen
 import com.example.project_ad_wallet.ui.registration.ResetPasswordScreen
 import com.example.project_ad_wallet.ui.settings.SettingsScreen
@@ -45,6 +47,7 @@ import com.example.project_ad_wallet.ui.admin.AdminCharitiesScreen
 fun AdWalletNavGraph(
     onThemeModeChanged: (ThemeMode) -> Unit,
     navController: NavHostController = rememberNavController(),
+    authRepository: com.example.project_ad_wallet.data.auth.AuthRepository
 ) {
     val bottomNavItems = listOf(
         BottomNavItem(Routes.AD_FEED, "Home") {
@@ -58,10 +61,53 @@ fun AdWalletNavGraph(
         },
     )
 
+    val onLogout = {
+        authRepository.logout()
+        navController.navigate(Routes.LOGIN) {
+            popUpTo(0) { inclusive = true }
+        }
+    }
+
     NavHost(
         navController = navController,
-        startDestination = Routes.REGISTRATION,
+        startDestination = Routes.LOGIN,
     ) {
+        composable(Routes.LOGIN) {
+            LoginScreen(
+                onNavigateToUserFeed = {
+                    navController.navigate(Routes.AD_FEED) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                },
+                onNavigateToAdminDashboard = {
+                    navController.navigate(Routes.ADMIN_DASHBOARD) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                },
+                onNavigateToAdvertiserDashboard = {
+                    navController.navigate(Routes.ADVERTISER_DASHBOARD) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Routes.ADMIN_DASHBOARD) {
+            AdminDashboardScreen(onLogout = onLogout)
+        }
+
+        composable(Routes.ADVERTISER_DASHBOARD) {
+            AdvertiserDashboardScreen(onLogout = onLogout)
+        }
+
+        composable(Routes.AD_FEED) {
+            AdFeedScreen(
+                navController = navController,
+                bottomNavItems = bottomNavItems,
+                onLogout = onLogout
+            )
+        }
+
         composable(Routes.REGISTRATION) {
             RegistrationScreen(
                 onRegistered = {
@@ -71,22 +117,6 @@ fun AdWalletNavGraph(
                 },
                 onLoginRequested = {
                     navController.navigate(Routes.LOGIN)
-                },
-            )
-        }
-
-        composable(Routes.LOGIN) {
-            LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate(Routes.AD_FEED) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                    }
-                },
-                onCreateAccount = {
-                    navController.navigate(Routes.REGISTRATION)
-                },
-                onResetPassword = {
-                    navController.navigate(Routes.RESET_PASSWORD)
                 },
             )
         }
@@ -138,13 +168,6 @@ fun AdWalletNavGraph(
                 onApprove = { adId -> adRepo.approveAd(adId) },
                 onReject = { adId -> adRepo.rejectAd(adId) },
                 onBack = { navController.popBackStack() }
-            )
-        }
-
-        composable(Routes.AD_FEED) {
-            AdFeedScreen(
-                navController = navController,
-                bottomNavItems = bottomNavItems,
             )
         }
 

@@ -51,4 +51,9 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideWithdrawalRepository(): WithdrawalRepository = WithdrawalRepository()
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(): com.example.project_ad_wallet.data.auth.AuthRepository =
+        com.example.project_ad_wallet.data.auth.AuthRepository()
 }
