@@ -8,8 +8,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,13 +38,26 @@ import androidx.compose.material.icons.filled.VideoLibrary
 fun AdFeedScreen(
     navController: NavHostController,
     bottomNavItems: List<BottomNavItem>,
+    onLogout: () -> Unit,
     viewModel: AdFeedViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
-            AdWalletTopBar(title = "Home", balance = uiState.balance)
+            AdWalletTopBar(
+                title = "Home",
+                balance = uiState.balance,
+                actions = {
+                    IconButton(onClick = onLogout) {
+                        Icon(
+                            imageVector = Icons.Default.Logout,
+                            contentDescription = "Logout",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            )
         },
         bottomBar = {
             AdWalletBottomBar(navController = navController, items = bottomNavItems)
