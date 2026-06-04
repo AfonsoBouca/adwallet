@@ -19,7 +19,8 @@ import javax.inject.Singleton
 @Singleton
 class WalletRepository @Inject constructor(
     private val earningsDao: EarningsDao? = null,
-    private val userProfileDao: UserProfileDao? = null
+    private val userProfileDao: UserProfileDao? = null,
+    private val externalScope: CoroutineScope? = null
 ) {
 
     companion object {
@@ -27,8 +28,8 @@ class WalletRepository @Inject constructor(
         val instance: WalletRepository
             get() = _instance ?: WalletRepository()
 
-        fun initialize(earningsDao: EarningsDao, userProfileDao: UserProfileDao) {
-            _instance = WalletRepository(earningsDao, userProfileDao)
+        fun initialize(earningsDao: EarningsDao, userProfileDao: UserProfileDao, scope: CoroutineScope? = null) {
+            _instance = WalletRepository(earningsDao, userProfileDao, scope)
         }
     }
 
@@ -38,7 +39,7 @@ class WalletRepository @Inject constructor(
     private val _earnings = MutableStateFlow<List<Earning>>(emptyList())
     val earnings: StateFlow<List<Earning>> = _earnings.asStateFlow()
 
-    private val repositoryScope = CoroutineScope(Dispatchers.IO)
+    private val repositoryScope = externalScope ?: CoroutineScope(Dispatchers.IO)
 
     init {
         userProfileDao?.getProfile()?.onEach { entity ->

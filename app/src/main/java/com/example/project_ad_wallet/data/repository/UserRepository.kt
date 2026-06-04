@@ -17,8 +17,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserRepository @Inject constructor(
-    private val userProfileDao: UserProfileDao? = null
+open class UserRepository @Inject constructor(
+    private val userProfileDao: UserProfileDao? = null,
+    private val externalScope: CoroutineScope? = null
 ) {
 
     companion object {
@@ -26,19 +27,19 @@ class UserRepository @Inject constructor(
         val instance: UserRepository
             get() = _instance ?: UserRepository()
 
-        fun initialize(userProfileDao: UserProfileDao) {
-            _instance = UserRepository(userProfileDao)
+        fun initialize(userProfileDao: UserProfileDao, scope: CoroutineScope? = null) {
+            _instance = UserRepository(userProfileDao, scope)
         }
     }
 
     private val _user = MutableStateFlow(User())
-    val user: StateFlow<User> = _user.asStateFlow()
+    open val user: StateFlow<User> = _user.asStateFlow()
 
     private val _themeMode = MutableStateFlow(ThemeMode.System)
-    val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
+    open val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
 
     private val registeredUsers = mutableMapOf<String, User>()
-    private val repositoryScope = CoroutineScope(Dispatchers.IO)
+    private val repositoryScope = externalScope ?: CoroutineScope(Dispatchers.IO)
 
     init {
         userProfileDao?.getProfile()?.onEach { entity ->
@@ -55,7 +56,7 @@ class UserRepository @Inject constructor(
         }?.launchIn(repositoryScope)
     }
 
-    fun saveUser(user: User) {
+    open fun saveUser(user: User) {
         _user.value = user
         repositoryScope.launch {
             userProfileDao?.upsertProfile(
@@ -71,7 +72,7 @@ class UserRepository @Inject constructor(
         }
     }
 
-    fun updateProfilePicture(uriString: String) {
+    open fun updateProfilePicture(uriString: String) {
         _user.update { it.copy(profilePictureUri = uriString) }
         repositoryScope.launch {
             userProfileDao?.updateProfilePicture(uriString)

@@ -5,6 +5,7 @@ import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.ui.earnings.EarningsHistoryViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -18,13 +19,14 @@ import org.junit.Test
 class EarningsHistoryViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
     private lateinit var walletRepo: WalletRepository
     private lateinit var viewModel: EarningsHistoryViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        walletRepo = WalletRepository()
+        walletRepo = WalletRepository(externalScope = testScope)
         viewModel = EarningsHistoryViewModel(walletRepo)
     }
 

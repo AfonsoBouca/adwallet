@@ -5,6 +5,7 @@ import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.ui.donations.DonationHistoryViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -18,13 +19,14 @@ import org.junit.Test
 class DonationHistoryTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
     private lateinit var donationRepo: DonationRepository
     private lateinit var viewModel: DonationHistoryViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        donationRepo = DonationRepository()
+        donationRepo = DonationRepository(externalScope = testScope)
         viewModel = DonationHistoryViewModel(donationRepo)
     }
 

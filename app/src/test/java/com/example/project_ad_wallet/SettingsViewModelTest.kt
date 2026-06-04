@@ -19,12 +19,12 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class SettingsViewModelTest {
 
-    private val userRepository = UserRepository.instance
-    private val walletRepository = WalletRepository.instance
-    private val adRepository = AdRepository.instance
-    private val donationRepository = DonationRepository.instance
+    private val userRepository = UserRepository()
+    private val walletRepository = WalletRepository()
+    private val adRepository = AdRepository()
+    private val donationRepository = DonationRepository()
     private val charityRepository = CharityRepository()
-    private val withdrawalRepository = WithdrawalRepository.instance
+    private val withdrawalRepository = WithdrawalRepository()
     private lateinit var viewModel: SettingsViewModel
 
     @Before

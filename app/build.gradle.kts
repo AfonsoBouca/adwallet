@@ -78,6 +78,7 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.androidx.junit)
+    testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")

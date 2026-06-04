@@ -7,6 +7,13 @@ import com.example.project_ad_wallet.data.model.QuestionOption
 import com.example.project_ad_wallet.data.repository.AdRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.ui.adWatch.AdWatchViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -15,7 +22,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class AdWatchViewModelTest {
+
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private lateinit var adRepo: AdRepository
     private lateinit var walletRepo: WalletRepository
@@ -52,12 +63,18 @@ class AdWatchViewModelTest {
 
     @Before
     fun setup() {
-        adRepo = AdRepository()
+        Dispatchers.setMain(testDispatcher)
+        adRepo = AdRepository(externalScope = testScope)
         adRepo.addAd(fakeAd)
         adRepo.addQuestionnaire("test-ad", fakeQuestions)
-        walletRepo = WalletRepository()
+        walletRepo = WalletRepository(externalScope = testScope)
         viewModel = AdWatchViewModel(adRepo, walletRepo)
         viewModel.loadAd("test-ad")
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
