@@ -61,4 +61,22 @@ class SettingsViewModelTest {
 
         assertEquals(0.0, walletRepository.balance.value, 0.001)
     }
+
+    @Test
+    fun updateProfile_updatesUserRepositoryAndState() {
+        viewModel.updateProfile("Bob", 30, "Male")
+
+        val user = userRepository.user.value
+        assertEquals("Bob", user.name)
+        assertEquals(30, user.age)
+        assertEquals("Male", user.gender)
+    }
+
+    @Test
+    fun updateProfile_trimsName() {
+        viewModel.updateProfile("  Alice  ", 28, "Female")
+
+        val user = userRepository.user.value
+        assertEquals("Alice", user.name)
+    }
 }

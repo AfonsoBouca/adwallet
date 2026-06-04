@@ -12,6 +12,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Feature: Avaliar anúncio (rating)
+ *
+ * Scenario: O utilizador submete uma avaliação após ver o anúncio
+ *   Given o utilizador terminou o anúncio e questionário
+ *   When seleciona uma classificação de 1 a 5 estrelas
+ *   Then a avaliação é guardada e o botão de submissão fica disponível
+ */
 @RunWith(AndroidJUnit4::class)
 class AdRatingAcceptanceTest {
 

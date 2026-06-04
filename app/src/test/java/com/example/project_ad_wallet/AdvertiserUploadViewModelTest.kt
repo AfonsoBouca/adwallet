@@ -27,6 +27,7 @@ class AdvertiserUploadViewModelTest {
         viewModel.onCategoryChanged("Education")
         viewModel.onDescriptionChanged("A great product for everyone.")
         viewModel.onRewardAmountChanged("0.25")
+        viewModel.onDurationSecondsChanged("30")
 
         viewModel.onQuestionChanged("Is this a great product?")
         viewModel.onOptionChanged(0, "Yes")

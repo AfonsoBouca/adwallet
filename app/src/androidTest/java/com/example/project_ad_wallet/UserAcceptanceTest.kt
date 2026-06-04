@@ -11,6 +11,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Feature: Registo de utilizador
+ *
+ * Scenario: Utilizador regista-se preenchendo os campos obrigatórios
+ *   Given a app é iniciada no ecrã de registo
+ *   When o utilizador preenche os dados válidos e clica em "Join AdWallet"
+ *   Then é navegado para o ecrã de AdFeed
+ */
 @RunWith(AndroidJUnit4::class)
 class UserAcceptanceTest {
 

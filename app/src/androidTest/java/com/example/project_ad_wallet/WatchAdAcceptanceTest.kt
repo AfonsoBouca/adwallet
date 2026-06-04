@@ -12,6 +12,19 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Feature: Ver anúncio e progresso
+ *
+ * Scenario: Utilizador vê a barra de progresso durante o anúncio
+ *   Given o utilizador seleciona um anúncio no feed
+ *   When entra no ecrã de reprodução
+ *   Then consegue ver o título, duração e a barra de progresso
+ *
+ * Scenario: O botão de saltar para o questionário inicia desativado
+ *   Given o utilizador seleciona um anúncio
+ *   When o vídeo começa a reproduzir
+ *   Then o botão de skip está desativado
+ */
 @RunWith(AndroidJUnit4::class)
 class WatchAdAcceptanceTest {
 

@@ -11,6 +11,19 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Feature: Ver histórico de ganhos e saldo na Wallet
+ *
+ * Scenario: Utilizador consulta histórico vazio
+ *   Given o utilizador não tem ganhos
+ *   When abre a tab "Earnings" na Wallet
+ *   Then vê um empty state
+ *
+ * Scenario: Utilizador vê o saldo na Wallet
+ *   Given o utilizador está logado
+ *   When abre a tab "Wallet"
+ *   Then o saldo atual é apresentado
+ */
 @RunWith(AndroidJUnit4::class)
 class EarningsHistoryAcceptanceTest {
 

@@ -11,6 +11,19 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Feature: Histórico de doações
+ *
+ * Scenario: O utilizador vê o histórico de doações vazio
+ *   Given o utilizador não fez doações
+ *   When navega para a tab de doações
+ *   Then vê a mensagem de que não há doações
+ *
+ * Scenario: O utilizador vê as doações passadas
+ *   Given o utilizador fez uma doação
+ *   When acede ao histórico
+ *   Then a doação é listada
+ */
 @RunWith(AndroidJUnit4::class)
 class DonationHistoryAcceptanceTest {
 
