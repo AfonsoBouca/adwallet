@@ -39,16 +39,20 @@ import com.example.project_ad_wallet.ui.withdrawals.WithdrawalRequestScreen
 import com.example.project_ad_wallet.ui.withdrawals.WithdrawalStatusScreen
 import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.ui.admin.AdminAdsScreen
+import com.example.project_ad_wallet.ui.admin.AdminCharitiesScreen
 import com.example.project_ad_wallet.ui.admin.AdminUsersScreen
 import com.example.project_ad_wallet.data.model.CharityStatus
-import com.example.project_ad_wallet.ui.admin.AdminCharitiesScreen
+import com.example.project_ad_wallet.ui.auth.LoginScreen
+import com.example.project_ad_wallet.ui.onboarding.OnboardingScreen
 
 @Composable
 fun AdWalletNavGraph(
     onThemeModeChanged: (ThemeMode) -> Unit,
     navController: NavHostController = rememberNavController(),
-    authRepository: com.example.project_ad_wallet.data.auth.AuthRepository
+    authRepository: com.example.project_ad_wallet.data.auth.AuthRepository,
+    startDestination: String = Routes.LOGIN
 ) {
+
     val bottomNavItems = listOf(
         BottomNavItem(Routes.AD_FEED, "Home") {
             Icon(Icons.Default.Home, contentDescription = "Home")
@@ -70,8 +74,18 @@ fun AdWalletNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = Routes.LOGIN,
+        startDestination = startDestination,
     ) {
+        composable(Routes.ONBOARDING) {
+            OnboardingScreen(
+                onComplete = {
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(Routes.ONBOARDING) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Routes.LOGIN) {
             LoginScreen(
                 onNavigateToUserFeed = {

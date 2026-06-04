@@ -14,8 +14,12 @@ import androidx.compose.runtime.setValue
 import com.example.project_ad_wallet.data.model.ThemeMode
 import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import com.example.project_ad_wallet.data.auth.AuthRepository
+import com.example.project_ad_wallet.data.preferences.OnboardingPreferences
 import com.example.project_ad_wallet.ui.navigation.AdWalletNavGraph
+import com.example.project_ad_wallet.ui.navigation.Routes
 import com.example.project_ad_wallet.ui.theme.Project_Ad_WalletTheme
+
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -29,9 +33,13 @@ class MainActivity : ComponentActivity() {
     lateinit var walletRepository: WalletRepository
 
     @Inject
-    lateinit var authRepository: com.example.project_ad_wallet.data.auth.AuthRepository
+    lateinit var authRepository: AuthRepository
+
+    @Inject
+    lateinit var onboardingPreferences: OnboardingPreferences
 
     // Registar a chamada do sistema para pedir a permissão
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -72,11 +80,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            val isOnboardingCompleted by onboardingPreferences.isOnboardingCompleted.collectAsState(initial = null)
+
             Project_Ad_WalletTheme(darkTheme = darkTheme) {
-                AdWalletNavGraph(
-                    onThemeModeChanged = { userRepository.setThemeMode(it) },
-                    authRepository = authRepository
-                )
+                if (isOnboardingCompleted != null) {
+                    val startDestination = if (isOnboardingCompleted == true) Routes.LOGIN else Routes.ONBOARDING
+                    AdWalletNavGraph(
+                        onThemeModeChanged = { userRepository.setThemeMode(it) },
+                        authRepository = authRepository,
+                        startDestination = startDestination
+                    )
+                }
             }
         }
     }
