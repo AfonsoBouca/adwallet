@@ -14,5 +14,5 @@ data class UserProfileEntity(
     val streakDays: Int = 0,
     val lastActiveDate: Long = 0L,
     val profilePictureUri: String? = null,
-    val role: String = "USER"
+    val role: String = "USER" // "USER", "ADMIN", "ADVERTISER"
 )

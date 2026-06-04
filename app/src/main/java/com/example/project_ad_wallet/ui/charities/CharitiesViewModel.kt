@@ -29,6 +29,8 @@ data class CharitiesUiState(
     val errorMessage: String? = null,
     val confirmedDonation: Pair<String, Double>? = null,
     val charityDonations: Map<String, Double> = emptyMap(),
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
 @HiltViewModel
@@ -42,6 +44,11 @@ class CharitiesViewModel @Inject constructor(
     val uiState: StateFlow<CharitiesUiState> = _uiState.asStateFlow()
 
     init {
+        loadCharities()
+    }
+
+    fun loadCharities() {
+        _uiState.update { it.copy(isLoading = true, error = null) }
         combine(
             charityRepository.charities,
             walletRepository.balance,
@@ -54,10 +61,15 @@ class CharitiesViewModel @Inject constructor(
                 it.copy(
                     charities = verifiedCharities,
                     balance = balance,
-                    charityDonations = donationTotals
+                    charityDonations = donationTotals,
+                    isLoading = false
                 )
             }
         }.launchIn(viewModelScope)
+    }
+
+    fun retry() {
+        loadCharities()
     }
 
     fun selectCharity(charity: Charity) {

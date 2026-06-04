@@ -20,4 +20,7 @@ interface UserProfileDao {
 
     @Query("UPDATE user_profile SET walletBalance = walletBalance - :amount WHERE id = 1")
     suspend fun deductFromWalletBalance(amount: Double)
+
+    @Query("UPDATE user_profile SET profilePictureUri = :uri WHERE id = 1")
+    suspend fun updateProfilePicture(uri: String)
 }

@@ -24,11 +24,18 @@ import javax.inject.Singleton
 
 @Singleton
 class AdRepository @Inject constructor(
-    private val adsWatchedDao: AdsWatchedDao? = null
+    private val adsWatchedDao: AdsWatchedDao? = null,
+    private val externalScope: CoroutineScope? = null
 ) {
-
+    
     companion object {
-        val instance = AdRepository()
+        private var _instance: AdRepository? = null
+        val instance: AdRepository
+            get() = _instance ?: AdRepository()
+
+        fun initialize(adsWatchedDao: AdsWatchedDao, scope: CoroutineScope? = null) {
+            _instance = AdRepository(adsWatchedDao, scope)
+        }
     }
 
     private val _ads = MutableStateFlow(sampleAds())
@@ -52,7 +59,7 @@ class AdRepository @Inject constructor(
     private val questionnaires: MutableMap<String, List<Question>> =
         sampleQuestionnaires().toMutableMap()
 
-    private val repositoryScope = CoroutineScope(Dispatchers.IO)
+    private val repositoryScope = externalScope ?: CoroutineScope(Dispatchers.IO)
 
     init {
         adsWatchedDao?.getAllWatched()?.onEach { entities ->

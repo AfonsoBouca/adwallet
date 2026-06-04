@@ -16,7 +16,8 @@ import javax.inject.Inject
 data class DonationHistoryUiState(
     val donations: List<Donation> = emptyList(),
     val totalDonated: Double = 0.0,
-    val isEmpty: Boolean = true,
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
 @HiltViewModel
@@ -28,15 +29,24 @@ class DonationHistoryViewModel @Inject constructor(
     val uiState: StateFlow<DonationHistoryUiState> = _uiState.asStateFlow()
 
     init {
+        loadDonations()
+    }
+
+    fun loadDonations() {
+        _uiState.update { it.copy(isLoading = true, error = null) }
         donationRepository.donations.onEach { donations ->
             val sorted = donations.sortedByDescending { it.timestamp }
             _uiState.update {
                 it.copy(
                     donations = sorted,
                     totalDonated = donations.sumOf { d -> d.amount },
-                    isEmpty = donations.isEmpty(),
+                    isLoading = false
                 )
             }
         }.launchIn(viewModelScope)
+    }
+
+    fun retry() {
+        loadDonations()
     }
 }

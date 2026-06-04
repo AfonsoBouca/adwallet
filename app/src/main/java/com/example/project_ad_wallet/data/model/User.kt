@@ -10,4 +10,6 @@ data class User(
     val email: String = "",
     val password: String = "",
     val isBlocked: Boolean = false,
-)
+    val profilePictureUri: String? = null
+    )
+
