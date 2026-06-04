@@ -13,8 +13,13 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserRepository(private val userProfileDao: UserProfileDao? = null) {
+@Singleton
+class UserRepository @Inject constructor(
+    private val userProfileDao: UserProfileDao? = null
+) {
 
     companion object {
         private var _instance: UserRepository? = null

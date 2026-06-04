@@ -13,10 +13,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.project_ad_wallet.data.model.ThemeMode
 import com.example.project_ad_wallet.data.repository.UserRepository
+import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.ui.navigation.AdWalletNavGraph
 import com.example.project_ad_wallet.ui.theme.Project_Ad_WalletTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var userRepository: UserRepository
+
+    @Inject
+    lateinit var walletRepository: WalletRepository
 
     // Registar a chamada do sistema para pedir a permissão
     private val requestPermissionLauncher = registerForActivityResult(
@@ -35,7 +45,6 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val userRepository = UserRepository.instance
             val themeMode by userRepository.themeMode.collectAsState()
             val systemDark = isSystemInDarkTheme()
             val darkTheme = when (themeMode) {
@@ -44,7 +53,6 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.Dark -> true
             }
             
-            val walletRepository = com.example.project_ad_wallet.data.repository.WalletRepository.instance
             val balance by walletRepository.balance.collectAsState()
             val context = androidx.compose.ui.platform.LocalContext.current
 

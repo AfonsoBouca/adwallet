@@ -10,26 +10,28 @@ import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.data.repository.WithdrawalRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 data class SettingsUiState(
     val user: User = User(),
     val themeMode: ThemeMode = ThemeMode.System,
 )
 
-class SettingsViewModel(
-    private val userRepository: UserRepository = UserRepository.instance,
-    private val walletRepository: WalletRepository = WalletRepository.instance,
-    private val adRepository: AdRepository = AdRepository.instance,
-    private val donationRepository: DonationRepository = DonationRepository.instance,
-    private val charityRepository: CharityRepository = CharityRepository.instance,
-    private val withdrawalRepository: WithdrawalRepository = WithdrawalRepository.instance,
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val walletRepository: WalletRepository,
+    private val adRepository: AdRepository,
+    private val donationRepository: DonationRepository,
+    private val charityRepository: CharityRepository,
+    private val withdrawalRepository: WithdrawalRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())

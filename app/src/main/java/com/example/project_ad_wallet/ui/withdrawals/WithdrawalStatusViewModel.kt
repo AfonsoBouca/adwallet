@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.project_ad_wallet.data.model.WithdrawalRequest
 import com.example.project_ad_wallet.data.model.WithdrawalStatus
 import com.example.project_ad_wallet.data.repository.WithdrawalRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 data class WithdrawalStatusUiState(
     val withdrawals: List<WithdrawalRequest> = emptyList(),
@@ -19,8 +21,9 @@ data class WithdrawalStatusUiState(
     val isEmpty: Boolean = true,
 )
 
-class WithdrawalStatusViewModel(
-    private val withdrawalRepository: WithdrawalRepository = WithdrawalRepository.instance,
+@HiltViewModel
+class WithdrawalStatusViewModel @Inject constructor(
+    private val withdrawalRepository: WithdrawalRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WithdrawalStatusUiState())

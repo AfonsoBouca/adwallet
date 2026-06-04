@@ -19,18 +19,13 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AdRepository(private val adsWatchedDao: AdsWatchedDao? = null) {
-
-    companion object {
-        private var _instance: AdRepository? = null
-        val instance: AdRepository
-            get() = _instance ?: AdRepository()
-
-        fun initialize(adsWatchedDao: AdsWatchedDao) {
-            _instance = AdRepository(adsWatchedDao)
-        }
-    }
+@Singleton
+class AdRepository @Inject constructor(
+    private val adsWatchedDao: AdsWatchedDao? = null
+) {
 
     private val _ads = MutableStateFlow(sampleAds())
     val ads: StateFlow<List<Ad>> = _ads.asStateFlow()
@@ -111,6 +106,7 @@ class AdRepository(private val adsWatchedDao: AdsWatchedDao? = null) {
     }
 
     fun markWatched(adId: String) {
+        _watchedAdIds.update { it + adId }
         repositoryScope.launch {
             adsWatchedDao?.insertOrUpdate(
                 AdWatchedEntity(
@@ -121,6 +117,7 @@ class AdRepository(private val adsWatchedDao: AdsWatchedDao? = null) {
     }
 
     fun markSkipped(adId: String) {
+        _skippedAdIds.update { it + adId }
         repositoryScope.launch {
             adsWatchedDao?.insertOrUpdate(
                 AdWatchedEntity(

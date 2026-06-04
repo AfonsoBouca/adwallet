@@ -7,11 +7,13 @@ import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.data.model.Question
 import com.example.project_ad_wallet.data.model.QuestionOption
 import com.example.project_ad_wallet.data.repository.AdRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.UUID
+import javax.inject.Inject
 
 data class AdvertiserUploadUiState(
     val title: String = "",
@@ -62,8 +64,9 @@ val AD_CATEGORIES = listOf(
     "Education", "Sustainability", "Energy", "Charity", "Sports", "Other"
 )
 
-class AdvertiserUploadViewModel(
-    private val adRepository: AdRepository = AdRepository.instance,
+@HiltViewModel
+class AdvertiserUploadViewModel @Inject constructor(
+    private val adRepository: AdRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdvertiserUploadUiState())

@@ -20,7 +20,7 @@ class RegistrationViewModelTest {
     @Before
     fun setup() {
         userRepository.reset()
-        viewModel = RegistrationViewModel()
+        viewModel = RegistrationViewModel(userRepository)
     }
 
     @After

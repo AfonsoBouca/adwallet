@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project_ad_wallet.data.model.Donation
 import com.example.project_ad_wallet.data.repository.DonationRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 data class DonationHistoryUiState(
     val donations: List<Donation> = emptyList(),
@@ -17,8 +19,9 @@ data class DonationHistoryUiState(
     val isEmpty: Boolean = true,
 )
 
-class DonationHistoryViewModel(
-    private val donationRepository: DonationRepository = DonationRepository.instance,
+@HiltViewModel
+class DonationHistoryViewModel @Inject constructor(
+    private val donationRepository: DonationRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DonationHistoryUiState())

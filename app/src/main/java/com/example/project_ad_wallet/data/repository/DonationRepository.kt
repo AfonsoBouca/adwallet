@@ -12,8 +12,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class DonationRepository(
+@Singleton
+class DonationRepository @Inject constructor(
     private val donationsDao: DonationsDao? = null,
     private val userProfileDao: UserProfileDao? = null
 ) {
@@ -86,7 +89,9 @@ class DonationRepository(
                         charityId = donation.charityId,
                         charityName = donation.charityName,
                         amount = donation.amount,
-                        timestamp = donation.timestamp
+                        timestamp = donation.timestamp,
+                        sdgNumber = donation.sdgNumber,
+                        sdgName = donation.sdgName
                     )
                 )
                 userProfileDao?.deductFromWalletBalance(donation.amount)
