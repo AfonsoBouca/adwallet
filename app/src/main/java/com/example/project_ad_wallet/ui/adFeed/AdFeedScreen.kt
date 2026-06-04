@@ -19,7 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.testTag
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.ui.components.AdCard
 import com.example.project_ad_wallet.ui.components.AdWalletBottomBar
@@ -27,11 +27,16 @@ import com.example.project_ad_wallet.ui.components.AdWalletTopBar
 import com.example.project_ad_wallet.ui.components.BottomNavItem
 import com.example.project_ad_wallet.ui.navigation.Routes
 
+import com.example.project_ad_wallet.ui.components.AdWalletEmptyState
+import com.example.project_ad_wallet.ui.components.AdWalletErrorState
+import com.example.project_ad_wallet.ui.components.AdWalletLoadingState
+import androidx.compose.material.icons.filled.VideoLibrary
+
 @Composable
 fun AdFeedScreen(
     navController: NavHostController,
     bottomNavItems: List<BottomNavItem>,
-    viewModel: AdFeedViewModel = viewModel(),
+    viewModel: AdFeedViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -63,19 +68,45 @@ fun AdFeedScreen(
             }
         },
     ) { innerPadding ->
-        LazyColumn(
+        androidx.compose.foundation.layout.Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(innerPadding)
         ) {
-            items(uiState.ads, key = { it.id }) { ad ->
-                AdCard(
-                    ad = ad,
-                    isWatched = ad.id in uiState.watchedAdIds,
-                    onClick = { navController.navigate(Routes.adWatch(ad.id)) },
-                )
+            when {
+                uiState.isLoading -> {
+                    AdWalletLoadingState()
+                }
+                uiState.error != null -> {
+                    AdWalletErrorState(
+                        message = uiState.error!!,
+                        onRetry = { viewModel.retry() }
+                    )
+                }
+                uiState.ads.isEmpty() -> {
+                    AdWalletEmptyState(
+                        icon = Icons.Default.VideoLibrary,
+                        title = "Sem anúncios",
+                        subtitle = "Não há anúncios disponíveis de momento.",
+                        actionLabel = "Atualizar",
+                        onAction = { viewModel.retry() }
+                    )
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        items(uiState.ads, key = { it.id }) { ad ->
+                            AdCard(
+                                ad = ad,
+                                isWatched = ad.id in uiState.watchedAdIds,
+                                onClick = { navController.navigate(Routes.adWatch(ad.id)) },
+                            )
+                        }
+                    }
+                }
             }
         }
     }

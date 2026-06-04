@@ -6,6 +6,7 @@ import com.example.project_ad_wallet.data.model.Ad
 import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.data.repository.AdRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,22 +14,31 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 data class AdFeedUiState(
     val ads: List<Ad> = emptyList(),
     val balance: Double = 0.0,
     val watchedAdIds: Set<String> = emptySet(),
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
-class AdFeedViewModel(
-    private val adRepository: AdRepository = AdRepository.instance,
-    private val walletRepository: WalletRepository = WalletRepository.instance,
+@HiltViewModel
+class AdFeedViewModel @Inject constructor(
+    private val adRepository: AdRepository,
+    private val walletRepository: WalletRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdFeedUiState())
     val uiState: StateFlow<AdFeedUiState> = _uiState.asStateFlow()
 
     init {
+        loadFeed()
+    }
+
+    fun loadFeed() {
+        _uiState.update { it.copy(isLoading = true, error = null) }
         combine(
             adRepository.ads,
             walletRepository.balance,
@@ -39,9 +49,14 @@ class AdFeedViewModel(
                 ads = ads.filter { it.status == AdStatus.APPROVED && it.id !in skipped },
                 balance = balance,
                 watchedAdIds = watched,
+                isLoading = false
             )
         }.onEach { state ->
             _uiState.value = state
         }.launchIn(viewModelScope)
+    }
+
+    fun retry() {
+        loadFeed()
     }
 }

@@ -2,10 +2,13 @@ package com.example.project_ad_wallet
 
 import com.example.project_ad_wallet.data.model.Earning
 import com.example.project_ad_wallet.data.repository.DonationRepository
+import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import com.example.project_ad_wallet.data.repository.WithdrawalRepository
 import com.example.project_ad_wallet.ui.wallet.WalletViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -18,16 +21,21 @@ import org.junit.Test
 class WalletUnitTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
     private lateinit var walletRepo: WalletRepository
     private lateinit var donationRepo: DonationRepository
+    private lateinit var withdrawalRepo: WithdrawalRepository
+    private lateinit var userRepo: UserRepository
     private lateinit var viewModel: WalletViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        walletRepo = WalletRepository()
-        donationRepo = DonationRepository()
-        viewModel = WalletViewModel(walletRepo, donationRepo)
+        walletRepo = WalletRepository(externalScope = testScope)
+        donationRepo = DonationRepository(externalScope = testScope)
+        withdrawalRepo = WithdrawalRepository()
+        userRepo = UserRepository(externalScope = testScope)
+        viewModel = WalletViewModel(walletRepo, donationRepo, withdrawalRepo, userRepo)
     }
 
     @After

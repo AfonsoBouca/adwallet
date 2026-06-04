@@ -14,13 +14,13 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class RegistrationViewModelTest {
 
-    private val userRepository = UserRepository.instance
+    private val userRepository = UserRepository()
     private lateinit var viewModel: RegistrationViewModel
 
     @Before
     fun setup() {
         userRepository.reset()
-        viewModel = RegistrationViewModel()
+        viewModel = RegistrationViewModel(userRepository)
     }
 
     @After

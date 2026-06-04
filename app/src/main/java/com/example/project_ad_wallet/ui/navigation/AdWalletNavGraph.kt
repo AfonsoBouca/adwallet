@@ -8,7 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -103,40 +103,36 @@ fun AdWalletNavGraph(
         }
         
         composable(Routes.ADMIN_USERS) {
-            val walletRepo = com.example.project_ad_wallet.data.repository.UserRepository.instance
-            val users by walletRepo.allUsers.collectAsState()
+            val adminUsersViewModel: com.example.project_ad_wallet.ui.admin.AdminUsersViewModel = hiltViewModel()
+            val users by adminUsersViewModel.users.collectAsState()
     
-            AdminUsersScreen(
+            com.example.project_ad_wallet.ui.admin.AdminUsersScreen(
                 users = users,
-                onToggleBlock = { userId: String -> walletRepo.toggleBlockStatus(userId) }, // Adicionado ": String" aqui
+                onToggleBlock = { userId: String -> adminUsersViewModel.toggleBlockStatus(userId) },
                 onBack = { navController.popBackStack() }
             )
         }
 
         composable(Routes.ADMIN_CHARITIES) {
-            val charityRepo = com.example.project_ad_wallet.data.repository.CharityRepository.instance
-            val charities by charityRepo.charities.collectAsState()
+            val adminCharitiesViewModel: com.example.project_ad_wallet.ui.admin.AdminCharitiesViewModel = hiltViewModel()
+            val pendingCharities by adminCharitiesViewModel.pendingCharities.collectAsState()
 
-            val pendingCharities = charities.filter { it.status == com.example.project_ad_wallet.data.model.CharityStatus.PENDING }
-
-            AdminCharitiesScreen(
+            com.example.project_ad_wallet.ui.admin.AdminCharitiesScreen(
                 pendingCharities = pendingCharities,
-                onApprove = { charityId -> charityRepo.approveCharity(charityId) },
-                onReject = { charityId -> charityRepo.rejectCharity(charityId) },
+                onApprove = { charityId -> adminCharitiesViewModel.approveCharity(charityId) },
+                onReject = { charityId -> adminCharitiesViewModel.rejectCharity(charityId) },
                 onBack = { navController.popBackStack() }
             )
         }
 
         composable(Routes.ADMIN_ADS) {
-            val adRepo = com.example.project_ad_wallet.data.repository.AdRepository.instance
-            val ads by adRepo.ads.collectAsState()
-    
-            val pendingAds = ads.filter { it.status == AdStatus.PENDING }
+            val adminAdsViewModel: com.example.project_ad_wallet.ui.admin.AdminAdsViewModel = hiltViewModel()
+            val pendingAds by adminAdsViewModel.pendingAds.collectAsState()
 
-            AdminAdsScreen(
+            com.example.project_ad_wallet.ui.admin.AdminAdsScreen(
                 pendingAds = pendingAds,
-                onApprove = { adId -> adRepo.approveAd(adId) },
-                onReject = { adId -> adRepo.rejectAd(adId) },
+                onApprove = { adId -> adminAdsViewModel.approveAd(adId) },
+                onReject = { adId -> adminAdsViewModel.rejectAd(adId) },
                 onBack = { navController.popBackStack() }
             )
         }
@@ -163,7 +159,7 @@ fun AdWalletNavGraph(
         }
 
         composable(Routes.SETTINGS) {
-            val settingsViewModel: SettingsViewModel = viewModel()
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
             SettingsScreen(
                 navController = navController,
                 bottomNavItems = bottomNavItems,

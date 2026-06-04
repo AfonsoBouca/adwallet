@@ -4,20 +4,23 @@ import androidx.lifecycle.ViewModel
 import com.example.project_ad_wallet.data.model.WithdrawalRequest
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.data.repository.WithdrawalRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.UUID
+import javax.inject.Inject
 
 data class WithdrawalRequestUiState(
     val errorMessage: String? = null,
     val requestSent: Boolean = false,
 )
 
-class WithdrawalRequestViewModel(
-    private val walletRepository: WalletRepository = WalletRepository.instance,
-    private val withdrawalRepository: WithdrawalRepository = WithdrawalRepository.instance,
+@HiltViewModel
+class WithdrawalRequestViewModel @Inject constructor(
+    private val walletRepository: WalletRepository,
+    private val withdrawalRepository: WithdrawalRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WithdrawalRequestUiState())

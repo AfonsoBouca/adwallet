@@ -39,7 +39,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.data.model.Donation
 import com.example.project_ad_wallet.data.model.Earning
@@ -52,11 +52,16 @@ import com.example.project_ad_wallet.ui.components.asCurrency
 import com.example.project_ad_wallet.ui.navigation.Routes
 import com.example.project_ad_wallet.ui.withdrawals.toDisplayInfo
 
+import com.example.project_ad_wallet.ui.components.AdWalletEmptyState
+import com.example.project_ad_wallet.ui.components.AdWalletErrorState
+import com.example.project_ad_wallet.ui.components.AdWalletLoadingState
+import androidx.compose.material.icons.filled.Favorite
+
 @Composable
 fun WalletScreen(
     navController: NavHostController,
     bottomNavItems: List<BottomNavItem>,
-    viewModel: WalletViewModel = viewModel(),
+    viewModel: WalletViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -66,26 +71,37 @@ fun WalletScreen(
         topBar = { AdWalletTopBar(title = "Wallet", balance = uiState.balance) },
         bottomBar = { AdWalletBottomBar(navController = navController, items = bottomNavItems) },
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
         ) {
-            ScrollableTabRow(selectedTabIndex = selectedTab) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
-                        text = { Text(title) },
-                    )
-                }
-            }
+            when {
+                uiState.isLoading -> AdWalletLoadingState()
+                uiState.error != null -> AdWalletErrorState(
+                    message = uiState.error!!,
+                    onRetry = { viewModel.retry() }
+                )
+                else -> {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        ScrollableTabRow(selectedTabIndex = selectedTab) {
+                            tabs.forEachIndexed { index, title ->
+                                Tab(
+                                    selected = selectedTab == index,
+                                    onClick = { selectedTab = index },
+                                    text = { Text(title) },
+                                )
+                            }
+                        }
 
-            when (selectedTab) {
-                0 -> BalanceTab(uiState) { navController.navigate(Routes.withdrawalRequest()) }
-                1 -> EarningsTab(uiState.earnings, uiState.totalEarned)
-                2 -> DonationsTab(uiState.donations, uiState.totalDonated, navController)
-                3 -> WithdrawalsTab(uiState.withdrawals)
+                        when (selectedTab) {
+                            0 -> BalanceTab(uiState) { navController.navigate(Routes.withdrawalRequest()) }
+                            1 -> EarningsTab(uiState.earnings, uiState.totalEarned)
+                            2 -> DonationsTab(uiState.donations, uiState.totalDonated, navController)
+                            3 -> WithdrawalsTab(uiState.withdrawals)
+                        }
+                    }
+                }
             }
         }
     }
@@ -164,9 +180,10 @@ private fun StatCard(label: String, value: String) {
 @Composable
 private fun EarningsTab(earnings: List<Earning>, totalEarned: Double) {
     if (earnings.isEmpty()) {
-        EmptyStateView(
+        AdWalletEmptyState(
             icon = Icons.Default.AccountBalanceWallet,
-            message = "No earnings yet. Watch an ad to earn!",
+            title = "Ainda não ganhaste saldo.",
+            subtitle = "Vê anúncios para começar a ganhar."
         )
     } else {
         LazyColumn(contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -223,24 +240,13 @@ private fun EarningRow(earning: Earning) {
 @Composable
 private fun DonationsTab(donations: List<Donation>, totalDonated: Double, navController: NavHostController) {
     if (donations.isEmpty()) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            EmptyStateView(
-                icon = Icons.Default.History,
-                message = "No donations yet. Make a difference today!",
-                modifier = Modifier.weight(1f)
-            )
-            Button(
-                onClick = { navController.navigate(Routes.CHARITIES) },
-                modifier = Modifier.fillMaxWidth().height(56.dp).testTag("donate_button_wallet_empty"),
-                shape = RoundedCornerShape(50)
-            ) {
-                Text("Donate to Charities", fontWeight = FontWeight.Bold)
-            }
-        }
+        AdWalletEmptyState(
+            icon = Icons.Default.Favorite,
+            title = "Ainda não fizeste nenhuma doação.",
+            subtitle = "Doa o teu saldo a uma causa que te importa.",
+            actionLabel = "Donate to Charities",
+            onAction = { navController.navigate(Routes.CHARITIES) }
+        )
     } else {
         LazyColumn(contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             item {

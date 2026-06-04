@@ -49,7 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.ui.components.AdWalletTopBar
 import com.example.project_ad_wallet.ui.components.asCurrency
@@ -60,7 +60,7 @@ import kotlinx.coroutines.delay
 fun AdWatchScreen(
     adId: String,
     navController: NavHostController,
-    viewModel: AdWatchViewModel = viewModel(),
+    viewModel: AdWatchViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
