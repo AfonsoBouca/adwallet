@@ -44,6 +44,7 @@ class UserRepository(private val userProfileDao: UserProfileDao? = null) {
                     age = entity.age,
                     gender = entity.gender,
                     email = entity.email,
+                    profilePictureUri = entity.profilePictureUri
                 )
             }
         }?.launchIn(repositoryScope)
@@ -59,8 +60,16 @@ class UserRepository(private val userProfileDao: UserProfileDao? = null) {
                     age = user.age,
                     gender = user.gender,
                     email = user.email,
+                    profilePictureUri = user.profilePictureUri
                 )
             )
+        }
+    }
+
+    fun updateProfilePicture(uriString: String) {
+        _user.update { it.copy(profilePictureUri = uriString) }
+        repositoryScope.launch {
+            userProfileDao?.updateProfilePicture(uriString)
         }
     }
 
