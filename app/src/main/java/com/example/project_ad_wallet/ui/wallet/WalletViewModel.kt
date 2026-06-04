@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 
 data class WalletUiState(
     val balance: Double = 0.0,
@@ -25,6 +26,8 @@ data class WalletUiState(
     val totalEarned: Double = 0.0,
     val totalDonated: Double = 0.0,
     val users: List<User> = emptyList(), // Nova propriedade para a UI do Admin
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
 class WalletViewModel(
@@ -38,6 +41,11 @@ class WalletViewModel(
     val uiState: StateFlow<WalletUiState> = _uiState.asStateFlow()
 
     init {
+        loadWallet()
+    }
+
+    fun loadWallet() {
+        _uiState.update { it.copy(isLoading = true, error = null) }
         // Agora o combine suporta até 5 fluxos
         combine(
             walletRepository.balance,
@@ -53,11 +61,16 @@ class WalletViewModel(
                 withdrawals = withdrawals.sortedByDescending { it.timestamp },
                 totalEarned = earnings.sumOf { it.amount },
                 totalDonated = donations.sumOf { it.amount },
-                users = users
+                users = users,
+                isLoading = false
             )
         }.onEach { state ->
             _uiState.value = state
         }.launchIn(viewModelScope)
+    }
+
+    fun retry() {
+        loadWallet()
     }
 
     // Função para o Admin bloquear/desbloquear

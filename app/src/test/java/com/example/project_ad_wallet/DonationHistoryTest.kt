@@ -46,14 +46,13 @@ class DonationHistoryTest {
 
     @Test
     fun test_isEmptyWhenNoDonations() {
-        assertTrue(viewModel.uiState.value.isEmpty)
         assertTrue(viewModel.uiState.value.donations.isEmpty())
     }
 
     @Test
     fun test_isNotEmptyAfterDonation() {
         donationRepo.addDonation(makeDonation("d1", "charity-1", "Green Earth", 2.00))
-        assertTrue(!viewModel.uiState.value.isEmpty)
+        assertTrue(viewModel.uiState.value.donations.isNotEmpty())
     }
 
     @Test

@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.update
 data class SettingsUiState(
     val user: User = User(),
     val themeMode: ThemeMode = ThemeMode.System,
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
 class SettingsViewModel(
@@ -36,12 +38,27 @@ class SettingsViewModel(
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
     init {
+        loadSettings()
+    }
+
+    fun loadSettings() {
+        _uiState.update { it.copy(isLoading = true, error = null) }
         combine(
             userRepository.user,
             userRepository.themeMode,
         ) { user, themeMode ->
-            _uiState.update { it.copy(user = user, themeMode = themeMode) }
+            _uiState.update { 
+                it.copy(
+                    user = user, 
+                    themeMode = themeMode,
+                    isLoading = false
+                ) 
+            }
         }.launchIn(viewModelScope)
+    }
+
+    fun retry() {
+        loadSettings()
     }
 
     fun updateProfile(name: String, age: Int, gender: String) {

@@ -18,6 +18,8 @@ data class AdFeedUiState(
     val ads: List<Ad> = emptyList(),
     val balance: Double = 0.0,
     val watchedAdIds: Set<String> = emptySet(),
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
 class AdFeedViewModel(
@@ -29,6 +31,11 @@ class AdFeedViewModel(
     val uiState: StateFlow<AdFeedUiState> = _uiState.asStateFlow()
 
     init {
+        loadFeed()
+    }
+
+    fun loadFeed() {
+        _uiState.update { it.copy(isLoading = true, error = null) }
         combine(
             adRepository.ads,
             walletRepository.balance,
@@ -39,9 +46,14 @@ class AdFeedViewModel(
                 ads = ads.filter { it.status == AdStatus.APPROVED && it.id !in skipped },
                 balance = balance,
                 watchedAdIds = watched,
+                isLoading = false
             )
         }.onEach { state ->
             _uiState.value = state
         }.launchIn(viewModelScope)
+    }
+
+    fun retry() {
+        loadFeed()
     }
 }

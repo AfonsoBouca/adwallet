@@ -59,6 +59,11 @@ import com.example.project_ad_wallet.ui.components.ConfirmationDialog
 import com.example.project_ad_wallet.ui.navigation.Routes
 import com.example.project_ad_wallet.ui.registration.EditProfileDialog
 
+import com.example.project_ad_wallet.ui.components.AdWalletEmptyState
+import com.example.project_ad_wallet.ui.components.AdWalletErrorState
+import com.example.project_ad_wallet.ui.components.AdWalletLoadingState
+import androidx.compose.foundation.layout.Box
+
 @Composable
 fun SettingsScreen(
     navController: NavHostController,
@@ -77,45 +82,59 @@ fun SettingsScreen(
         topBar = { AdWalletTopBar(title = "Settings", showBalance = false) },
         bottomBar = { AdWalletBottomBar(navController = navController, items = bottomNavItems) },
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            ProfileSection(
-                user = uiState.user,
-                onEdit = { showEditProfile = true },
-            )
+            when {
+                uiState.isLoading -> AdWalletLoadingState()
+                uiState.error != null -> AdWalletErrorState(
+                    message = uiState.error!!,
+                    onRetry = { viewModel.retry() }
+                )
+                else -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                    ) {
+                        ProfileSection(
+                            user = uiState.user,
+                            onEdit = { showEditProfile = true },
+                        )
 
-            NotificationsSection(navController = navController)
+                        NotificationsSection(navController = navController)
 
-            ThemeSection(
-                currentMode = uiState.themeMode,
-                onModeChanged = {
-                    viewModel.setThemeMode(it)
-                    onThemeModeChanged(it)
-                },
-            )
+                        ThemeSection(
+                            currentMode = uiState.themeMode,
+                            onModeChanged = {
+                                viewModel.setThemeMode(it)
+                                onThemeModeChanged(it)
+                            },
+                        )
 
-            AccountSection(
-                onDeleteAccount = { showDeleteConfirm = true },
-            )
+                        AccountSection(
+                            onDeleteAccount = { showDeleteConfirm = true },
+                        )
 
-            DeveloperSection(
-                onResetApp = {
-                    viewModel.resetApp()
-                    onResetApp()
-                },
-                onAddFunds = viewModel::onAddFunds,
-                onGenerateRandomHistory = viewModel::onGenerateRandomHistory,
-                onLogout = {
-                    viewModel.logout()
-                    onLogout()
-                },
-            )
+                        DeveloperSection(
+                            onResetApp = {
+                                viewModel.resetApp()
+                                onResetApp()
+                            },
+                            onAddFunds = viewModel::onAddFunds,
+                            onGenerateRandomHistory = viewModel::onGenerateRandomHistory,
+                            onLogout = {
+                                viewModel.logout()
+                                onLogout()
+                            },
+                        )
+                    }
+                }
+            }
         }
     }
 
