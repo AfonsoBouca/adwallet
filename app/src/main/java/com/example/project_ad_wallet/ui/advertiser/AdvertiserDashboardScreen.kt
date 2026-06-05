@@ -36,6 +36,7 @@ fun AdvertiserDashboardScreen(
     val completionRate by viewModel.completionRate.collectAsState()
 
     var activeTargetAd by remember { mutableStateOf<AdStatsEntity?>(null) }
+    var activeScheduleAd by remember { mutableStateOf<AdStatsEntity?>(null) }
 
     Column(
         modifier = Modifier
@@ -117,7 +118,8 @@ fun AdvertiserDashboardScreen(
                 items(adStats) { stat ->
                     AdStatCard(
                         stat = stat,
-                        onTargetClick = { activeTargetAd = stat }
+                        onTargetClick = { activeTargetAd = stat },
+                        onScheduleClick = { activeScheduleAd = stat }
                     )
                 }
             }
@@ -131,6 +133,17 @@ fun AdvertiserDashboardScreen(
             onConfirm = { target ->
                 viewModel.updateDemographicTarget(ad.adId, target)
                 activeTargetAd = null
+            }
+        )
+    }
+
+    activeScheduleAd?.let { ad ->
+        AdScheduleDialog(
+            adTitle = ad.adTitle,
+            onDismiss = { activeScheduleAd = null },
+            onConfirm = { startDate, endDate, dailyLimit ->
+                // Mocado por agora ou atualizado no viewmodel se necessário
+                activeScheduleAd = null
             }
         )
     }
@@ -178,7 +191,8 @@ fun StatCard(
 @Composable
 fun AdStatCard(
     stat: AdStatsEntity,
-    onTargetClick: () -> Unit
+    onTargetClick: () -> Unit,
+    onScheduleClick: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -195,13 +209,22 @@ fun AdStatCard(
                     text = stat.adTitle,
                     color = Color.White,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
                 )
-                TextButton(
-                    onClick = onTargetClick,
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF3FB950))
-                ) {
-                    Text("Targeting", fontWeight = FontWeight.SemiBold)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    TextButton(
+                        onClick = onTargetClick,
+                        colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF3FB950))
+                    ) {
+                        Text("Targeting", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                    }
+                    TextButton(
+                        onClick = onScheduleClick,
+                        colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF3FB950))
+                    ) {
+                        Text("Schedule", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
