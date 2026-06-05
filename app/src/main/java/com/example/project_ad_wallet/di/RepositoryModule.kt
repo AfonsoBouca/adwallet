@@ -10,6 +10,7 @@ import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.data.repository.WithdrawalRepository
+import com.example.project_ad_wallet.data.repository.CharityOfWeekRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,8 +37,13 @@ object RepositoryModule {
     @Singleton
     fun provideDonationRepository(
         donationsDao: DonationsDao,
-        userProfileDao: UserProfileDao
-    ): DonationRepository = DonationRepository(donationsDao, userProfileDao)
+        userProfileDao: UserProfileDao,
+        charityOfWeekDao: com.example.project_ad_wallet.data.local.dao.CharityOfWeekDao
+    ): DonationRepository = DonationRepository(
+        donationsDao = donationsDao,
+        userProfileDao = userProfileDao,
+        charityOfWeekDao = charityOfWeekDao
+    )
 
     @Provides
     @Singleton
@@ -56,4 +62,11 @@ object RepositoryModule {
     @Singleton
     fun provideAuthRepository(): com.example.project_ad_wallet.data.auth.AuthRepository =
         com.example.project_ad_wallet.data.auth.AuthRepository()
+
+    @Provides
+    @Singleton
+    fun provideCharityOfWeekRepository(
+        dao: com.example.project_ad_wallet.data.local.dao.CharityOfWeekDao
+    ): CharityOfWeekRepository = CharityOfWeekRepository(dao)
 }
+

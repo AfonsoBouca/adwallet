@@ -6,13 +6,14 @@ import com.example.project_ad_wallet.data.local.entities.DonationEntity
 import com.example.project_ad_wallet.data.model.Donation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,7 +21,8 @@ import javax.inject.Singleton
 class DonationRepository @Inject constructor(
     private val donationsDao: DonationsDao? = null,
     private val userProfileDao: UserProfileDao? = null,
-    private val externalScope: CoroutineScope? = null
+    private val externalScope: CoroutineScope? = null,
+    private val charityOfWeekDao: com.example.project_ad_wallet.data.local.dao.CharityOfWeekDao? = null
 ) {
 
     companion object {
@@ -67,6 +69,10 @@ class DonationRepository @Inject constructor(
                 )
             )
             userProfileDao?.deductFromWalletBalance(donation.amount)
+            val weekly = charityOfWeekDao?.getCharityOfWeek()?.first()
+            if (weekly != null && weekly.charityId == donation.charityId) {
+                charityOfWeekDao.addDonation(donation.amount)
+            }
         }
         // Update the in‑memory flow for tests without a DAO
         _donations.update { it + donation }

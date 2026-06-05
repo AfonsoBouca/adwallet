@@ -30,7 +30,8 @@ data class CharitiesUiState(
     val confirmedDonation: Pair<String, Double>? = null,
     val charityDonations: Map<String, Double> = emptyMap(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val userRole: String = "USER"
 )
 
 @HiltViewModel
@@ -38,6 +39,7 @@ class CharitiesViewModel @Inject constructor(
     private val charityRepository: CharityRepository,
     private val walletRepository: WalletRepository,
     private val donationRepository: DonationRepository,
+    private val userRepository: com.example.project_ad_wallet.data.repository.UserRepository = com.example.project_ad_wallet.data.repository.UserRepository.instance,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CharitiesUiState())
@@ -53,7 +55,8 @@ class CharitiesViewModel @Inject constructor(
             charityRepository.charities,
             walletRepository.balance,
             donationRepository.donations,
-        ) { charities, balance, donations ->
+            userRepository.user,
+        ) { charities, balance, donations, user ->
             val verifiedCharities = charities.filter { it.status == CharityStatus.VERIFIED }
             val donationTotals = donations.groupBy { it.charityId }
                 .mapValues { entry -> entry.value.sumOf { it.amount } }
@@ -62,7 +65,8 @@ class CharitiesViewModel @Inject constructor(
                     charities = verifiedCharities,
                     balance = balance,
                     charityDonations = donationTotals,
-                    isLoading = false
+                    isLoading = false,
+                    userRole = user.role
                 )
             }
         }.launchIn(viewModelScope)

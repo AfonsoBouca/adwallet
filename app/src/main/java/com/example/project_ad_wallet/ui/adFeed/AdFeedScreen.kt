@@ -46,6 +46,8 @@ fun AdFeedScreen(
     viewModel: AdFeedViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val charityOfWeekViewModel: com.example.project_ad_wallet.ui.charities.CharityOfWeekViewModel = hiltViewModel()
+    val charityOfWeek by charityOfWeekViewModel.charityOfWeek.collectAsState()
 
     if (uiState.showStreakBrokenNotification) {
         AlertDialog(
@@ -135,6 +137,16 @@ fun AdFeedScreen(
                                 streakDays = uiState.streakDays,
                                 modifier = Modifier.fillMaxWidth()
                             )
+                        }
+                        if (uiState.userRole == "USER" && charityOfWeek != null) {
+                            item {
+                                com.example.project_ad_wallet.ui.components.CharityOfWeekCard(
+                                    charity = charityOfWeek!!,
+                                    onDonateClick = {
+                                        navController.navigate("charities?preselected=${charityOfWeek!!.charityId}")
+                                    }
+                                )
+                            }
                         }
                         items(uiState.ads, key = { it.id }) { ad ->
                             AdCard(

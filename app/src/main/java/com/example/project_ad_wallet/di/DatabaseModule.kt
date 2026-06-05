@@ -7,6 +7,7 @@ import com.example.project_ad_wallet.data.local.dao.AdsWatchedDao
 import com.example.project_ad_wallet.data.local.dao.DonationsDao
 import com.example.project_ad_wallet.data.local.dao.EarningsDao
 import com.example.project_ad_wallet.data.local.dao.UserProfileDao
+import com.example.project_ad_wallet.data.local.dao.CharityOfWeekDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,11 +22,15 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AdWalletDatabase {
-        return Room.databaseBuilder(
+        val db = Room.databaseBuilder(
             context,
             AdWalletDatabase::class.java,
             "adwallet_database"
-        ).build()
+        )
+        .addMigrations(AdWalletDatabase.MIGRATION_1_2)
+        .build()
+        com.example.project_ad_wallet.AdWalletApp.database = db
+        return db
     }
 
     @Provides
@@ -39,4 +44,9 @@ object DatabaseModule {
 
     @Provides
     fun provideAdsWatchedDao(db: AdWalletDatabase): AdsWatchedDao = db.adsWatchedDao()
+
+    @Provides
+    fun provideCharityOfWeekDao(db: AdWalletDatabase): CharityOfWeekDao =
+        db.charityOfWeekDao()
 }
+

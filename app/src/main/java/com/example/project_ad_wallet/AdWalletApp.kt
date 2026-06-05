@@ -4,4 +4,8 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class AdWalletApp : Application()
+class AdWalletApp : Application() {
+    companion object {
+        lateinit var database: com.example.project_ad_wallet.data.local.AdWalletDatabase
+    }
+}
