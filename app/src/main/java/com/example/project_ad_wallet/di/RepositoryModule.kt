@@ -16,6 +16,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+import com.example.project_ad_wallet.data.local.dao.UserActivityDao
+import com.example.project_ad_wallet.data.repository.UserActivityRepository
+
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
@@ -56,4 +59,9 @@ object RepositoryModule {
     @Singleton
     fun provideAuthRepository(): com.example.project_ad_wallet.data.auth.AuthRepository =
         com.example.project_ad_wallet.data.auth.AuthRepository()
+
+    @Provides
+    @Singleton
+    fun provideUserActivityRepository(dao: UserActivityDao): UserActivityRepository =
+        UserActivityRepository(dao)
 }

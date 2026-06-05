@@ -14,6 +14,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+import com.example.project_ad_wallet.data.local.dao.UserActivityDao
+
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
@@ -25,7 +27,9 @@ object DatabaseModule {
             context,
             AdWalletDatabase::class.java,
             "adwallet_database"
-        ).build()
+        )
+            .addMigrations(AdWalletDatabase.MIGRATION_1_2)
+            .build()
     }
 
     @Provides
@@ -39,4 +43,7 @@ object DatabaseModule {
 
     @Provides
     fun provideAdsWatchedDao(db: AdWalletDatabase): AdsWatchedDao = db.adsWatchedDao()
+
+    @Provides
+    fun provideUserActivityDao(db: AdWalletDatabase): UserActivityDao = db.userActivityDao()
 }

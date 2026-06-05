@@ -18,6 +18,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.util.UUID
 import javax.inject.Inject
+import com.example.project_ad_wallet.data.repository.UserRepository
+import com.example.project_ad_wallet.data.repository.UserActivityRepository
+import kotlinx.coroutines.launch
 
 data class CharitiesUiState(
     val charities: List<Charity> = emptyList(),
@@ -38,6 +41,8 @@ class CharitiesViewModel @Inject constructor(
     private val charityRepository: CharityRepository,
     private val walletRepository: WalletRepository,
     private val donationRepository: DonationRepository,
+    private val userRepository: UserRepository,
+    private val userActivityRepository: UserActivityRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CharitiesUiState())
@@ -124,6 +129,16 @@ class CharitiesViewModel @Inject constructor(
                 sdgName = charity.sdgName,
             )
         )
+
+        val user = userRepository.user.value
+        viewModelScope.launch {
+            userActivityRepository.logActivity(
+                userName = user.name.ifBlank { "User" },
+                activityType = "DONATION",
+                details = "Donated $amount to ${charity.name}",
+                userId = 1
+            )
+        }
 
         _uiState.update {
             it.copy(

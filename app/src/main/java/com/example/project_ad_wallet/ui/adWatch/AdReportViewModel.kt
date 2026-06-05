@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import com.example.project_ad_wallet.data.repository.UserRepository
+import com.example.project_ad_wallet.data.repository.UserActivityRepository
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 val REPORT_REASONS = listOf(
     "Misleading content",
@@ -27,6 +31,8 @@ data class AdReportUiState(
 @HiltViewModel
 class AdReportViewModel @Inject constructor(
     private val adRepository: AdRepository,
+    private val userRepository: UserRepository,
+    private val userActivityRepository: UserActivityRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdReportUiState())
@@ -49,6 +55,15 @@ class AdReportViewModel @Inject constructor(
                 comment = _uiState.value.comment.trim(),
             )
         )
+        val user = userRepository.user.value
+        viewModelScope.launch {
+            userActivityRepository.logActivity(
+                userName = user.name.ifBlank { "User" },
+                activityType = "REPORT",
+                details = "Reported ad $adId for $reason",
+                userId = 1
+            )
+        }
         _uiState.update { it.copy(isSubmitted = true) }
     }
 
