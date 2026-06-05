@@ -24,7 +24,7 @@ class EarningsHistoryViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        walletRepo = WalletRepository()
+        walletRepo = WalletRepository(externalScope = kotlinx.coroutines.CoroutineScope(testDispatcher))
         viewModel = EarningsHistoryViewModel(walletRepo)
     }
 

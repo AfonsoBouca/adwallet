@@ -30,7 +30,7 @@ class DonationConfirmationTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        walletRepo = WalletRepository()
+        walletRepo = WalletRepository(externalScope = kotlinx.coroutines.CoroutineScope(testDispatcher))
         charityRepo = CharityRepository()
         donationRepo = DonationRepository()
         viewModel = CharitiesViewModel(charityRepo, walletRepo, donationRepo)

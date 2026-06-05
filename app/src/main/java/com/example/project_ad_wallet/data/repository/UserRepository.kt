@@ -14,7 +14,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class UserRepository(private val userProfileDao: UserProfileDao? = null) {
+class UserRepository(
+    private val userProfileDao: UserProfileDao? = null,
+    private val externalScope: CoroutineScope? = null
+) {
 
     companion object {
         private var _instance: UserRepository? = null
@@ -33,7 +36,7 @@ class UserRepository(private val userProfileDao: UserProfileDao? = null) {
     val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
 
     private val registeredUsers = mutableMapOf<String, User>()
-    private val repositoryScope = CoroutineScope(Dispatchers.IO)
+    private val repositoryScope = externalScope ?: CoroutineScope(Dispatchers.IO)
 
     init {
         userProfileDao?.getProfile()?.onEach { entity ->
@@ -44,6 +47,9 @@ class UserRepository(private val userProfileDao: UserProfileDao? = null) {
                     age = entity.age,
                     gender = entity.gender,
                     email = entity.email,
+                    streakDays = entity.streakDays,
+                    lastActiveDate = entity.lastActiveDate,
+                    profilePictureUri = entity.profilePictureUri,
                 )
             }
         }?.launchIn(repositoryScope)
@@ -59,6 +65,9 @@ class UserRepository(private val userProfileDao: UserProfileDao? = null) {
                     age = user.age,
                     gender = user.gender,
                     email = user.email,
+                    streakDays = user.streakDays,
+                    lastActiveDate = user.lastActiveDate,
+                    profilePictureUri = user.profilePictureUri,
                 )
             )
         }

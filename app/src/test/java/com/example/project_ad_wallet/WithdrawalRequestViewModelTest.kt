@@ -26,7 +26,7 @@ class WithdrawalRequestViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        walletRepository = WalletRepository()
+        walletRepository = WalletRepository(externalScope = kotlinx.coroutines.CoroutineScope(testDispatcher))
         withdrawalRepository = WithdrawalRepository()
         viewModel = WithdrawalRequestViewModel(walletRepository, withdrawalRepository)
     }

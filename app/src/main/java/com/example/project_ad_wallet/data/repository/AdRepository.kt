@@ -20,7 +20,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AdRepository(private val adsWatchedDao: AdsWatchedDao? = null) {
+class AdRepository(
+    private val adsWatchedDao: AdsWatchedDao? = null,
+    private val externalScope: CoroutineScope? = null
+) {
 
     companion object {
         private var _instance: AdRepository? = null
@@ -53,7 +56,7 @@ class AdRepository(private val adsWatchedDao: AdsWatchedDao? = null) {
     private val questionnaires: MutableMap<String, List<Question>> =
         sampleQuestionnaires().toMutableMap()
 
-    private val repositoryScope = CoroutineScope(Dispatchers.IO)
+    private val repositoryScope = externalScope ?: CoroutineScope(Dispatchers.IO)
 
     init {
         adsWatchedDao?.getAllWatched()?.onEach { entities ->
@@ -121,6 +124,8 @@ class AdRepository(private val adsWatchedDao: AdsWatchedDao? = null) {
     }
 
     fun markSkipped(adId: String) {
+        // Update the in‑memory set immediately so flows emit for tests without a DAO
+        _skippedAdIds.update { it + adId }
         repositoryScope.launch {
             adsWatchedDao?.insertOrUpdate(
                 AdWatchedEntity(

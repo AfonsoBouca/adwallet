@@ -31,7 +31,7 @@ class CharitiesViewModelFilterTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         charityRepo = CharityRepository()
-        walletRepo = WalletRepository()
+        walletRepo = WalletRepository(externalScope = kotlinx.coroutines.CoroutineScope(testDispatcher))
         donationRepo = DonationRepository()
         viewModel = CharitiesViewModel(charityRepo, walletRepo, donationRepo)
     }
