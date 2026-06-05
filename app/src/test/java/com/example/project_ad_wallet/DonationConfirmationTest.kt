@@ -35,7 +35,10 @@ class DonationConfirmationTest {
         walletRepo = WalletRepository(externalScope = testScope)
         charityRepo = CharityRepository()
         donationRepo = DonationRepository()
-        viewModel = CharitiesViewModel(charityRepo, walletRepo, donationRepo)
+        val userProfileDao = com.example.project_ad_wallet.fakes.FakeUserProfileDao()
+        val userRepository = com.example.project_ad_wallet.data.repository.UserRepository(userProfileDao)
+        val userActivityRepository = com.example.project_ad_wallet.fakes.FakeUserActivityRepository()
+        viewModel = CharitiesViewModel(charityRepo, walletRepo, donationRepo, userRepository, userActivityRepository)
     }
 
     @After
