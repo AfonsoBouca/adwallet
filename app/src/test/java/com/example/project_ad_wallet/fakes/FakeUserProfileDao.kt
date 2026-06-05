@@ -26,4 +26,9 @@ class FakeUserProfileDao : UserProfileDao {
         val current = _profile.value ?: return
         _profile.value = current.copy(walletBalance = current.walletBalance - amount)
     }
+
+    override suspend fun updateProfilePicture(uri: String) {
+        val current = _profile.value ?: return
+        _profile.value = current.copy(profilePictureUri = uri)
+    }
 }

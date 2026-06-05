@@ -57,7 +57,7 @@ fun LoginScreen(
             onValueChange = { viewModel.onEmailChange(it) },
             label = { Text("Email", color = Color.Gray) },
             modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
+            colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF238636),
                 unfocusedBorderColor = Color.Gray,
                 cursorColor = Color(0xFF3FB950),
@@ -75,7 +75,7 @@ fun LoginScreen(
             onValueChange = { viewModel.onPasswordChange(it) },
             label = { Text("Password", color = Color.Gray) },
             modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
+            colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF238636),
                 unfocusedBorderColor = Color.Gray,
                 cursorColor = Color(0xFF3FB950),

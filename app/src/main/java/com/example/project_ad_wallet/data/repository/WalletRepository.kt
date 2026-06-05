@@ -77,6 +77,7 @@ class WalletRepository @Inject constructor(
         }
         // Update in‑memory balance for tests without a DAO
         _balance.update { it + earning.amount }
+        _earnings.update { it + earning }
     }
 
     fun addFunds(amount: Double) {
@@ -155,6 +156,7 @@ class WalletRepository @Inject constructor(
         repositoryScope.launch {
             userProfileDao?.deductFromWalletBalance(amount)
         }
+        _balance.update { it - amount }
         return true
     }
 

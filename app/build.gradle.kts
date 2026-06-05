@@ -76,6 +76,9 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
+    // Coil for image loading
+    implementation(libs.coil.compose)
+
     testImplementation(libs.junit)
     testImplementation(libs.androidx.junit)
     testImplementation(libs.mockk)
