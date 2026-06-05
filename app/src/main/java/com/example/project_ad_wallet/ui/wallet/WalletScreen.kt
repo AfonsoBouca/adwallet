@@ -98,7 +98,9 @@ fun WalletScreen(
 
                         when (selectedTab) {
                             0 -> BalanceTab(uiState) { navController.navigate(Routes.withdrawalRequest()) }
-                            1 -> EarningsTab(uiState.earnings, uiState.totalEarned)
+                            1 -> EarningsTab(uiState.earnings, uiState.totalEarned) {
+                                navController.navigate(Routes.EARNINGS_HISTORY)
+                            }
                             2 -> DonationsTab(uiState.donations, uiState.totalDonated, navController)
                             3 -> WithdrawalsTab(uiState.withdrawals)
                         }
@@ -180,23 +182,40 @@ private fun StatCard(label: String, value: String) {
 }
 
 @Composable
-private fun EarningsTab(earnings: List<Earning>, totalEarned: Double) {
+private fun EarningsTab(
+    earnings: List<Earning>,
+    totalEarned: Double,
+    onSeeFullHistory: () -> Unit
+) {
     if (earnings.isEmpty()) {
         AdWalletEmptyState(
             icon = Icons.Default.AccountBalanceWallet,
             title = "Ainda não ganhaste saldo.",
-            subtitle = "Vê anúncios para começar a ganhar."
+            subtitle = "Vê anúncios para começar a ganhar.",
+            actionLabel = "Ver Histórico",
+            onAction = onSeeFullHistory
         )
     } else {
         LazyColumn(contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             item {
-                Text(
-                    text = "Total earned: ${totalEarned.asCurrency()}",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Total earned: ${totalEarned.asCurrency()}",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                    Button(
+                        onClick = onSeeFullHistory,
+                        modifier = Modifier.testTag("see_full_history_button")
+                    ) {
+                        Text("Ver Histórico")
+                    }
+                }
             }
             items(earnings) { earning ->
                 EarningRow(earning)

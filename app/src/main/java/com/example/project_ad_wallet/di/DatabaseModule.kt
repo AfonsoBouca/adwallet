@@ -28,7 +28,11 @@ object DatabaseModule {
             AdWalletDatabase::class.java,
             "adwallet_database"
         )
-            .addMigrations(AdWalletDatabase.MIGRATION_1_2, AdWalletDatabase.MIGRATION_2_3)
+            .addMigrations(
+                AdWalletDatabase.MIGRATION_1_2,
+                AdWalletDatabase.MIGRATION_2_3,
+                AdWalletDatabase.MIGRATION_3_4
+            )
             .build()
         com.example.project_ad_wallet.AdWalletApp.database = db
         return db

@@ -9,5 +9,7 @@ data class EarningEntity(
     val adTitle: String,
     val adId: String,
     val amount: Double,
+    val baseAmount: Double = amount,   // valor sem bónus
+    val streakBonus: Double = 0.0,     // percentagem de bónus aplicada
     val timestamp: Long = System.currentTimeMillis()
 )

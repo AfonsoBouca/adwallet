@@ -26,7 +26,7 @@ import com.example.project_ad_wallet.data.local.entities.UserActivityEntity
         CharityOfWeekEntity::class,
         UserActivityEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AdWalletDatabase : RoomDatabase() {
@@ -70,6 +70,14 @@ abstract class AdWalletDatabase : RoomDatabase() {
                         `flagReason` TEXT
                     )
                 """.trimIndent())
+            }
+        }
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE earnings ADD COLUMN baseAmount REAL NOT NULL DEFAULT 0.0")
+                database.execSQL("ALTER TABLE earnings ADD COLUMN streakBonus REAL NOT NULL DEFAULT 0.0")
+                database.execSQL("UPDATE earnings SET baseAmount = amount")
             }
         }
     }
