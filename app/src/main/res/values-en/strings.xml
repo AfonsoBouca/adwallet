@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">AdWallet</string>
+    <string name="login_title">Welcome to AdWallet</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Sign In</string>
+    <string name="login_error">Incorrect email or password.</string>
+    <string name="wallet_title">Wallet</string>
+    <string name="wallet_balance">Current balance</string>
+    <string name="earnings_title">Earnings History</string>
+    <string name="earnings_empty">No earnings yet</string>
+    <string name="earnings_empty_subtitle">Watch ads to start earning.</string>
+    <string name="donations_title">Donation History</string>
+    <string name="donations_empty">No donations yet</string>
+    <string name="donate_button">Donate now</string>
+    <string name="charity_of_week">✨ Charity of the Week</string>
+    <string name="streak_days">%d days</string>
+    <string name="streak_broken">Your streak was broken. Start again today! 💪</string>
+    <string name="report_ad">Report ad</string>
+    <string name="skip_ad">Skip</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_start">Get Started</string>
+    <string name="loading">Loading...</string>
+    <string name="error_generic">Something went wrong.</string>
+    <string name="retry">Try again</string>
+    <string name="logout">Sign out</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+</resources>

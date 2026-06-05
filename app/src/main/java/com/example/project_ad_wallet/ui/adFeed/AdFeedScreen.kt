@@ -35,7 +35,7 @@ import com.example.project_ad_wallet.ui.navigation.Routes
 
 import com.example.project_ad_wallet.ui.components.AdWalletEmptyState
 import com.example.project_ad_wallet.ui.components.AdWalletErrorState
-import com.example.project_ad_wallet.ui.components.AdWalletLoadingState
+import com.example.project_ad_wallet.ui.components.SkeletonItem
 import androidx.compose.material.icons.filled.VideoLibrary
 
 @Composable
@@ -46,6 +46,8 @@ fun AdFeedScreen(
     viewModel: AdFeedViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val charityOfWeekViewModel: com.example.project_ad_wallet.ui.charities.CharityOfWeekViewModel = hiltViewModel()
+    val charityOfWeek by charityOfWeekViewModel.charityOfWeek.collectAsState()
 
     if (uiState.showStreakBrokenNotification) {
         AlertDialog(
@@ -107,7 +109,15 @@ fun AdFeedScreen(
         ) {
             when {
                 uiState.isLoading -> {
-                    AdWalletLoadingState()
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        items(3) {
+                            SkeletonItem()
+                        }
+                    }
                 }
                 uiState.error != null -> {
                     AdWalletErrorState(
@@ -135,6 +145,16 @@ fun AdFeedScreen(
                                 streakDays = uiState.streakDays,
                                 modifier = Modifier.fillMaxWidth()
                             )
+                        }
+                        if (uiState.userRole == "USER" && charityOfWeek != null) {
+                            item {
+                                com.example.project_ad_wallet.ui.components.CharityOfWeekCard(
+                                    charity = charityOfWeek!!,
+                                    onDonateClick = {
+                                        navController.navigate("charities?preselected=${charityOfWeek!!.charityId}")
+                                    }
+                                )
+                            }
                         }
                         items(uiState.ads, key = { it.id }) { ad ->
                             AdCard(

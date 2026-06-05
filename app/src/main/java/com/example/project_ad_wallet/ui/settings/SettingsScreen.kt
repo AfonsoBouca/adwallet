@@ -265,19 +265,29 @@ fun ProfilePictureSection(
         }
 
         // Botão de editar
-        IconButton(
-            onClick = onPickImage,
+        Box(
             modifier = Modifier
-                .size(28.dp)
-                .clip(CircleShape)
-                .background(Color(0xFF238636))
+                .size(48.dp)
+                .clickable(
+                    onClick = onPickImage,
+                    onClickLabel = "Alterar foto"
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.CameraAlt,
-                contentDescription = "Alterar foto",
-                tint = Color.White,
-                modifier = Modifier.size(16.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF238636)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CameraAlt,
+                    contentDescription = "Alterar foto",
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
         }
     }
 }

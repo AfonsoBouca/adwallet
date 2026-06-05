@@ -9,7 +9,15 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
+import org.junit.Rule
+import com.example.project_ad_wallet.data.repository.UserRepository
+import com.example.project_ad_wallet.fakes.FakeUserProfileDao
+import com.example.project_ad_wallet.fakes.FakeUserActivityRepository
+
 class AdReportViewModelTest {
+
+    @get:Rule
+    val coroutineRule = MainCoroutineRule()
 
     private lateinit var adRepo: AdRepository
     private lateinit var viewModel: AdReportViewModel
@@ -17,7 +25,10 @@ class AdReportViewModelTest {
     @Before
     fun setup() {
         adRepo = AdRepository()
-        viewModel = AdReportViewModel(adRepo)
+        val userProfileDao = FakeUserProfileDao()
+        val userRepo = UserRepository(userProfileDao)
+        val userActivityRepo = FakeUserActivityRepository()
+        viewModel = AdReportViewModel(adRepo, userRepo, userActivityRepo)
     }
 
     @Test
