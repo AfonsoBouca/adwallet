@@ -1,11 +1,13 @@
 package com.example.project_ad_wallet.di
 
+import com.example.project_ad_wallet.data.local.dao.AdStatsDao
 import com.example.project_ad_wallet.data.local.dao.AdsWatchedDao
 import com.example.project_ad_wallet.data.local.dao.DonationsDao
 import com.example.project_ad_wallet.data.local.dao.EarningsDao
 import com.example.project_ad_wallet.data.local.dao.UserProfileDao
 import com.example.project_ad_wallet.data.local.dao.UserActivityDao
 import com.example.project_ad_wallet.data.repository.AdRepository
+import com.example.project_ad_wallet.data.repository.AdStatsRepository
 import com.example.project_ad_wallet.data.repository.CharityRepository
 import com.example.project_ad_wallet.data.repository.CharityOfWeekRepository
 import com.example.project_ad_wallet.data.repository.DonationRepository
@@ -65,6 +67,11 @@ object RepositoryModule {
     @Singleton
     fun provideAuthRepository(): com.example.project_ad_wallet.data.auth.AuthRepository =
         com.example.project_ad_wallet.data.auth.AuthRepository()
+
+    @Provides
+    @Singleton
+    fun provideAdStatsRepository(dao: AdStatsDao): AdStatsRepository =
+        AdStatsRepository(dao)
 
     @Provides
     @Singleton

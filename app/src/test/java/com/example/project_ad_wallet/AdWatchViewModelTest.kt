@@ -5,10 +5,14 @@ import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.data.model.Question
 import com.example.project_ad_wallet.data.model.QuestionOption
 import com.example.project_ad_wallet.data.repository.AdRepository
+import com.example.project_ad_wallet.data.repository.AdStatsRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.fakes.FakeAdsWatchedDao
+import com.example.project_ad_wallet.fakes.FakeAdStatsDao
 import com.example.project_ad_wallet.fakes.FakeEarningsDao
 import com.example.project_ad_wallet.fakes.FakeUserProfileDao
+import com.example.project_ad_wallet.fakes.FakeUserActivityDao
+import com.example.project_ad_wallet.fakes.FakeUserActivityRepository
 import com.example.project_ad_wallet.ui.adWatch.AdWatchViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -77,10 +81,13 @@ class AdWatchViewModelTest {
         val userProfileDao = FakeUserProfileDao()
         walletRepo = WalletRepository(earningsDao, userProfileDao, kotlinx.coroutines.CoroutineScope(testDispatcher))
         val userRepo = com.example.project_ad_wallet.data.repository.UserRepository(userProfileDao)
-        val userActivityDao = com.example.project_ad_wallet.fakes.FakeUserActivityDao()
-        val userActivityRepo = com.example.project_ad_wallet.fakes.FakeUserActivityRepository(userActivityDao)
+        val userActivityDao = FakeUserActivityDao()
+        val userActivityRepo = FakeUserActivityRepository(userActivityDao)
 
-        viewModel = AdWatchViewModel(adRepo, walletRepo, userRepo, userActivityRepo, userActivityDao)
+        val adStatsDao = FakeAdStatsDao()
+        val adStatsRepository = AdStatsRepository(adStatsDao)
+
+        viewModel = AdWatchViewModel(adRepo, walletRepo, adStatsRepository, userRepo, userActivityRepo, userActivityDao)
         viewModel.loadAd("test-ad")
     }
 

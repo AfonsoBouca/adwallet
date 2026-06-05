@@ -3,6 +3,7 @@ package com.example.project_ad_wallet.di
 import android.content.Context
 import androidx.room.Room
 import com.example.project_ad_wallet.data.local.AdWalletDatabase
+import com.example.project_ad_wallet.data.local.dao.AdStatsDao
 import com.example.project_ad_wallet.data.local.dao.AdsWatchedDao
 import com.example.project_ad_wallet.data.local.dao.CharityOfWeekDao
 import com.example.project_ad_wallet.data.local.dao.DonationsDao
@@ -31,7 +32,8 @@ object DatabaseModule {
             .addMigrations(
                 AdWalletDatabase.MIGRATION_1_2,
                 AdWalletDatabase.MIGRATION_2_3,
-                AdWalletDatabase.MIGRATION_3_4
+                AdWalletDatabase.MIGRATION_3_4,
+                AdWalletDatabase.MIGRATION_4_5
             )
             .build()
         com.example.project_ad_wallet.AdWalletApp.database = db
@@ -56,4 +58,7 @@ object DatabaseModule {
 
     @Provides
     fun provideUserActivityDao(db: AdWalletDatabase): UserActivityDao = db.userActivityDao()
+
+    @Provides
+    fun provideAdStatsDao(db: AdWalletDatabase): AdStatsDao = db.adStatsDao()
 }

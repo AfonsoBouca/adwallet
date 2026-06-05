@@ -6,7 +6,11 @@ import com.example.project_ad_wallet.data.model.Earning
 import com.example.project_ad_wallet.data.model.Question
 import com.example.project_ad_wallet.data.model.QuestionResult
 import com.example.project_ad_wallet.data.repository.AdRepository
+import com.example.project_ad_wallet.data.repository.AdStatsRepository
+import com.example.project_ad_wallet.data.repository.UserActivityRepository
+import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import com.example.project_ad_wallet.data.local.dao.UserActivityDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,9 +20,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
-import com.example.project_ad_wallet.data.repository.UserRepository
-import com.example.project_ad_wallet.data.repository.UserActivityRepository
-import com.example.project_ad_wallet.data.local.dao.UserActivityDao
 
 data class AdWatchUiState(
     val ad: Ad? = null,
@@ -42,6 +43,7 @@ data class AdWatchUiState(
 class AdWatchViewModel @Inject constructor(
     private val adRepository: AdRepository,
     private val walletRepository: WalletRepository,
+    private val adStatsRepository: AdStatsRepository,
     private val userRepository: UserRepository,
     private val userActivityRepository: UserActivityRepository,
     private val userActivityDao: UserActivityDao,
@@ -59,6 +61,9 @@ class AdWatchViewModel @Inject constructor(
                 questions = questions,
                 rewardAmount = ad.rewardAmount,
             )
+        }
+        viewModelScope.launch {
+            adStatsRepository.recordView(ad.id, ad.title)
         }
     }
 
@@ -141,6 +146,7 @@ class AdWatchViewModel @Inject constructor(
                 baseAmount = ad.rewardAmount
             )
             adRepository.markWatched(ad.id)
+            adStatsRepository.recordCompletion(ad.id, ad.title, totalAmount)
 
             val user = userRepository.user.value
             val fraudFlag = com.example.project_ad_wallet.domain.FraudDetector.checkForFraud(1, userActivityDao)

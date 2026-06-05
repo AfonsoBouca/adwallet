@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
+import com.example.project_ad_wallet.data.repository.AdStatsRepository
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+
 data class AdRatingUiState(
     val ad: Ad? = null,
     val selectedRating: Int = 0,
@@ -21,6 +25,7 @@ data class AdRatingUiState(
 @HiltViewModel
 class AdRatingViewModel @Inject constructor(
     private val adRepository: AdRepository,
+    private val adStatsRepository: AdStatsRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdRatingUiState())
@@ -45,6 +50,9 @@ class AdRatingViewModel @Inject constructor(
         adRepository.addRating(
             AdRating(adId = ad.id, rating = state.selectedRating)
         )
+        viewModelScope.launch {
+            adStatsRepository.recordRating(ad.id, ad.title, state.selectedRating.toDouble())
+        }
         _uiState.update { it.copy(isSubmitted = true) }
     }
 

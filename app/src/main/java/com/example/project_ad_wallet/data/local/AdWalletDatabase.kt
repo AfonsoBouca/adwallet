@@ -10,12 +10,14 @@ import com.example.project_ad_wallet.data.local.dao.EarningsDao
 import com.example.project_ad_wallet.data.local.dao.UserProfileDao
 import com.example.project_ad_wallet.data.local.dao.CharityOfWeekDao
 import com.example.project_ad_wallet.data.local.dao.UserActivityDao
+import com.example.project_ad_wallet.data.local.dao.AdStatsDao
 import com.example.project_ad_wallet.data.local.entities.AdWatchedEntity
 import com.example.project_ad_wallet.data.local.entities.DonationEntity
 import com.example.project_ad_wallet.data.local.entities.EarningEntity
 import com.example.project_ad_wallet.data.local.entities.UserProfileEntity
 import com.example.project_ad_wallet.data.local.entities.CharityOfWeekEntity
 import com.example.project_ad_wallet.data.local.entities.UserActivityEntity
+import com.example.project_ad_wallet.data.local.entities.AdStatsEntity
 
 @Database(
     entities = [
@@ -24,9 +26,10 @@ import com.example.project_ad_wallet.data.local.entities.UserActivityEntity
         UserProfileEntity::class,
         AdWatchedEntity::class,
         CharityOfWeekEntity::class,
-        UserActivityEntity::class
+        UserActivityEntity::class,
+        AdStatsEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class AdWalletDatabase : RoomDatabase() {
@@ -36,6 +39,7 @@ abstract class AdWalletDatabase : RoomDatabase() {
     abstract fun adsWatchedDao(): AdsWatchedDao
     abstract fun charityOfWeekDao(): CharityOfWeekDao
     abstract fun userActivityDao(): UserActivityDao
+    abstract fun adStatsDao(): AdStatsDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -78,6 +82,26 @@ abstract class AdWalletDatabase : RoomDatabase() {
                 database.execSQL("ALTER TABLE earnings ADD COLUMN baseAmount REAL NOT NULL DEFAULT 0.0")
                 database.execSQL("ALTER TABLE earnings ADD COLUMN streakBonus REAL NOT NULL DEFAULT 0.0")
                 database.execSQL("UPDATE earnings SET baseAmount = amount")
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `ad_stats` (
+                        `adId` TEXT NOT NULL,
+                        `adTitle` TEXT NOT NULL,
+                        `totalViews` INTEGER NOT NULL,
+                        `totalCompletions` INTEGER NOT NULL,
+                        `totalSkips` INTEGER NOT NULL,
+                        `totalReports` INTEGER NOT NULL,
+                        `totalEarningsGenerated` REAL NOT NULL,
+                        `averageRating` REAL NOT NULL,
+                        `ratingCount` INTEGER NOT NULL,
+                        `createdAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`adId`)
+                    )
+                """.trimIndent())
             }
         }
     }
