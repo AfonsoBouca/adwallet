@@ -15,6 +15,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.project_ad_wallet.data.auth.UserRole
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.res.stringResource
+import com.example.project_ad_wallet.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,7 +59,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = viewModel.email,
             onValueChange = { viewModel.onEmailChange(it) },
-            label = { Text("Email", color = Color.Gray) },
+            label = { Text(stringResource(R.string.login_email), color = Color.Gray) },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF238636),
@@ -73,7 +77,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = viewModel.password,
             onValueChange = { viewModel.onPasswordChange(it) },
-            label = { Text("Password", color = Color.Gray) },
+            label = { Text(stringResource(R.string.login_password), color = Color.Gray) },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF238636),
@@ -89,8 +93,13 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        viewModel.errorMessage?.let {
-            Text(text = it, color = Color.Red, fontSize = 14.sp)
+        viewModel.errorMessage?.let { error ->
+            val displayError = if (error == "Email ou password incorretos.") {
+                stringResource(R.string.login_error)
+            } else {
+                error
+            }
+            Text(text = displayError, color = Color.Red, fontSize = 14.sp)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -98,15 +107,18 @@ fun LoginScreen(
         if (viewModel.isLoading) {
             CircularProgressIndicator(color = Color(0xFF3FB950))
         } else {
+            val btnText = stringResource(R.string.login_button)
             Button(
                 onClick = { viewModel.login() },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { contentDescription = btnText },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF238636),
                     contentColor = Color.White
                 )
             ) {
-                Text("Entrar", fontWeight = FontWeight.Bold)
+                Text(btnText, fontWeight = FontWeight.Bold)
             }
         }
     }

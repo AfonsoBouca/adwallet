@@ -36,12 +36,6 @@ fun AdvertiserUploadPlaceholder(navController: NavHostController) {
     }
 }
 
-@Composable
-fun EarningsHistoryPlaceholder(navController: NavHostController) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Earnings History — coming in feature/44-earnings-history")
-    }
-}
 
 @Composable
 fun DonationHistoryPlaceholder(navController: NavHostController) {

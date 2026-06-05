@@ -6,7 +6,11 @@ import com.example.project_ad_wallet.data.model.Earning
 import com.example.project_ad_wallet.data.model.Question
 import com.example.project_ad_wallet.data.model.QuestionResult
 import com.example.project_ad_wallet.data.repository.AdRepository
+import com.example.project_ad_wallet.data.repository.AdStatsRepository
+import com.example.project_ad_wallet.data.repository.UserActivityRepository
+import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import com.example.project_ad_wallet.data.local.dao.UserActivityDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +20,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
-import com.example.project_ad_wallet.data.repository.AdStatsRepository
 
 data class AdWatchUiState(
     val ad: Ad? = null,
@@ -41,6 +44,9 @@ class AdWatchViewModel @Inject constructor(
     private val adRepository: AdRepository,
     private val walletRepository: WalletRepository,
     private val adStatsRepository: AdStatsRepository,
+    private val userRepository: UserRepository,
+    private val userActivityRepository: UserActivityRepository,
+    private val userActivityDao: UserActivityDao,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdWatchUiState())
@@ -141,6 +147,18 @@ class AdWatchViewModel @Inject constructor(
             )
             adRepository.markWatched(ad.id)
             adStatsRepository.recordCompletion(ad.id, ad.title, totalAmount)
+
+            val user = userRepository.user.value
+            val fraudFlag = com.example.project_ad_wallet.domain.FraudDetector.checkForFraud(1, userActivityDao)
+            userActivityRepository.logActivity(
+                userName = user.name.ifBlank { "User" },
+                activityType = "AD_WATCHED",
+                details = "Ad: ${ad.title}",
+                isFlagged = fraudFlag.isSuspicious,
+                flagReason = fraudFlag.reason,
+                userId = 1
+            )
+
             _uiState.update {
                 it.copy(
                     rewardGranted = true,

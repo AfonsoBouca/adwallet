@@ -13,4 +13,5 @@ data class User(
     val streakDays: Int = 0,
     val lastActiveDate: Long = 0L,
     val profilePictureUri: String? = null,
+    val role: String = "USER"
 )

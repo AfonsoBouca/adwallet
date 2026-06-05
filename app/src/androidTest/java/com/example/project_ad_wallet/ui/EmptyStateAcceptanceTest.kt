@@ -1,6 +1,7 @@
 package com.example.project_ad_wallet.ui
 
 import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.example.project_ad_wallet.MainActivity
 import org.junit.Rule

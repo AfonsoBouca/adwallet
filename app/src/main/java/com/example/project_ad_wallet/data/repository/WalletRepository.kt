@@ -19,7 +19,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WalletRepository @Inject constructor(
+open class WalletRepository @Inject constructor(
     private val earningsDao: EarningsDao? = null,
     private val userProfileDao: UserProfileDao? = null,
     private val externalScope: CoroutineScope? = null
@@ -116,7 +116,13 @@ class WalletRepository @Inject constructor(
         )
 
         earningsDao?.insertEarning(
-            EarningEntity(adTitle = adTitle, adId = adId, amount = totalAmount)
+            EarningEntity(
+                adTitle = adTitle,
+                adId = adId,
+                amount = totalAmount,
+                baseAmount = baseAmount,
+                streakBonus = bonus
+            )
         )
         return totalAmount
     }
@@ -158,6 +164,14 @@ class WalletRepository @Inject constructor(
         }
         _balance.update { it - amount }
         return true
+    }
+
+    open fun getAllEarnings(): kotlinx.coroutines.flow.Flow<List<EarningEntity>> {
+        return earningsDao?.getAllEarnings() ?: kotlinx.coroutines.flow.flowOf(emptyList())
+    }
+
+    open fun getTotalEarned(): kotlinx.coroutines.flow.Flow<Double> {
+        return earningsDao?.getTotalEarned() ?: kotlinx.coroutines.flow.flowOf(0.0)
     }
 
     fun reset() {

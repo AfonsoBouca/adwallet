@@ -79,6 +79,14 @@ private fun sampleCharities() = listOf(
         status = CharityStatus.VERIFIED,
     ),
     Charity(
+        id = "unicef",
+        name = "UNICEF",
+        description = "Protege os direitos das crianças em todo o mundo.",
+        sdgNumber = 3,
+        sdgName = "Boa Saúde e Bem-Estar",
+        status = CharityStatus.VERIFIED,
+    ),
+    Charity(
         id = "scam-foundation",
         name = "Totally Real Foundation",
         description = "We definitely give all our money to penguins.",
