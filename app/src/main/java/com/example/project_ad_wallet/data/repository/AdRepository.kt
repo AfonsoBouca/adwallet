@@ -27,7 +27,7 @@ class AdRepository @Inject constructor(
     private val adsWatchedDao: AdsWatchedDao? = null,
     private val externalScope: CoroutineScope? = null
 ) {
-    
+
     companion object {
         private var _instance: AdRepository? = null
         val instance: AdRepository
@@ -128,6 +128,7 @@ class AdRepository @Inject constructor(
     }
 
     fun markSkipped(adId: String) {
+        // Update the in‑memory set immediately so flows emit for tests without a DAO
         _skippedAdIds.update { it + adId }
         repositoryScope.launch {
             adsWatchedDao?.insertOrUpdate(

@@ -28,9 +28,10 @@ class AdFeedViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        adRepo = AdRepository()
-        walletRepo = WalletRepository()
-        viewModel = AdFeedViewModel(adRepo, walletRepo)
+        adRepo = AdRepository(externalScope = kotlinx.coroutines.CoroutineScope(testDispatcher))
+        walletRepo = WalletRepository(externalScope = kotlinx.coroutines.CoroutineScope(testDispatcher))
+        val userRepository = com.example.project_ad_wallet.data.repository.UserRepository(externalScope = kotlinx.coroutines.CoroutineScope(testDispatcher))
+        viewModel = AdFeedViewModel(adRepo, walletRepo, userRepository)
     }
 
     @After

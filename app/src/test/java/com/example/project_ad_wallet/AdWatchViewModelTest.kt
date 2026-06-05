@@ -6,12 +6,16 @@ import com.example.project_ad_wallet.data.model.Question
 import com.example.project_ad_wallet.data.model.QuestionOption
 import com.example.project_ad_wallet.data.repository.AdRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import com.example.project_ad_wallet.fakes.FakeAdsWatchedDao
+import com.example.project_ad_wallet.fakes.FakeEarningsDao
+import com.example.project_ad_wallet.fakes.FakeUserProfileDao
 import com.example.project_ad_wallet.ui.adWatch.AdWatchViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -41,7 +45,7 @@ class AdWatchViewModelTest {
         rewardAmount = 0.20,
         advertiserName = "Test Co",
         category = "Test",
-        status = AdStatus.APPROVED, // <-- A grande alteração está aqui!
+        status = AdStatus.APPROVED,
     )
 
     private val fakeQuestions = listOf(
@@ -64,10 +68,15 @@ class AdWatchViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        adRepo = AdRepository(externalScope = testScope)
+        val adsWatchedDao = FakeAdsWatchedDao()
+        adRepo = AdRepository(adsWatchedDao, kotlinx.coroutines.CoroutineScope(testDispatcher))
         adRepo.addAd(fakeAd)
         adRepo.addQuestionnaire("test-ad", fakeQuestions)
-        walletRepo = WalletRepository(externalScope = testScope)
+
+        val earningsDao = FakeEarningsDao()
+        val userProfileDao = FakeUserProfileDao()
+        walletRepo = WalletRepository(earningsDao, userProfileDao, kotlinx.coroutines.CoroutineScope(testDispatcher))
+
         viewModel = AdWatchViewModel(adRepo, walletRepo)
         viewModel.loadAd("test-ad")
     }
@@ -78,7 +87,7 @@ class AdWatchViewModelTest {
     }
 
     @Test
-    fun test_rewardIsAddedToWalletAfterCompletingQuestionnaire() {
+    fun test_rewardIsAddedToWalletAfterCompletingQuestionnaire() = runTest {
         viewModel.proceedToQuestionnaire()
         viewModel.completeQuestionnaire()
 
@@ -87,7 +96,7 @@ class AdWatchViewModelTest {
     }
 
     @Test
-    fun test_skipIsDisabledUntil80Percent() {
+    fun test_skipIsDisabledUntil80Percent() = runTest {
         viewModel.updateProgress(0.5f)
         assertFalse(viewModel.uiState.value.isSkipEnabled)
 
@@ -96,13 +105,13 @@ class AdWatchViewModelTest {
     }
 
     @Test
-    fun test_rewardNotGrantedIfQuestionnaireNotCompleted() {
+    fun test_rewardNotGrantedIfQuestionnaireNotCompleted() = runTest {
         assertEquals(0.0, walletRepo.balance.value, 0.001)
         assertEquals(0, walletRepo.earnings.value.size)
     }
 
     @Test
-    fun test_earningEntryHasCorrectAdTitleAndAmount() {
+    fun test_earningEntryHasCorrectAdTitleAndAmount() = runTest {
         viewModel.completeQuestionnaire()
 
         val earning = walletRepo.earnings.value.firstOrNull()
@@ -112,13 +121,13 @@ class AdWatchViewModelTest {
     }
 
     @Test
-    fun test_adIsMarkedWatchedAfterCompletion() {
+    fun test_adIsMarkedWatchedAfterCompletion() = runTest {
         viewModel.completeQuestionnaire()
         assertTrue(adRepo.watchedAdIds.value.contains("test-ad"))
     }
 
     @Test
-    fun test_selectCorrectAnswerSetsIsAnswerCorrectTrue() {
+    fun test_selectCorrectAnswerSetsIsAnswerCorrectTrue() = runTest {
         viewModel.proceedToQuestionnaire()
         // Q1 correct answer is index 1 ("B")
         viewModel.selectAnswer(1)
@@ -126,7 +135,7 @@ class AdWatchViewModelTest {
     }
 
     @Test
-    fun test_selectWrongAnswerSetsIsAnswerCorrectFalse() {
+    fun test_selectWrongAnswerSetsIsAnswerCorrectFalse() = runTest {
         viewModel.proceedToQuestionnaire()
         // Q1 wrong answer is index 0 ("A")
         viewModel.selectAnswer(0)
@@ -134,7 +143,7 @@ class AdWatchViewModelTest {
     }
 
     @Test
-    fun test_advanceQuestionMovesToNext() {
+    fun test_advanceQuestionMovesToNext() = runTest {
         viewModel.proceedToQuestionnaire()
         assertEquals(0, viewModel.uiState.value.currentQuestionIndex)
         viewModel.selectAnswer(0)
@@ -144,7 +153,7 @@ class AdWatchViewModelTest {
     }
 
     @Test
-    fun test_skipAdMarksAdAsSkipped() {
+    fun test_skipAdMarksAdAsSkipped() = runTest {
         assertFalse(adRepo.skippedAdIds.value.contains("test-ad"))
         viewModel.skipAd()
         assertTrue(adRepo.skippedAdIds.value.contains("test-ad"))

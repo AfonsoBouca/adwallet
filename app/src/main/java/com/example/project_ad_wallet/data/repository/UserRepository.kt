@@ -50,7 +50,9 @@ open class UserRepository @Inject constructor(
                     age = entity.age,
                     gender = entity.gender,
                     email = entity.email,
-                    profilePictureUri = entity.profilePictureUri
+                    streakDays = entity.streakDays,
+                    lastActiveDate = entity.lastActiveDate,
+                    profilePictureUri = entity.profilePictureUri,
                 )
             }
         }?.launchIn(repositoryScope)
@@ -66,7 +68,9 @@ open class UserRepository @Inject constructor(
                     age = user.age,
                     gender = user.gender,
                     email = user.email,
-                    profilePictureUri = user.profilePictureUri
+                    streakDays = user.streakDays,
+                    lastActiveDate = user.lastActiveDate,
+                    profilePictureUri = user.profilePictureUri,
                 )
             )
         }

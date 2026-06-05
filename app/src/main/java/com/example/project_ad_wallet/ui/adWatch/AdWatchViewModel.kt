@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
@@ -125,20 +127,21 @@ class AdWatchViewModel @Inject constructor(
     fun completeQuestionnaire() {
         val state = _uiState.value
         val ad = state.ad ?: return
-        val earning = Earning(
-            id = UUID.randomUUID().toString(),
-            adId = ad.id,
-            adTitle = ad.title,
-            amount = ad.rewardAmount,
-        )
-        walletRepository.addEarning(earning)
-        adRepository.markWatched(ad.id)
-        _uiState.update {
-            it.copy(
-                rewardGranted = true,
-                rewardAmount = ad.rewardAmount,
-                isComplete = false,
+
+        viewModelScope.launch {
+            val totalAmount = walletRepository.completeAdAndUpdateStreak(
+                adTitle = ad.title,
+                adId = ad.id,
+                baseAmount = ad.rewardAmount
             )
+            adRepository.markWatched(ad.id)
+            _uiState.update {
+                it.copy(
+                    rewardGranted = true,
+                    rewardAmount = totalAmount,
+                    isComplete = false,
+                )
+            }
         }
     }
 

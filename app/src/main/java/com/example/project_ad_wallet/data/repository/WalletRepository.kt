@@ -3,7 +3,9 @@ package com.example.project_ad_wallet.data.repository
 import com.example.project_ad_wallet.data.local.dao.EarningsDao
 import com.example.project_ad_wallet.data.local.dao.UserProfileDao
 import com.example.project_ad_wallet.data.local.entities.EarningEntity
+import com.example.project_ad_wallet.data.local.entities.UserProfileEntity
 import com.example.project_ad_wallet.data.model.Earning
+import com.example.project_ad_wallet.domain.StreakCalculator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,12 +75,49 @@ class WalletRepository @Inject constructor(
             )
             userProfileDao?.addToWalletBalance(earning.amount)
         }
+        // Update in‑memory balance for tests without a DAO
+        _balance.update { it + earning.amount }
     }
 
     fun addFunds(amount: Double) {
         repositoryScope.launch {
             userProfileDao?.addToWalletBalance(amount)
         }
+        // Update in‑memory balance for tests without a DAO
+        _balance.update { it + amount }
+    }
+
+    suspend fun completeAdAndUpdateStreak(
+        adTitle: String,
+        adId: String,
+        baseAmount: Double
+    ): Double {
+        val profile = userProfileDao?.getProfileOnce()
+        val newStreak = StreakCalculator.calculateNewStreak(
+            currentStreak = profile?.streakDays ?: 0,
+            lastActiveDate = profile?.lastActiveDate ?: 0L
+        )
+        val bonus = StreakCalculator.getStreakBonus(newStreak)
+        val totalAmount = baseAmount + (baseAmount * bonus)
+
+        userProfileDao?.upsertProfile(
+            profile?.copy(
+                streakDays = newStreak,
+                lastActiveDate = System.currentTimeMillis(),
+                walletBalance = (profile.walletBalance) + totalAmount
+            ) ?: UserProfileEntity(
+                name = "User",
+                email = "",
+                streakDays = newStreak,
+                lastActiveDate = System.currentTimeMillis(),
+                walletBalance = totalAmount
+            )
+        )
+
+        earningsDao?.insertEarning(
+            EarningEntity(adTitle = adTitle, adId = adId, amount = totalAmount)
+        )
+        return totalAmount
     }
 
     fun generateRandomHistory(charities: List<com.example.project_ad_wallet.data.model.Charity>) {

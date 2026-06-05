@@ -5,12 +5,15 @@ import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.data.repository.WithdrawalRepository
+import com.example.project_ad_wallet.fakes.FakeEarningsDao
+import com.example.project_ad_wallet.fakes.FakeUserProfileDao
 import com.example.project_ad_wallet.ui.wallet.WalletViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -32,7 +35,7 @@ class WalletUnitTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         walletRepo = WalletRepository(externalScope = testScope)
-        donationRepo = DonationRepository(externalScope = testScope)
+        donationRepo = DonationRepository()
         withdrawalRepo = WithdrawalRepository()
         userRepo = UserRepository(externalScope = testScope)
         viewModel = WalletViewModel(walletRepo, donationRepo, withdrawalRepo, userRepo)
@@ -44,18 +47,18 @@ class WalletUnitTest {
     }
 
     @Test
-    fun test_initialBalanceIsZero() {
+    fun test_initialBalanceIsZero() = runTest {
         assertEquals(0.0, viewModel.uiState.value.balance, 0.001)
     }
 
     @Test
-    fun test_addEarningUpdatesBalance() {
+    fun test_addEarningUpdatesBalance() = runTest {
         walletRepo.addEarning(Earning(id = "e1", adId = "1", adTitle = "Ad", amount = 0.50))
         assertEquals(0.50, viewModel.uiState.value.balance, 0.001)
     }
 
     @Test
-    fun test_addFundsUpdatesBalance() {
+    fun test_addFundsUpdatesBalance() = runTest {
         walletRepo.addFunds(100.0)
         assertEquals(100.0, viewModel.uiState.value.balance, 0.001)
     }

@@ -34,7 +34,7 @@ class CharitiesViewModelFilterTest {
         Dispatchers.setMain(testDispatcher)
         charityRepo = CharityRepository()
         walletRepo = WalletRepository(externalScope = testScope)
-        donationRepo = DonationRepository(externalScope = testScope)
+        donationRepo = DonationRepository()
         viewModel = CharitiesViewModel(charityRepo, walletRepo, donationRepo)
     }
 

@@ -34,7 +34,7 @@ class DonationConfirmationTest {
         Dispatchers.setMain(testDispatcher)
         walletRepo = WalletRepository(externalScope = testScope)
         charityRepo = CharityRepository()
-        donationRepo = DonationRepository(externalScope = testScope)
+        donationRepo = DonationRepository()
         viewModel = CharitiesViewModel(charityRepo, walletRepo, donationRepo)
     }
 
