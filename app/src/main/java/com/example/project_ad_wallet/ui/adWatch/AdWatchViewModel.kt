@@ -16,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
+import com.example.project_ad_wallet.data.repository.AdStatsRepository
 
 data class AdWatchUiState(
     val ad: Ad? = null,
@@ -39,6 +40,7 @@ data class AdWatchUiState(
 class AdWatchViewModel @Inject constructor(
     private val adRepository: AdRepository,
     private val walletRepository: WalletRepository,
+    private val adStatsRepository: AdStatsRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdWatchUiState())
@@ -53,6 +55,9 @@ class AdWatchViewModel @Inject constructor(
                 questions = questions,
                 rewardAmount = ad.rewardAmount,
             )
+        }
+        viewModelScope.launch {
+            adStatsRepository.recordView(ad.id, ad.title)
         }
     }
 
@@ -135,6 +140,7 @@ class AdWatchViewModel @Inject constructor(
                 baseAmount = ad.rewardAmount
             )
             adRepository.markWatched(ad.id)
+            adStatsRepository.recordCompletion(ad.id, ad.title, totalAmount)
             _uiState.update {
                 it.copy(
                     rewardGranted = true,

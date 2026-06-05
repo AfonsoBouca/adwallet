@@ -7,9 +7,13 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class AdRatingViewModelTest {
+
+    @get:Rule
+    val coroutineRule = MainCoroutineRule()
 
     private lateinit var adRepo: AdRepository
     private lateinit var viewModel: AdRatingViewModel
@@ -29,7 +33,9 @@ class AdRatingViewModelTest {
     fun setup() {
         adRepo = AdRepository()
         adRepo.addAd(fakeAd)
-        viewModel = AdRatingViewModel(adRepo)
+        val adStatsDao = com.example.project_ad_wallet.fakes.FakeAdStatsDao()
+        val adStatsRepository = com.example.project_ad_wallet.data.repository.AdStatsRepository(adStatsDao)
+        viewModel = AdRatingViewModel(adRepo, adStatsRepository)
         viewModel.loadAd("test-ad")
     }
 
