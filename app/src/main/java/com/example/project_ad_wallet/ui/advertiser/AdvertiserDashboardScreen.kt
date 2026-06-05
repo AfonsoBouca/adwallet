@@ -12,9 +12,7 @@ import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +34,8 @@ fun AdvertiserDashboardScreen(
     val totalViews by viewModel.totalViews.collectAsState()
     val totalCompletions by viewModel.totalCompletions.collectAsState()
     val completionRate by viewModel.completionRate.collectAsState()
+
+    var activeTargetAd by remember { mutableStateOf<AdStatsEntity?>(null) }
 
     Column(
         modifier = Modifier
@@ -115,10 +115,24 @@ fun AdvertiserDashboardScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(adStats) { stat ->
-                    AdStatCard(stat = stat)
+                    AdStatCard(
+                        stat = stat,
+                        onTargetClick = { activeTargetAd = stat }
+                    )
                 }
             }
         }
+    }
+
+    activeTargetAd?.let { ad ->
+        DemographicTargetDialog(
+            adTitle = ad.adTitle,
+            onDismiss = { activeTargetAd = null },
+            onConfirm = { target ->
+                viewModel.updateDemographicTarget(ad.adId, target)
+                activeTargetAd = null
+            }
+        )
     }
 }
 
@@ -162,19 +176,34 @@ fun StatCard(
 }
 
 @Composable
-fun AdStatCard(stat: AdStatsEntity) {
+fun AdStatCard(
+    stat: AdStatsEntity,
+    onTargetClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF161B22)),
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = stat.adTitle,
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stat.adTitle,
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                TextButton(
+                    onClick = onTargetClick,
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF3FB950))
+                ) {
+                    Text("Targeting", fontWeight = FontWeight.SemiBold)
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 StatPill(text = "👁 ${stat.totalViews} views")

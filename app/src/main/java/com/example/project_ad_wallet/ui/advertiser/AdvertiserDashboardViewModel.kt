@@ -11,9 +11,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
+import com.example.project_ad_wallet.data.repository.AdRepository
+
 @HiltViewModel
 class AdvertiserDashboardViewModel @Inject constructor(
-    private val adStatsRepository: AdStatsRepository
+    private val adStatsRepository: AdStatsRepository,
+    private val adRepository: AdRepository
 ) : ViewModel() {
 
     val adStats: StateFlow<List<AdStatsEntity>> = adStatsRepository.getAllAdStats()
@@ -30,4 +33,8 @@ class AdvertiserDashboardViewModel @Inject constructor(
     ) { views, completions ->
         if (views > 0) (completions.toDouble() / views) * 100 else 0.0
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+
+    fun updateDemographicTarget(adId: String, target: com.example.project_ad_wallet.data.model.DemographicTarget) {
+        adRepository.updateDemographicTarget(adId, target)
+    }
 }

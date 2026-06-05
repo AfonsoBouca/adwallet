@@ -52,8 +52,9 @@ class AdFeedViewModel @Inject constructor(
             userRepository.user,
         ) { ads, balance, watched, skipped, user ->
             val isBroken = StreakCalculator.isStreakBroken(user.lastActiveDate)
+            val filteredAds = adRepository.filterAdsForUser(ads, user)
             AdFeedUiState(
-                ads = ads.filter { it.status == AdStatus.APPROVED && it.id !in skipped },
+                ads = filteredAds.filter { it.id !in skipped },
                 balance = balance,
                 watchedAdIds = watched,
                 streakDays = user.streakDays,

@@ -25,7 +25,7 @@ class AdvertiserDashboardViewModelTest {
 
     @Before
     fun setup() {
-        viewModel = AdvertiserDashboardViewModel(fakeRepository)
+        viewModel = AdvertiserDashboardViewModel(fakeRepository, com.example.project_ad_wallet.data.repository.AdRepository())
     }
 
     @Test
