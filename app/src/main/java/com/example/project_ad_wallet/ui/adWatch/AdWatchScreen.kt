@@ -303,7 +303,9 @@ private fun RewardOverlay(
     rewardAmount: Double,
     onDismiss: () -> Unit,
 ) {
+    var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
+        visible = true
         delay(2000)
         onDismiss()
     }
@@ -331,6 +333,11 @@ private fun RewardOverlay(
                 color = Color.White,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.testTag("reward_text"),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            com.example.project_ad_wallet.ui.components.EarningAnimation(
+                amount = rewardAmount,
+                visible = visible
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(

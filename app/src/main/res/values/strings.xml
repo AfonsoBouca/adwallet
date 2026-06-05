@@ -1,3 +1,31 @@
 <resources>
     <string name="app_name">AdWallet</string>
+    <string name="login_title">Bem-vindo ao AdWallet</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Entrar</string>
+    <string name="login_error">Email ou password incorretos.</string>
+    <string name="wallet_title">Carteira</string>
+    <string name="wallet_balance">Saldo atual</string>
+    <string name="earnings_title">Histórico de Ganhos</string>
+    <string name="earnings_empty">Ainda não ganhaste saldo</string>
+    <string name="earnings_empty_subtitle">Vê anúncios para começar a acumular ganhos.</string>
+    <string name="donations_title">Histórico de Doações</string>
+    <string name="donations_empty">Ainda não fizeste nenhuma doação</string>
+    <string name="donate_button">Doar agora</string>
+    <string name="charity_of_week">✨ Charity da Semana</string>
+    <string name="streak_days">%d dias</string>
+    <string name="streak_broken">A tua streak foi interrompida. Começa de novo hoje! 💪</string>
+    <string name="report_ad">Reportar anúncio</string>
+    <string name="skip_ad">Saltar</string>
+    <string name="onboarding_skip">Saltar</string>
+    <string name="onboarding_next">Próximo</string>
+    <string name="onboarding_start">Começar</string>
+    <string name="loading">A carregar...</string>
+    <string name="error_generic">Algo correu mal.</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="logout">Terminar sessão</string>
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
 </resources>

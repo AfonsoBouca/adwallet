@@ -54,7 +54,7 @@ import com.example.project_ad_wallet.ui.registration.adWalletTextFieldColors
 
 import com.example.project_ad_wallet.ui.components.AdWalletEmptyState
 import com.example.project_ad_wallet.ui.components.AdWalletErrorState
-import com.example.project_ad_wallet.ui.components.AdWalletLoadingState
+import com.example.project_ad_wallet.ui.components.SkeletonItem
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.foundation.layout.Box
 
@@ -94,7 +94,17 @@ fun CharitiesScreen(
                 .padding(innerPadding)
         ) {
             when {
-                uiState.isLoading -> AdWalletLoadingState()
+                uiState.isLoading -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        items(3) {
+                            SkeletonItem()
+                        }
+                    }
+                }
                 uiState.error != null -> AdWalletErrorState(
                     message = uiState.error!!,
                     onRetry = { viewModel.retry() }
@@ -235,19 +245,11 @@ fun CharitiesScreen(
                 }
             },
             confirmButton = {
-                Button(
+                com.example.project_ad_wallet.ui.components.AnimatedDonateButton(
                     onClick = { viewModel.confirmDonation() },
                     enabled = confirmEnabled,
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = Color.White,
-                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.38f),
-                        disabledContentColor = Color.White.copy(alpha = 0.60f),
-                    ),
-                ) {
-                    Text("Confirm Donation", fontWeight = FontWeight.Bold)
-                }
+                    text = "Confirm Donation"
+                )
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.dismissCharity() }) {
