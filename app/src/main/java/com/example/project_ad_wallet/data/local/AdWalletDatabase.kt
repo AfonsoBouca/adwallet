@@ -20,7 +20,7 @@ import com.example.project_ad_wallet.data.local.entities.UserProfileEntity
         UserProfileEntity::class,
         AdWatchedEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AdWalletDatabase : RoomDatabase() {
@@ -32,7 +32,9 @@ abstract class AdWalletDatabase : RoomDatabase() {
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // reservado para migrações futuras
+                database.execSQL("ALTER TABLE earnings ADD COLUMN baseAmount REAL NOT NULL DEFAULT 0.0")
+                database.execSQL("ALTER TABLE earnings ADD COLUMN streakBonus REAL NOT NULL DEFAULT 0.0")
+                database.execSQL("UPDATE earnings SET baseAmount = amount")
             }
         }
     }

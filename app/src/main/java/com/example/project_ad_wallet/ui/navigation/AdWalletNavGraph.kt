@@ -247,7 +247,9 @@ fun AdWalletNavGraph(
         }
 
         composable(Routes.EARNINGS_HISTORY) {
-            EarningsHistoryPlaceholder(navController = navController)
+            com.example.project_ad_wallet.ui.wallet.EarningsHistoryScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(

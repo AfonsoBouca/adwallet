@@ -25,7 +25,9 @@ object DatabaseModule {
             context,
             AdWalletDatabase::class.java,
             "adwallet_database"
-        ).build()
+        )
+        .addMigrations(AdWalletDatabase.MIGRATION_1_2)
+        .build()
     }
 
     @Provides
