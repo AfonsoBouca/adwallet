@@ -18,6 +18,7 @@ import javax.inject.Singleton
 
 import com.example.project_ad_wallet.data.local.dao.UserActivityDao
 import com.example.project_ad_wallet.data.repository.UserActivityRepository
+import com.example.project_ad_wallet.data.repository.ReportsRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -64,4 +65,13 @@ object RepositoryModule {
     @Singleton
     fun provideUserActivityRepository(dao: UserActivityDao): UserActivityRepository =
         UserActivityRepository(dao)
+
+    @Provides
+    @Singleton
+    fun provideReportsRepository(
+        earningsDao: EarningsDao,
+        donationsDao: DonationsDao,
+        userActivityDao: UserActivityDao,
+        userProfileDao: UserProfileDao
+    ): ReportsRepository = ReportsRepository(earningsDao, donationsDao, userActivityDao, userProfileDao)
 }

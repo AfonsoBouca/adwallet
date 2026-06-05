@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Shield
@@ -20,7 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.project_ad_wallet.data.local.entities.UserActivityEntity
+import com.example.project_ad_wallet.data.model.PlatformReport
 import com.example.project_ad_wallet.ui.components.AdWalletEmptyState
+import com.example.project_ad_wallet.ui.components.AdWalletLoadingState
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun AdminDashboardScreen(
@@ -32,7 +38,7 @@ fun AdminDashboardScreen(
     val flaggedCount by viewModel.flaggedCount.collectAsState()
 
     var selectedTab by remember { mutableStateOf(0) }
-    val tabs = listOf("Atividade Recente", "Suspeitos ($flaggedCount)")
+    val tabs = listOf("Atividade Recente", "Suspeitos ($flaggedCount)", "Relatórios")
 
     Column(
         modifier = Modifier
@@ -89,6 +95,7 @@ fun AdminDashboardScreen(
                 onFlag = null,
                 emptyMessage = "Sem atividade suspeita"
             )
+            2 -> ReportsScreen()
         }
     }
 }
@@ -172,4 +179,96 @@ fun ActivityItem(
             }
         }
     }
+}
+
+@Composable
+fun ReportsScreen(
+    viewModel: ReportsViewModel = hiltViewModel()
+) {
+    val report = viewModel.report
+    val isLoading = viewModel.isLoading
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0D1117))
+            .padding(16.dp)
+    ) {
+        Button(
+            onClick = { viewModel.generateReport() },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF238636)
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Default.Assessment,
+                contentDescription = null,
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                "Gerar Relatório",
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (isLoading) {
+            AdWalletLoadingState(message = "A gerar relatório...")
+        } else if (report != null) {
+            ReportCard(report = report)
+        } else {
+            AdWalletEmptyState(
+                icon = Icons.Default.Assessment,
+                title = "Sem relatório gerado",
+                subtitle = "Clica em 'Gerar Relatório' para ver as métricas."
+            )
+        }
+    }
+}
+
+@Composable
+fun ReportCard(report: PlatformReport) {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF161B22)),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Relatório gerado em ${dateFormat.format(Date(report.generatedAt))}",
+                color = Color.Gray,
+                fontSize = 11.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ReportRow("📺 Anúncios vistos", report.totalAdsWatched.toString())
+            ReportRow("💰 Total ganho", "€${"%.2f".format(Locale.US, report.totalAmountEarned)}")
+            ReportRow("❤️ Doações realizadas", report.totalDonations.toString())
+            ReportRow("💸 Total doado", "€${"%.2f".format(Locale.US, report.totalAmountDonated)}")
+            ReportRow("🔥 Média de streak", "${"%.1f".format(Locale.US, report.averageStreakDays)} dias")
+            ReportRow("🏆 Charity mais apoiada", report.topCharityName)
+            ReportRow("💚 Valor para top charity", "€${"%.2f".format(Locale.US, report.topCharityDonations)}")
+        }
+    }
+}
+
+@Composable
+fun ReportRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, color = Color.Gray, fontSize = 13.sp)
+        Text(value, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+    }
+    HorizontalDivider(color = Color(0xFF21262D), thickness = 0.5.dp)
 }
