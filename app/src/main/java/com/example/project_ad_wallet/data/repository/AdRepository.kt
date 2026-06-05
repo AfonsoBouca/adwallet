@@ -19,8 +19,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AdRepository(
+@Singleton
+class AdRepository @Inject constructor(
     private val adsWatchedDao: AdsWatchedDao? = null,
     private val externalScope: CoroutineScope? = null
 ) {
@@ -30,8 +33,8 @@ class AdRepository(
         val instance: AdRepository
             get() = _instance ?: AdRepository()
 
-        fun initialize(adsWatchedDao: AdsWatchedDao) {
-            _instance = AdRepository(adsWatchedDao)
+        fun initialize(adsWatchedDao: AdsWatchedDao, scope: CoroutineScope? = null) {
+            _instance = AdRepository(adsWatchedDao, scope)
         }
     }
 
@@ -114,6 +117,7 @@ class AdRepository(
     }
 
     fun markWatched(adId: String) {
+        _watchedAdIds.update { it + adId }
         repositoryScope.launch {
             adsWatchedDao?.insertOrUpdate(
                 AdWatchedEntity(

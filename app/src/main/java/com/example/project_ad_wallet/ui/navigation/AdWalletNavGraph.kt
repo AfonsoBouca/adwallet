@@ -8,7 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -27,7 +27,9 @@ import com.example.project_ad_wallet.ui.donations.DonationConfirmationScreen
 import com.example.project_ad_wallet.ui.donations.DonationHistoryScreen
 import com.example.project_ad_wallet.ui.notifications.NotificationPrefsScreen
 import com.example.project_ad_wallet.ui.components.BottomNavItem
-import com.example.project_ad_wallet.ui.registration.LoginScreen
+import com.example.project_ad_wallet.ui.auth.LoginScreen
+import com.example.project_ad_wallet.ui.admin.AdminDashboardScreen
+import com.example.project_ad_wallet.ui.advertiser.AdvertiserDashboardScreen
 import com.example.project_ad_wallet.ui.registration.RegistrationScreen
 import com.example.project_ad_wallet.ui.registration.ResetPasswordScreen
 import com.example.project_ad_wallet.ui.settings.SettingsScreen
@@ -37,15 +39,20 @@ import com.example.project_ad_wallet.ui.withdrawals.WithdrawalRequestScreen
 import com.example.project_ad_wallet.ui.withdrawals.WithdrawalStatusScreen
 import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.ui.admin.AdminAdsScreen
+import com.example.project_ad_wallet.ui.admin.AdminCharitiesScreen
 import com.example.project_ad_wallet.ui.admin.AdminUsersScreen
 import com.example.project_ad_wallet.data.model.CharityStatus
-import com.example.project_ad_wallet.ui.admin.AdminCharitiesScreen
+import com.example.project_ad_wallet.ui.auth.LoginScreen
+import com.example.project_ad_wallet.ui.onboarding.OnboardingScreen
 
 @Composable
 fun AdWalletNavGraph(
     onThemeModeChanged: (ThemeMode) -> Unit,
     navController: NavHostController = rememberNavController(),
+    authRepository: com.example.project_ad_wallet.data.auth.AuthRepository,
+    startDestination: String = Routes.LOGIN
 ) {
+
     val bottomNavItems = listOf(
         BottomNavItem(Routes.AD_FEED, "Home") {
             Icon(Icons.Default.Home, contentDescription = "Home")
@@ -58,10 +65,63 @@ fun AdWalletNavGraph(
         },
     )
 
+    val onLogout = {
+        authRepository.logout()
+        navController.navigate(Routes.LOGIN) {
+            popUpTo(0) { inclusive = true }
+        }
+    }
+
     NavHost(
         navController = navController,
-        startDestination = Routes.REGISTRATION,
+        startDestination = startDestination,
     ) {
+        composable(Routes.ONBOARDING) {
+            OnboardingScreen(
+                onComplete = {
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(Routes.ONBOARDING) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Routes.LOGIN) {
+            LoginScreen(
+                onNavigateToUserFeed = {
+                    navController.navigate(Routes.AD_FEED) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                },
+                onNavigateToAdminDashboard = {
+                    navController.navigate(Routes.ADMIN_DASHBOARD) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                },
+                onNavigateToAdvertiserDashboard = {
+                    navController.navigate(Routes.ADVERTISER_DASHBOARD) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Routes.ADMIN_DASHBOARD) {
+            AdminDashboardScreen(onLogout = onLogout)
+        }
+
+        composable(Routes.ADVERTISER_DASHBOARD) {
+            AdvertiserDashboardScreen(onLogout = onLogout)
+        }
+
+        composable(Routes.AD_FEED) {
+            AdFeedScreen(
+                navController = navController,
+                bottomNavItems = bottomNavItems,
+                onLogout = onLogout
+            )
+        }
+
         composable(Routes.REGISTRATION) {
             RegistrationScreen(
                 onRegistered = {
@@ -71,22 +131,6 @@ fun AdWalletNavGraph(
                 },
                 onLoginRequested = {
                     navController.navigate(Routes.LOGIN)
-                },
-            )
-        }
-
-        composable(Routes.LOGIN) {
-            LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate(Routes.AD_FEED) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                    }
-                },
-                onCreateAccount = {
-                    navController.navigate(Routes.REGISTRATION)
-                },
-                onResetPassword = {
-                    navController.navigate(Routes.RESET_PASSWORD)
                 },
             )
         }
@@ -103,48 +147,37 @@ fun AdWalletNavGraph(
         }
         
         composable(Routes.ADMIN_USERS) {
-            val walletRepo = com.example.project_ad_wallet.data.repository.UserRepository.instance
-            val users by walletRepo.allUsers.collectAsState()
+            val adminUsersViewModel: com.example.project_ad_wallet.ui.admin.AdminUsersViewModel = hiltViewModel()
+            val users by adminUsersViewModel.users.collectAsState()
     
-            AdminUsersScreen(
+            com.example.project_ad_wallet.ui.admin.AdminUsersScreen(
                 users = users,
-                onToggleBlock = { userId: String -> walletRepo.toggleBlockStatus(userId) }, // Adicionado ": String" aqui
+                onToggleBlock = { userId: String -> adminUsersViewModel.toggleBlockStatus(userId) },
                 onBack = { navController.popBackStack() }
             )
         }
 
         composable(Routes.ADMIN_CHARITIES) {
-            val charityRepo = com.example.project_ad_wallet.data.repository.CharityRepository.instance
-            val charities by charityRepo.charities.collectAsState()
+            val adminCharitiesViewModel: com.example.project_ad_wallet.ui.admin.AdminCharitiesViewModel = hiltViewModel()
+            val pendingCharities by adminCharitiesViewModel.pendingCharities.collectAsState()
 
-            val pendingCharities = charities.filter { it.status == com.example.project_ad_wallet.data.model.CharityStatus.PENDING }
-
-            AdminCharitiesScreen(
+            com.example.project_ad_wallet.ui.admin.AdminCharitiesScreen(
                 pendingCharities = pendingCharities,
-                onApprove = { charityId -> charityRepo.approveCharity(charityId) },
-                onReject = { charityId -> charityRepo.rejectCharity(charityId) },
+                onApprove = { charityId -> adminCharitiesViewModel.approveCharity(charityId) },
+                onReject = { charityId -> adminCharitiesViewModel.rejectCharity(charityId) },
                 onBack = { navController.popBackStack() }
             )
         }
 
         composable(Routes.ADMIN_ADS) {
-            val adRepo = com.example.project_ad_wallet.data.repository.AdRepository.instance
-            val ads by adRepo.ads.collectAsState()
-    
-            val pendingAds = ads.filter { it.status == AdStatus.PENDING }
+            val adminAdsViewModel: com.example.project_ad_wallet.ui.admin.AdminAdsViewModel = hiltViewModel()
+            val pendingAds by adminAdsViewModel.pendingAds.collectAsState()
 
-            AdminAdsScreen(
+            com.example.project_ad_wallet.ui.admin.AdminAdsScreen(
                 pendingAds = pendingAds,
-                onApprove = { adId -> adRepo.approveAd(adId) },
-                onReject = { adId -> adRepo.rejectAd(adId) },
+                onApprove = { adId -> adminAdsViewModel.approveAd(adId) },
+                onReject = { adId -> adminAdsViewModel.rejectAd(adId) },
                 onBack = { navController.popBackStack() }
-            )
-        }
-
-        composable(Routes.AD_FEED) {
-            AdFeedScreen(
-                navController = navController,
-                bottomNavItems = bottomNavItems,
             )
         }
 
@@ -163,7 +196,7 @@ fun AdWalletNavGraph(
         }
 
         composable(Routes.SETTINGS) {
-            val settingsViewModel: SettingsViewModel = viewModel()
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
             SettingsScreen(
                 navController = navController,
                 bottomNavItems = bottomNavItems,

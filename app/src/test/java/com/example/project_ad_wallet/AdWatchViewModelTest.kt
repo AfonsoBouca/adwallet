@@ -12,6 +12,7 @@ import com.example.project_ad_wallet.fakes.FakeUserProfileDao
 import com.example.project_ad_wallet.ui.adWatch.AdWatchViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -29,6 +30,7 @@ import org.junit.Test
 class AdWatchViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private lateinit var adRepo: AdRepository
     private lateinit var walletRepo: WalletRepository
@@ -70,11 +72,11 @@ class AdWatchViewModelTest {
         adRepo = AdRepository(adsWatchedDao, kotlinx.coroutines.CoroutineScope(testDispatcher))
         adRepo.addAd(fakeAd)
         adRepo.addQuestionnaire("test-ad", fakeQuestions)
-        
+
         val earningsDao = FakeEarningsDao()
         val userProfileDao = FakeUserProfileDao()
         walletRepo = WalletRepository(earningsDao, userProfileDao, kotlinx.coroutines.CoroutineScope(testDispatcher))
-        
+
         viewModel = AdWatchViewModel(adRepo, walletRepo)
         viewModel.loadAd("test-ad")
     }

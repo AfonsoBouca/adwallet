@@ -15,8 +15,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class WalletRepository(
+@Singleton
+class WalletRepository @Inject constructor(
     private val earningsDao: EarningsDao? = null,
     private val userProfileDao: UserProfileDao? = null,
     private val externalScope: CoroutineScope? = null
@@ -27,8 +30,8 @@ class WalletRepository(
         val instance: WalletRepository
             get() = _instance ?: WalletRepository()
 
-        fun initialize(earningsDao: EarningsDao, userProfileDao: UserProfileDao) {
-            _instance = WalletRepository(earningsDao, userProfileDao)
+        fun initialize(earningsDao: EarningsDao, userProfileDao: UserProfileDao, scope: CoroutineScope? = null) {
+            _instance = WalletRepository(earningsDao, userProfileDao, scope)
         }
     }
 
@@ -158,6 +161,5 @@ class WalletRepository(
     fun reset() {
         _balance.value = 0.0
         _earnings.value = emptyList()
-        // In a real app, clear DB
     }
 }

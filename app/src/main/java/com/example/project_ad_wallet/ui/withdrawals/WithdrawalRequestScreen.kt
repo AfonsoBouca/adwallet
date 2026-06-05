@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.ui.components.AdWalletBottomBar
 import com.example.project_ad_wallet.ui.components.AdWalletTopBar
@@ -38,7 +38,7 @@ import com.example.project_ad_wallet.ui.components.BottomNavItem
 fun WithdrawalRequestScreen(
     navController: NavHostController,
     bottomNavItems: List<BottomNavItem>,
-    viewModel: WithdrawalRequestViewModel = viewModel(),
+    viewModel: WithdrawalRequestViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var amountText by rememberSaveable { mutableStateOf("") }

@@ -2,12 +2,15 @@ package com.example.project_ad_wallet
 
 import com.example.project_ad_wallet.data.model.Earning
 import com.example.project_ad_wallet.data.repository.DonationRepository
+import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import com.example.project_ad_wallet.data.repository.WithdrawalRepository
 import com.example.project_ad_wallet.fakes.FakeEarningsDao
 import com.example.project_ad_wallet.fakes.FakeUserProfileDao
 import com.example.project_ad_wallet.ui.wallet.WalletViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -21,21 +24,21 @@ import org.junit.Test
 class WalletUnitTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
     private lateinit var walletRepo: WalletRepository
     private lateinit var donationRepo: DonationRepository
+    private lateinit var withdrawalRepo: WithdrawalRepository
+    private lateinit var userRepo: UserRepository
     private lateinit var viewModel: WalletViewModel
-    private lateinit var userProfileDao: FakeUserProfileDao
-    private lateinit var earningsDao: FakeEarningsDao
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        userProfileDao = FakeUserProfileDao()
-        earningsDao = FakeEarningsDao()
-        walletRepo = WalletRepository(earningsDao, userProfileDao, kotlinx.coroutines.CoroutineScope(testDispatcher))
-
+        walletRepo = WalletRepository(externalScope = testScope)
         donationRepo = DonationRepository()
-        viewModel = WalletViewModel(walletRepo, donationRepo)
+        withdrawalRepo = WithdrawalRepository()
+        userRepo = UserRepository(externalScope = testScope)
+        viewModel = WalletViewModel(walletRepo, donationRepo, withdrawalRepo, userRepo)
     }
 
     @After

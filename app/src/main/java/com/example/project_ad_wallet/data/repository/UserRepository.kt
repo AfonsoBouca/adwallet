@@ -13,8 +13,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserRepository(
+@Singleton
+open class UserRepository @Inject constructor(
     private val userProfileDao: UserProfileDao? = null,
     private val externalScope: CoroutineScope? = null
 ) {
@@ -24,16 +27,16 @@ class UserRepository(
         val instance: UserRepository
             get() = _instance ?: UserRepository()
 
-        fun initialize(userProfileDao: UserProfileDao) {
-            _instance = UserRepository(userProfileDao)
+        fun initialize(userProfileDao: UserProfileDao, scope: CoroutineScope? = null) {
+            _instance = UserRepository(userProfileDao, scope)
         }
     }
 
     private val _user = MutableStateFlow(User())
-    val user: StateFlow<User> = _user.asStateFlow()
+    open val user: StateFlow<User> = _user.asStateFlow()
 
     private val _themeMode = MutableStateFlow(ThemeMode.System)
-    val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
+    open val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
 
     private val registeredUsers = mutableMapOf<String, User>()
     private val repositoryScope = externalScope ?: CoroutineScope(Dispatchers.IO)
@@ -55,7 +58,7 @@ class UserRepository(
         }?.launchIn(repositoryScope)
     }
 
-    fun saveUser(user: User) {
+    open fun saveUser(user: User) {
         _user.value = user
         repositoryScope.launch {
             userProfileDao?.upsertProfile(
@@ -70,6 +73,13 @@ class UserRepository(
                     profilePictureUri = user.profilePictureUri,
                 )
             )
+        }
+    }
+
+    open fun updateProfilePicture(uriString: String) {
+        _user.update { it.copy(profilePictureUri = uriString) }
+        repositoryScope.launch {
+            userProfileDao?.updateProfilePicture(uriString)
         }
     }
 

@@ -34,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.material.icons.Icons
 import androidx.compose.ui.Alignment
 import com.example.project_ad_wallet.ui.navigation.Routes
 import androidx.compose.ui.Modifier
@@ -43,7 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.ui.components.AdWalletBottomBar
 import com.example.project_ad_wallet.ui.components.AdWalletTopBar
@@ -51,11 +52,17 @@ import com.example.project_ad_wallet.ui.components.asCurrency
 import com.example.project_ad_wallet.ui.components.BottomNavItem
 import com.example.project_ad_wallet.ui.registration.adWalletTextFieldColors
 
+import com.example.project_ad_wallet.ui.components.AdWalletEmptyState
+import com.example.project_ad_wallet.ui.components.AdWalletErrorState
+import com.example.project_ad_wallet.ui.components.AdWalletLoadingState
+import androidx.compose.material.icons.filled.VolunteerActivism
+import androidx.compose.foundation.layout.Box
+
 @Composable
 fun CharitiesScreen(
     navController: NavHostController,
     bottomNavItems: List<BottomNavItem>,
-    viewModel: CharitiesViewModel = viewModel(),
+    viewModel: CharitiesViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -81,62 +88,82 @@ fun CharitiesScreen(
         bottomBar = { AdWalletBottomBar(navController = navController, items = bottomNavItems) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(innerPadding)
         ) {
-            items(uiState.charities, key = { it.id }) { charity ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { viewModel.selectCharity(charity) },
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = charity.name,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = charity.description,
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(6.dp),
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+            when {
+                uiState.isLoading -> AdWalletLoadingState()
+                uiState.error != null -> AdWalletErrorState(
+                    message = uiState.error!!,
+                    onRetry = { viewModel.retry() }
+                )
+                uiState.charities.isEmpty() -> {
+                    AdWalletEmptyState(
+                        icon = Icons.Default.VolunteerActivism,
+                        title = "Sem instituições",
+                        subtitle = "Não há instituições verificadas de momento."
+                    )
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        items(uiState.charities, key = { it.id }) { charity ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { viewModel.selectCharity(charity) },
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                             ) {
-                                Text(
-                                    text = "SDG ${charity.sdgNumber} — ${charity.sdgName}",
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(
+                                        text = charity.name,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = charity.description,
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Surface(
+                                            shape = RoundedCornerShape(6.dp),
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                                        ) {
+                                            Text(
+                                                text = "SDG ${charity.sdgNumber} — ${charity.sdgName}",
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = MaterialTheme.colorScheme.primary,
+                                            )
+                                        }
+                                        val totalDonated = uiState.charityDonations[charity.id] ?: 0.0
+                                        Text(
+                                            text = "Total Donated: ${totalDonated.asCurrency()}",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            modifier = Modifier.testTag("charity_total_donated_${charity.id}"),
+                                        )
+                                    }
+                                }
                             }
-                            val totalDonated = uiState.charityDonations[charity.id] ?: 0.0
-                            Text(
-                                text = "Total Donated: ${totalDonated.asCurrency()}",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.testTag("charity_total_donated_${charity.id}"),
-                            )
                         }
                     }
                 }

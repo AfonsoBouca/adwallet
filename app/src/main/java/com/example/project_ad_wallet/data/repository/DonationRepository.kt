@@ -13,10 +13,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class DonationRepository(
+@Singleton
+class DonationRepository @Inject constructor(
     private val donationsDao: DonationsDao? = null,
-    private val userProfileDao: UserProfileDao? = null
+    private val userProfileDao: UserProfileDao? = null,
+    private val externalScope: CoroutineScope? = null
 ) {
 
     companion object {
@@ -24,15 +28,15 @@ class DonationRepository(
         val instance: DonationRepository
             get() = _instance ?: DonationRepository()
 
-        fun initialize(donationsDao: DonationsDao, userProfileDao: UserProfileDao) {
-            _instance = DonationRepository(donationsDao, userProfileDao)
+        fun initialize(donationsDao: DonationsDao, userProfileDao: UserProfileDao, scope: CoroutineScope? = null) {
+            _instance = DonationRepository(donationsDao, userProfileDao, scope)
         }
     }
 
     private val _donations = MutableStateFlow<List<Donation>>(emptyList())
     val donations: StateFlow<List<Donation>> = _donations.asStateFlow()
 
-    private val repositoryScope = CoroutineScope(Dispatchers.IO)
+    private val repositoryScope = externalScope ?: CoroutineScope(Dispatchers.IO)
 
     init {
         donationsDao?.getAllDonations()?.onEach { entities ->
@@ -89,7 +93,9 @@ class DonationRepository(
                         charityId = donation.charityId,
                         charityName = donation.charityName,
                         amount = donation.amount,
-                        timestamp = donation.timestamp
+                        timestamp = donation.timestamp,
+                        sdgNumber = donation.sdgNumber,
+                        sdgName = donation.sdgName
                     )
                 )
                 userProfileDao?.deductFromWalletBalance(donation.amount)

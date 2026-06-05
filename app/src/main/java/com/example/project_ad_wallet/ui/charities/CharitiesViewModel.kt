@@ -8,6 +8,7 @@ import com.example.project_ad_wallet.data.model.Donation
 import com.example.project_ad_wallet.data.repository.CharityRepository
 import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.util.UUID
+import javax.inject.Inject
 
 data class CharitiesUiState(
     val charities: List<Charity> = emptyList(),
@@ -27,18 +29,26 @@ data class CharitiesUiState(
     val errorMessage: String? = null,
     val confirmedDonation: Pair<String, Double>? = null,
     val charityDonations: Map<String, Double> = emptyMap(),
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
-class CharitiesViewModel(
-    private val charityRepository: CharityRepository = CharityRepository.instance,
-    private val walletRepository: WalletRepository = WalletRepository.instance,
-    private val donationRepository: DonationRepository = DonationRepository.instance,
+@HiltViewModel
+class CharitiesViewModel @Inject constructor(
+    private val charityRepository: CharityRepository,
+    private val walletRepository: WalletRepository,
+    private val donationRepository: DonationRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CharitiesUiState())
     val uiState: StateFlow<CharitiesUiState> = _uiState.asStateFlow()
 
     init {
+        loadCharities()
+    }
+
+    fun loadCharities() {
+        _uiState.update { it.copy(isLoading = true, error = null) }
         combine(
             charityRepository.charities,
             walletRepository.balance,
@@ -51,10 +61,15 @@ class CharitiesViewModel(
                 it.copy(
                     charities = verifiedCharities,
                     balance = balance,
-                    charityDonations = donationTotals
+                    charityDonations = donationTotals,
+                    isLoading = false
                 )
             }
         }.launchIn(viewModelScope)
+    }
+
+    fun retry() {
+        loadCharities()
     }
 
     fun selectCharity(charity: Charity) {

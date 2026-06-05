@@ -8,6 +8,7 @@ import com.example.project_ad_wallet.data.repository.AdRepository
 import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.domain.StreakCalculator
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 data class AdFeedUiState(
     val ads: List<Ad> = emptyList(),
@@ -22,18 +24,26 @@ data class AdFeedUiState(
     val watchedAdIds: Set<String> = emptySet(),
     val streakDays: Int = 0,
     val showStreakBrokenNotification: Boolean = false,
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
-class AdFeedViewModel(
-    private val adRepository: AdRepository = AdRepository.instance,
-    private val walletRepository: WalletRepository = WalletRepository.instance,
-    private val userRepository: UserRepository = UserRepository.instance,
+@HiltViewModel
+class AdFeedViewModel @Inject constructor(
+    private val adRepository: AdRepository,
+    private val walletRepository: WalletRepository,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdFeedUiState())
     val uiState: StateFlow<AdFeedUiState> = _uiState.asStateFlow()
 
     init {
+        loadFeed()
+    }
+
+    fun loadFeed() {
+        _uiState.update { it.copy(isLoading = true, error = null) }
         combine(
             adRepository.ads,
             walletRepository.balance,
@@ -47,7 +57,8 @@ class AdFeedViewModel(
                 balance = balance,
                 watchedAdIds = watched,
                 streakDays = user.streakDays,
-                showStreakBrokenNotification = isBroken && user.streakDays > 0
+                showStreakBrokenNotification = isBroken && user.streakDays > 0,
+                isLoading = false
             )
         }.onEach { state ->
             _uiState.value = state
@@ -56,5 +67,9 @@ class AdFeedViewModel(
 
     fun dismissStreakBrokenNotification() {
         _uiState.update { it.copy(showStreakBrokenNotification = false) }
+    }
+
+    fun retry() {
+        loadFeed()
     }
 }
