@@ -13,6 +13,9 @@ import org.junit.runner.Description
 class MainCoroutineRule(
     val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
 ) : TestWatcher() {
+    /** Alias for testDispatcher, for compatibility */
+    val dispatcher: TestDispatcher get() = testDispatcher
+
     override fun starting(description: Description) {
         super.starting(description)
         Dispatchers.setMain(testDispatcher)

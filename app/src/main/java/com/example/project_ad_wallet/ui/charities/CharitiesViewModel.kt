@@ -7,6 +7,8 @@ import com.example.project_ad_wallet.data.model.CharityStatus
 import com.example.project_ad_wallet.data.model.Donation
 import com.example.project_ad_wallet.data.repository.CharityRepository
 import com.example.project_ad_wallet.data.repository.DonationRepository
+import com.example.project_ad_wallet.data.repository.UserActivityRepository
+import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.util.UUID
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 data class CharitiesUiState(
     val charities: List<Charity> = emptyList(),
@@ -39,7 +42,8 @@ class CharitiesViewModel @Inject constructor(
     private val charityRepository: CharityRepository,
     private val walletRepository: WalletRepository,
     private val donationRepository: DonationRepository,
-    private val userRepository: com.example.project_ad_wallet.data.repository.UserRepository = com.example.project_ad_wallet.data.repository.UserRepository.instance,
+    private val userRepository: UserRepository,
+    private val userActivityRepository: UserActivityRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CharitiesUiState())
@@ -95,6 +99,7 @@ class CharitiesViewModel @Inject constructor(
             _uiState.update { it.copy(errorMessage = "Please enter a valid amount.") }
             return
         }
+
         if (amount > state.balance) {
             _uiState.update { it.copy(errorMessage = "Insufficient balance. Watch more ads to earn!") }
             return
@@ -128,6 +133,16 @@ class CharitiesViewModel @Inject constructor(
                 sdgName = charity.sdgName,
             )
         )
+
+        val user = userRepository.user.value
+        viewModelScope.launch {
+            userActivityRepository.logActivity(
+                userName = user.name.ifBlank { "User" },
+                activityType = "DONATION",
+                details = "Donated $amount to ${charity.name}",
+                userId = 1
+            )
+        }
 
         _uiState.update {
             it.copy(

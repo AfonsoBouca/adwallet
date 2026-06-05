@@ -76,8 +76,11 @@ class AdWatchViewModelTest {
         val earningsDao = FakeEarningsDao()
         val userProfileDao = FakeUserProfileDao()
         walletRepo = WalletRepository(earningsDao, userProfileDao, kotlinx.coroutines.CoroutineScope(testDispatcher))
+        val userRepo = com.example.project_ad_wallet.data.repository.UserRepository(userProfileDao)
+        val userActivityDao = com.example.project_ad_wallet.fakes.FakeUserActivityDao()
+        val userActivityRepo = com.example.project_ad_wallet.fakes.FakeUserActivityRepository(userActivityDao)
 
-        viewModel = AdWatchViewModel(adRepo, walletRepo)
+        viewModel = AdWatchViewModel(adRepo, walletRepo, userRepo, userActivityRepo, userActivityDao)
         viewModel.loadAd("test-ad")
     }
 

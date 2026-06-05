@@ -4,13 +4,16 @@ import com.example.project_ad_wallet.data.local.dao.AdsWatchedDao
 import com.example.project_ad_wallet.data.local.dao.DonationsDao
 import com.example.project_ad_wallet.data.local.dao.EarningsDao
 import com.example.project_ad_wallet.data.local.dao.UserProfileDao
+import com.example.project_ad_wallet.data.local.dao.UserActivityDao
 import com.example.project_ad_wallet.data.repository.AdRepository
 import com.example.project_ad_wallet.data.repository.CharityRepository
+import com.example.project_ad_wallet.data.repository.CharityOfWeekRepository
 import com.example.project_ad_wallet.data.repository.DonationRepository
+import com.example.project_ad_wallet.data.repository.ReportsRepository
 import com.example.project_ad_wallet.data.repository.UserRepository
+import com.example.project_ad_wallet.data.repository.UserActivityRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.data.repository.WithdrawalRepository
-import com.example.project_ad_wallet.data.repository.CharityOfWeekRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -68,5 +71,18 @@ object RepositoryModule {
     fun provideCharityOfWeekRepository(
         dao: com.example.project_ad_wallet.data.local.dao.CharityOfWeekDao
     ): CharityOfWeekRepository = CharityOfWeekRepository(dao)
-}
 
+    @Provides
+    @Singleton
+    fun provideUserActivityRepository(dao: UserActivityDao): UserActivityRepository =
+        UserActivityRepository(dao)
+
+    @Provides
+    @Singleton
+    fun provideReportsRepository(
+        earningsDao: EarningsDao,
+        donationsDao: DonationsDao,
+        userActivityDao: UserActivityDao,
+        userProfileDao: UserProfileDao
+    ): ReportsRepository = ReportsRepository(earningsDao, donationsDao, userActivityDao, userProfileDao)
+}

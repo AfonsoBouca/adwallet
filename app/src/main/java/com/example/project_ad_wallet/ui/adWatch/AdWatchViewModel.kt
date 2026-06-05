@@ -16,6 +16,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
+import com.example.project_ad_wallet.data.repository.UserRepository
+import com.example.project_ad_wallet.data.repository.UserActivityRepository
+import com.example.project_ad_wallet.data.local.dao.UserActivityDao
 
 data class AdWatchUiState(
     val ad: Ad? = null,
@@ -39,6 +42,9 @@ data class AdWatchUiState(
 class AdWatchViewModel @Inject constructor(
     private val adRepository: AdRepository,
     private val walletRepository: WalletRepository,
+    private val userRepository: UserRepository,
+    private val userActivityRepository: UserActivityRepository,
+    private val userActivityDao: UserActivityDao,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdWatchUiState())
@@ -135,6 +141,18 @@ class AdWatchViewModel @Inject constructor(
                 baseAmount = ad.rewardAmount
             )
             adRepository.markWatched(ad.id)
+
+            val user = userRepository.user.value
+            val fraudFlag = com.example.project_ad_wallet.domain.FraudDetector.checkForFraud(1, userActivityDao)
+            userActivityRepository.logActivity(
+                userName = user.name.ifBlank { "User" },
+                activityType = "AD_WATCHED",
+                details = "Ad: ${ad.title}",
+                isFlagged = fraudFlag.isSuspicious,
+                flagReason = fraudFlag.reason,
+                userId = 1
+            )
+
             _uiState.update {
                 it.copy(
                     rewardGranted = true,

@@ -4,10 +4,11 @@ import android.content.Context
 import androidx.room.Room
 import com.example.project_ad_wallet.data.local.AdWalletDatabase
 import com.example.project_ad_wallet.data.local.dao.AdsWatchedDao
+import com.example.project_ad_wallet.data.local.dao.CharityOfWeekDao
 import com.example.project_ad_wallet.data.local.dao.DonationsDao
 import com.example.project_ad_wallet.data.local.dao.EarningsDao
+import com.example.project_ad_wallet.data.local.dao.UserActivityDao
 import com.example.project_ad_wallet.data.local.dao.UserProfileDao
-import com.example.project_ad_wallet.data.local.dao.CharityOfWeekDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,8 +28,8 @@ object DatabaseModule {
             AdWalletDatabase::class.java,
             "adwallet_database"
         )
-        .addMigrations(AdWalletDatabase.MIGRATION_1_2)
-        .build()
+            .addMigrations(AdWalletDatabase.MIGRATION_1_2, AdWalletDatabase.MIGRATION_2_3)
+            .build()
         com.example.project_ad_wallet.AdWalletApp.database = db
         return db
     }
@@ -48,5 +49,7 @@ object DatabaseModule {
     @Provides
     fun provideCharityOfWeekDao(db: AdWalletDatabase): CharityOfWeekDao =
         db.charityOfWeekDao()
-}
 
+    @Provides
+    fun provideUserActivityDao(db: AdWalletDatabase): UserActivityDao = db.userActivityDao()
+}
