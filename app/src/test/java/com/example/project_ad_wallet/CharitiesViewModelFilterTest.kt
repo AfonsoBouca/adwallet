@@ -7,6 +7,7 @@ import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.ui.charities.CharitiesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -22,6 +23,7 @@ import org.junit.Test
 class CharitiesViewModelFilterTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
     private lateinit var charityRepo: CharityRepository
     private lateinit var walletRepo: WalletRepository
     private lateinit var donationRepo: DonationRepository
@@ -31,7 +33,7 @@ class CharitiesViewModelFilterTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         charityRepo = CharityRepository()
-        walletRepo = WalletRepository()
+        walletRepo = WalletRepository(externalScope = testScope)
         donationRepo = DonationRepository()
         viewModel = CharitiesViewModel(charityRepo, walletRepo, donationRepo)
     }

@@ -3,10 +3,12 @@ package com.example.project_ad_wallet.ui.registration
 import androidx.lifecycle.ViewModel
 import com.example.project_ad_wallet.data.model.User
 import com.example.project_ad_wallet.data.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 data class RegistrationUiState(
     val fullName: String = "",
@@ -17,8 +19,9 @@ data class RegistrationUiState(
     val isRegistered: Boolean = false,
 )
 
-class RegistrationViewModel(
-    private val userRepository: UserRepository = UserRepository.instance,
+@HiltViewModel
+class RegistrationViewModel @Inject constructor(
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegistrationUiState())

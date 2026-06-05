@@ -10,12 +10,15 @@ import com.example.project_ad_wallet.data.repository.DonationRepository
 import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import com.example.project_ad_wallet.data.repository.WithdrawalRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 data class WalletUiState(
     val balance: Double = 0.0,
@@ -25,19 +28,27 @@ data class WalletUiState(
     val totalEarned: Double = 0.0,
     val totalDonated: Double = 0.0,
     val users: List<User> = emptyList(), // Nova propriedade para a UI do Admin
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
-class WalletViewModel(
-    private val walletRepository: WalletRepository = WalletRepository.instance,
-    private val donationRepository: DonationRepository = DonationRepository.instance,
-    private val withdrawalRepository: WithdrawalRepository = WithdrawalRepository.instance,
-    private val userRepository: UserRepository = UserRepository.instance // Novo repositório de utilizadores
+@HiltViewModel
+class WalletViewModel @Inject constructor(
+    private val walletRepository: WalletRepository,
+    private val donationRepository: DonationRepository,
+    private val withdrawalRepository: WithdrawalRepository,
+    private val userRepository: UserRepository // Novo repositório de utilizadores
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WalletUiState())
     val uiState: StateFlow<WalletUiState> = _uiState.asStateFlow()
 
     init {
+        loadWallet()
+    }
+
+    fun loadWallet() {
+        _uiState.update { it.copy(isLoading = true, error = null) }
         // Agora o combine suporta até 5 fluxos
         combine(
             walletRepository.balance,
@@ -53,11 +64,16 @@ class WalletViewModel(
                 withdrawals = withdrawals.sortedByDescending { it.timestamp },
                 totalEarned = earnings.sumOf { it.amount },
                 totalDonated = donations.sumOf { it.amount },
-                users = users
+                users = users,
+                isLoading = false
             )
         }.onEach { state ->
             _uiState.value = state
         }.launchIn(viewModelScope)
+    }
+
+    fun retry() {
+        loadWallet()
     }
 
     // Função para o Admin bloquear/desbloquear

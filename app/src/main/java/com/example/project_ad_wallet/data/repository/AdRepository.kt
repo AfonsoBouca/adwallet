@@ -1,6 +1,8 @@
 package com.example.project_ad_wallet.data.repository
 
 import com.example.project_ad_wallet.R
+import com.example.project_ad_wallet.data.local.dao.AdsWatchedDao
+import com.example.project_ad_wallet.data.local.entities.AdWatchedEntity
 import com.example.project_ad_wallet.data.model.Ad
 import com.example.project_ad_wallet.data.model.AdRating
 import com.example.project_ad_wallet.data.model.AdReport
@@ -8,15 +10,32 @@ import com.example.project_ad_wallet.data.model.AdStatus
 import com.example.project_ad_wallet.data.model.Question
 import com.example.project_ad_wallet.data.model.QuestionOption
 import com.example.project_ad_wallet.data.model.QuestionnaireResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AdRepository {
+@Singleton
+class AdRepository @Inject constructor(
+    private val adsWatchedDao: AdsWatchedDao? = null,
+    private val externalScope: CoroutineScope? = null
+) {
 
     companion object {
-        val instance = AdRepository()
+        private var _instance: AdRepository? = null
+        val instance: AdRepository
+            get() = _instance ?: AdRepository()
+
+        fun initialize(adsWatchedDao: AdsWatchedDao, scope: CoroutineScope? = null) {
+            _instance = AdRepository(adsWatchedDao, scope)
+        }
     }
 
     private val _ads = MutableStateFlow(sampleAds())
@@ -40,6 +59,15 @@ class AdRepository {
     private val questionnaires: MutableMap<String, List<Question>> =
         sampleQuestionnaires().toMutableMap()
 
+    private val repositoryScope = externalScope ?: CoroutineScope(Dispatchers.IO)
+
+    init {
+        adsWatchedDao?.getAllWatched()?.onEach { entities ->
+            _watchedAdIds.value = entities.map { it.adId }.toSet()
+            _skippedAdIds.value = entities.filter { it.isSkipped }.map { it.adId }.toSet()
+        }?.launchIn(repositoryScope)
+    }
+
     fun getAdById(id: String): Ad? = _ads.value.firstOrNull { it.id == id }
 
     fun getQuestionsForAd(adId: String): List<Question> = questionnaires[adId] ?: emptyList()
@@ -52,7 +80,6 @@ class AdRepository {
         _ads.update { it + ad }
     }
 
-    // --- NOVAS FUNÇÕES PARA O ADMINISTRADOR ---
     fun approveAd(adId: String) {
         _ads.update { currentList ->
             currentList.map { ad ->
@@ -68,7 +95,6 @@ class AdRepository {
             }
         }
     }
-    // ------------------------------------------
 
     fun addRating(rating: AdRating) {
         _ratings.update { it + rating }
@@ -76,6 +102,14 @@ class AdRepository {
 
     fun addReport(report: AdReport) {
         _reports.update { it + report }
+        repositoryScope.launch {
+            adsWatchedDao?.insertOrUpdate(
+                AdWatchedEntity(
+                    adId = report.adId,
+                    isReported = true
+                )
+            )
+        }
     }
 
     fun addQuestionnaireResponse(response: QuestionnaireResponse) {
@@ -84,10 +118,26 @@ class AdRepository {
 
     fun markWatched(adId: String) {
         _watchedAdIds.update { it + adId }
+        repositoryScope.launch {
+            adsWatchedDao?.insertOrUpdate(
+                AdWatchedEntity(
+                    adId = adId
+                )
+            )
+        }
     }
 
     fun markSkipped(adId: String) {
+        // Update the in‑memory set immediately so flows emit for tests without a DAO
         _skippedAdIds.update { it + adId }
+        repositoryScope.launch {
+            adsWatchedDao?.insertOrUpdate(
+                AdWatchedEntity(
+                    adId = adId,
+                    isSkipped = true
+                )
+            )
+        }
     }
 
     fun reset() {
@@ -138,7 +188,7 @@ private fun sampleAds() = listOf(
         durationSeconds = 55,
         isActive = true,
     ),
-    Ad( // Vamos criar um pendente falso para o Admin ter algo para aprovar
+    Ad(
         id = "6",
         title = "Suspicious Crypto App",
         description = "Double your money in 5 minutes! No risks involved.",

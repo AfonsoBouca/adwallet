@@ -1,15 +1,38 @@
 package com.example.project_ad_wallet.data.repository
 
+import com.example.project_ad_wallet.data.local.dao.EarningsDao
+import com.example.project_ad_wallet.data.local.dao.UserProfileDao
+import com.example.project_ad_wallet.data.local.entities.EarningEntity
+import com.example.project_ad_wallet.data.local.entities.UserProfileEntity
 import com.example.project_ad_wallet.data.model.Earning
+import com.example.project_ad_wallet.domain.StreakCalculator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class WalletRepository {
+@Singleton
+class WalletRepository @Inject constructor(
+    private val earningsDao: EarningsDao? = null,
+    private val userProfileDao: UserProfileDao? = null,
+    private val externalScope: CoroutineScope? = null
+) {
 
     companion object {
-        val instance = WalletRepository()
+        private var _instance: WalletRepository? = null
+        val instance: WalletRepository
+            get() = _instance ?: WalletRepository()
+
+        fun initialize(earningsDao: EarningsDao, userProfileDao: UserProfileDao, scope: CoroutineScope? = null) {
+            _instance = WalletRepository(earningsDao, userProfileDao, scope)
+        }
     }
 
     private val _balance = MutableStateFlow(0.0)
@@ -18,13 +41,84 @@ class WalletRepository {
     private val _earnings = MutableStateFlow<List<Earning>>(emptyList())
     val earnings: StateFlow<List<Earning>> = _earnings.asStateFlow()
 
+    private val repositoryScope = externalScope ?: CoroutineScope(Dispatchers.IO)
+
+    init {
+        userProfileDao?.getProfile()?.onEach { entity ->
+            if (entity != null) {
+                _balance.value = entity.walletBalance
+            }
+        }?.launchIn(repositoryScope)
+
+        earningsDao?.getAllEarnings()?.onEach { entities ->
+            _earnings.value = entities.map { entity ->
+                Earning(
+                    id = entity.id.toString(),
+                    adId = entity.adId,
+                    adTitle = entity.adTitle,
+                    amount = entity.amount,
+                    timestamp = entity.timestamp
+                )
+            }
+        }?.launchIn(repositoryScope)
+    }
+
     fun addEarning(earning: Earning) {
-        _earnings.update { (it + earning).sortedByDescending { e -> e.timestamp } }
+        repositoryScope.launch {
+            earningsDao?.insertEarning(
+                EarningEntity(
+                    adId = earning.adId,
+                    adTitle = earning.adTitle,
+                    amount = earning.amount,
+                    timestamp = earning.timestamp
+                )
+            )
+            userProfileDao?.addToWalletBalance(earning.amount)
+        }
+        // Update in‑memory balance for tests without a DAO
         _balance.update { it + earning.amount }
+        _earnings.update { it + earning }
     }
 
     fun addFunds(amount: Double) {
+        repositoryScope.launch {
+            userProfileDao?.addToWalletBalance(amount)
+        }
+        // Update in‑memory balance for tests without a DAO
         _balance.update { it + amount }
+    }
+
+    suspend fun completeAdAndUpdateStreak(
+        adTitle: String,
+        adId: String,
+        baseAmount: Double
+    ): Double {
+        val profile = userProfileDao?.getProfileOnce()
+        val newStreak = StreakCalculator.calculateNewStreak(
+            currentStreak = profile?.streakDays ?: 0,
+            lastActiveDate = profile?.lastActiveDate ?: 0L
+        )
+        val bonus = StreakCalculator.getStreakBonus(newStreak)
+        val totalAmount = baseAmount + (baseAmount * bonus)
+
+        userProfileDao?.upsertProfile(
+            profile?.copy(
+                streakDays = newStreak,
+                lastActiveDate = System.currentTimeMillis(),
+                walletBalance = (profile.walletBalance) + totalAmount
+            ) ?: UserProfileEntity(
+                name = "User",
+                email = "",
+                streakDays = newStreak,
+                lastActiveDate = System.currentTimeMillis(),
+                walletBalance = totalAmount
+            )
+        )
+
+        earningsDao?.insertEarning(
+            EarningEntity(adTitle = adTitle, adId = adId, amount = totalAmount)
+        )
+        return totalAmount
     }
 
     fun generateRandomHistory(charities: List<com.example.project_ad_wallet.data.model.Charity>) {
@@ -37,28 +131,21 @@ class WalletRepository {
                 timestamp = System.currentTimeMillis() - (i * 3600000)
             )
         }
-        val randomDonations = (1..3).map { i ->
-            val charity = charities.random()
-            com.example.project_ad_wallet.data.model.Donation(
-                id = "rand_d_$i",
-                charityId = charity.id,
-                charityName = charity.name,
-                amount = (1.0..5.0).random(),
-                sdgNumber = charity.sdgNumber,
-                sdgName = charity.sdgName,
-                timestamp = System.currentTimeMillis() - (i * 7200000)
-            )
+        
+        repositoryScope.launch {
+            randomEarnings.forEach { earning ->
+                earningsDao?.insertEarning(
+                    EarningEntity(
+                        adId = earning.adId,
+                        adTitle = earning.adTitle,
+                        amount = earning.amount,
+                        timestamp = earning.timestamp
+                    )
+                )
+            }
+            val totalEarned = randomEarnings.sumOf { it.amount }
+            userProfileDao?.addToWalletBalance(totalEarned)
         }
-        
-        _earnings.update { (it + randomEarnings).sortedByDescending { e -> e.timestamp } }
-        val totalEarned = randomEarnings.sumOf { it.amount }
-        val totalDonated = randomDonations.sumOf { it.amount }
-        _balance.update { it + totalEarned - totalDonated }
-        
-        // We need to notify DonationRepository as well, but since we don't have a shared state, 
-        // we'll just update WalletRepository's balance. 
-        // In a real app, this would be handled by a use case or a shared database.
-        // For now, I'll just add a way to inject donations if needed, but let's stick to balance/earnings.
     }
 
     private fun ClosedRange<Double>.random() = 
@@ -66,6 +153,9 @@ class WalletRepository {
 
     fun deductBalance(amount: Double): Boolean {
         if (_balance.value < amount) return false
+        repositoryScope.launch {
+            userProfileDao?.deductFromWalletBalance(amount)
+        }
         _balance.update { it - amount }
         return true
     }

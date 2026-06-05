@@ -3,10 +3,12 @@ package com.example.project_ad_wallet.ui.notifications
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 data class NotificationPrefsUiState(
     val masterEnabled: Boolean = true,
@@ -17,7 +19,8 @@ data class NotificationPrefsUiState(
     val promotionsEnabled: Boolean = false,
 )
 
-class NotificationPrefsViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class NotificationPrefsViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
 
     private val prefs = application.getSharedPreferences("notification_prefs", Context.MODE_PRIVATE)
 

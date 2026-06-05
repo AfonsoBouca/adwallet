@@ -1,33 +1,90 @@
 package com.example.project_ad_wallet.data.repository
 
+import com.example.project_ad_wallet.data.local.dao.UserProfileDao
+import com.example.project_ad_wallet.data.local.entities.UserProfileEntity
 import com.example.project_ad_wallet.data.model.ThemeMode
 import com.example.project_ad_wallet.data.model.User
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserRepository {
+@Singleton
+open class UserRepository @Inject constructor(
+    private val userProfileDao: UserProfileDao? = null,
+    private val externalScope: CoroutineScope? = null
+) {
 
     companion object {
-        val instance = UserRepository()
+        private var _instance: UserRepository? = null
+        val instance: UserRepository
+            get() = _instance ?: UserRepository()
+
+        fun initialize(userProfileDao: UserProfileDao, scope: CoroutineScope? = null) {
+            _instance = UserRepository(userProfileDao, scope)
+        }
     }
 
-    // --- Lógica do Utilizador Ativo (Existente) ---
     private val _user = MutableStateFlow(User())
-    val user: StateFlow<User> = _user.asStateFlow()
+    open val user: StateFlow<User> = _user.asStateFlow()
 
     private val _themeMode = MutableStateFlow(ThemeMode.System)
-    val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
+    open val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
 
     private val registeredUsers = mutableMapOf<String, User>()
+    private val repositoryScope = externalScope ?: CoroutineScope(Dispatchers.IO)
 
-    fun saveUser(user: User) {
+    init {
+        userProfileDao?.getProfile()?.onEach { entity ->
+            if (entity != null) {
+                _user.value = User(
+                    id = entity.id.toString(),
+                    name = entity.name,
+                    age = entity.age,
+                    gender = entity.gender,
+                    email = entity.email,
+                    streakDays = entity.streakDays,
+                    lastActiveDate = entity.lastActiveDate,
+                    profilePictureUri = entity.profilePictureUri,
+                )
+            }
+        }?.launchIn(repositoryScope)
+    }
+
+    open fun saveUser(user: User) {
         _user.value = user
+        repositoryScope.launch {
+            userProfileDao?.upsertProfile(
+                UserProfileEntity(
+                    id = 1,
+                    name = user.name,
+                    age = user.age,
+                    gender = user.gender,
+                    email = user.email,
+                    streakDays = user.streakDays,
+                    lastActiveDate = user.lastActiveDate,
+                    profilePictureUri = user.profilePictureUri,
+                )
+            )
+        }
+    }
+
+    open fun updateProfilePicture(uriString: String) {
+        _user.update { it.copy(profilePictureUri = uriString) }
+        repositoryScope.launch {
+            userProfileDao?.updateProfilePicture(uriString)
+        }
     }
 
     fun registerUser(user: User) {
-        _user.value = user
+        saveUser(user)
         val normalizedEmail = user.email.trim().lowercase()
         if (normalizedEmail.isNotBlank()) {
             registeredUsers[normalizedEmail] = user
@@ -72,10 +129,8 @@ class UserRepository {
         _themeMode.value = ThemeMode.System
     }
 
-    // --- Lógica do Administrador: Gerir todos os utilizadores (Nova) ---
     private val _allUsers = MutableStateFlow<List<User>>(
         listOf(
-            // Dados mockados para podermos testar a UI do Admin
             User(name = "João Silva", age = 22, gender = "M", isBlocked = false),
             User(name = "Ana Costa", age = 28, gender = "F", isBlocked = true),
             User(name = "Carlos Martins", age = 35, gender = "M", isBlocked = false)

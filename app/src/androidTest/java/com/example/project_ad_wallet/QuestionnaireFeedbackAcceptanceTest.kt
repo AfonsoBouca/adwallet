@@ -11,6 +11,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Feature: Responder a inquérito
+ *
+ * Scenario: Utilizador responde ao questionário
+ *   Given o utilizador terminou de ver o vídeo e clica em saltar para questões
+ *   When responde às perguntas
+ *   Then vê o feedback das respostas
+ */
 @RunWith(AndroidJUnit4::class)
 class QuestionnaireFeedbackAcceptanceTest {
 

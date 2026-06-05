@@ -16,18 +16,20 @@ import androidx.compose.ui.platform.testTag
 import com.example.project_ad_wallet.data.model.QuestionnaireResponse
 import com.example.project_ad_wallet.data.repository.AdRepository
 
+import androidx.hilt.navigation.compose.hiltViewModel
+
 @Composable
 fun AdvertiserResponsesScreen(
-    adRepository: AdRepository = AdRepository.instance,
+    viewModel: AdvertiserResponsesViewModel = hiltViewModel(),
 ) {
-    val responses by adRepository.questionnaireResponses.collectAsState()
+    val responses by viewModel.responses.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text("Questionnaire Responses", modifier = Modifier.fillMaxWidth(), style = MaterialTheme.typography.titleMedium)
 
         LazyColumn(modifier = Modifier.fillMaxSize(), content = {
             items(responses) { resp: QuestionnaireResponse ->
-                val adTitle = adRepository.getAdById(resp.adId)?.title ?: "Unknown Ad"
+                val adTitle = viewModel.getAdById(resp.adId)?.title ?: "Unknown Ad"
                 Card(modifier = Modifier
                     .fillMaxWidth()
                     .testTag("response_item_${resp.id}")) {

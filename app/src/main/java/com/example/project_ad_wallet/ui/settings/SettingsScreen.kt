@@ -48,7 +48,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.project_ad_wallet.data.model.ThemeMode
 import com.example.project_ad_wallet.data.model.User
@@ -59,6 +59,24 @@ import com.example.project_ad_wallet.ui.components.ConfirmationDialog
 import com.example.project_ad_wallet.ui.navigation.Routes
 import com.example.project_ad_wallet.ui.registration.EditProfileDialog
 
+import com.example.project_ad_wallet.ui.components.AdWalletEmptyState
+import com.example.project_ad_wallet.ui.components.AdWalletErrorState
+import com.example.project_ad_wallet.ui.components.AdWalletLoadingState
+import androidx.compose.foundation.layout.Box
+
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
+import com.example.project_ad_wallet.ui.profile.ProfilePictureViewModel
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.net.Uri
+import androidx.compose.material3.IconButton
+
 @Composable
 fun SettingsScreen(
     navController: NavHostController,
@@ -67,55 +85,79 @@ fun SettingsScreen(
     onResetApp: () -> Unit,
     onLogout: () -> Unit,
     onDeleteAccount: () -> Unit,
-    viewModel: SettingsViewModel = viewModel(),
+    viewModel: SettingsViewModel = hiltViewModel(),
+    profileViewModel: ProfilePictureViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val userProfile by profileViewModel.userProfile.collectAsState()
     var showEditProfile by rememberSaveable { mutableStateOf(false) }
     var showDeleteConfirm by rememberSaveable { mutableStateOf(false) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { profileViewModel.updateProfilePicture(it) }
+    }
 
     Scaffold(
         topBar = { AdWalletTopBar(title = "Settings", showBalance = false) },
         bottomBar = { AdWalletBottomBar(navController = navController, items = bottomNavItems) },
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            ProfileSection(
-                user = uiState.user,
-                onEdit = { showEditProfile = true },
-            )
+            when {
+                uiState.isLoading -> AdWalletLoadingState()
+                uiState.error != null -> AdWalletErrorState(
+                    message = uiState.error!!,
+                    onRetry = { viewModel.retry() }
+                )
+                else -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                    ) {
+                        ProfileSection(
+                            user = uiState.user,
+                            onEdit = { showEditProfile = true },
+                            profilePictureUri = userProfile?.profilePictureUri,
+                            onPickImage = { launcher.launch("image/*") }
+                        )
 
-            NotificationsSection(navController = navController)
+                        NotificationsSection(navController = navController)
 
-            ThemeSection(
-                currentMode = uiState.themeMode,
-                onModeChanged = {
-                    viewModel.setThemeMode(it)
-                    onThemeModeChanged(it)
-                },
-            )
+                        ThemeSection(
+                            currentMode = uiState.themeMode,
+                            onModeChanged = {
+                                viewModel.setThemeMode(it)
+                                onThemeModeChanged(it)
+                            },
+                        )
 
-            AccountSection(
-                onDeleteAccount = { showDeleteConfirm = true },
-            )
+                        AccountSection(
+                            onDeleteAccount = { showDeleteConfirm = true },
+                        )
 
-            DeveloperSection(
-                onResetApp = {
-                    viewModel.resetApp()
-                    onResetApp()
-                },
-                onAddFunds = viewModel::onAddFunds,
-                onGenerateRandomHistory = viewModel::onGenerateRandomHistory,
-                onLogout = {
-                    viewModel.logout()
-                    onLogout()
-                },
-            )
+                        DeveloperSection(
+                            onResetApp = {
+                                viewModel.resetApp()
+                                onResetApp()
+                            },
+                            onAddFunds = viewModel::onAddFunds,
+                            onGenerateRandomHistory = viewModel::onGenerateRandomHistory,
+                            onLogout = {
+                                viewModel.logout()
+                                onLogout()
+                            },
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -147,23 +189,95 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun ProfileSection(user: User, onEdit: () -> Unit) {
+private fun ProfileSection(
+    user: User,
+    onEdit: () -> Unit,
+    profilePictureUri: String?,
+    onPickImage: () -> Unit
+) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         SectionHeader(icon = Icons.Default.Person, title = "Profile", actionLabel = "Edit", onActionClick = onEdit)
-        Card(
+        
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-            elevation = CardDefaults.cardElevation(0.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                ProfileItem("Name", user.name)
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-                ProfileItem("Age", user.age.toString())
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-                ProfileItem("Gender", user.gender)
+            ProfilePictureSection(
+                profilePictureUri = profilePictureUri,
+                onPickImage = onPickImage
+            )
+            
+            Card(
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                elevation = CardDefaults.cardElevation(0.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    ProfileItem("Name", user.name)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                    ProfileItem("Age", user.age.toString())
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                    ProfileItem("Gender", user.gender)
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun ProfilePictureSection(
+    profilePictureUri: String?,
+    onPickImage: () -> Unit
+) {
+    Box(contentAlignment = Alignment.BottomEnd) {
+        // Foto ou placeholder
+        if (profilePictureUri != null) {
+            AsyncImage(
+                model = profilePictureUri,
+                contentDescription = "Foto de perfil",
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, Color(0xFF238636), CircleShape)
+                    .clickable { onPickImage() },
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF161B22))
+                    .border(2.dp, Color(0xFF238636), CircleShape)
+                    .clickable { onPickImage() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    tint = Color(0xFF3FB950),
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+        }
+
+        // Botão de editar
+        IconButton(
+            onClick = onPickImage,
+            modifier = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF238636))
+        ) {
+            Icon(
+                imageVector = Icons.Default.CameraAlt,
+                contentDescription = "Alterar foto",
+                tint = Color.White,
+                modifier = Modifier.size(16.dp)
+            )
         }
     }
 }

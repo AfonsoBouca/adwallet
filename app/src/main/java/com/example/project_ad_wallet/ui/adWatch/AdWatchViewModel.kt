@@ -7,11 +7,15 @@ import com.example.project_ad_wallet.data.model.Question
 import com.example.project_ad_wallet.data.model.QuestionResult
 import com.example.project_ad_wallet.data.repository.AdRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import java.util.UUID
+import javax.inject.Inject
 
 data class AdWatchUiState(
     val ad: Ad? = null,
@@ -31,9 +35,10 @@ data class AdWatchUiState(
     val totalQuestions: Int = 0,
 )
 
-class AdWatchViewModel(
-    private val adRepository: AdRepository = AdRepository.instance,
-    private val walletRepository: WalletRepository = WalletRepository.instance,
+@HiltViewModel
+class AdWatchViewModel @Inject constructor(
+    private val adRepository: AdRepository,
+    private val walletRepository: WalletRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdWatchUiState())
@@ -122,20 +127,21 @@ class AdWatchViewModel(
     fun completeQuestionnaire() {
         val state = _uiState.value
         val ad = state.ad ?: return
-        val earning = Earning(
-            id = UUID.randomUUID().toString(),
-            adId = ad.id,
-            adTitle = ad.title,
-            amount = ad.rewardAmount,
-        )
-        walletRepository.addEarning(earning)
-        adRepository.markWatched(ad.id)
-        _uiState.update {
-            it.copy(
-                rewardGranted = true,
-                rewardAmount = ad.rewardAmount,
-                isComplete = false,
+
+        viewModelScope.launch {
+            val totalAmount = walletRepository.completeAdAndUpdateStreak(
+                adTitle = ad.title,
+                adId = ad.id,
+                baseAmount = ad.rewardAmount
             )
+            adRepository.markWatched(ad.id)
+            _uiState.update {
+                it.copy(
+                    rewardGranted = true,
+                    rewardAmount = totalAmount,
+                    isComplete = false,
+                )
+            }
         }
     }
 
