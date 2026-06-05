@@ -11,13 +11,18 @@ import org.junit.runner.Description
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainCoroutineRule(
-    val dispatcher: TestDispatcher = UnconfinedTestDispatcher()
+    val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
 ) : TestWatcher() {
+    /** Alias for testDispatcher, for compatibility */
+    val dispatcher: TestDispatcher get() = testDispatcher
+
     override fun starting(description: Description) {
-        Dispatchers.setMain(dispatcher)
+        super.starting(description)
+        Dispatchers.setMain(testDispatcher)
     }
 
     override fun finished(description: Description) {
+        super.finished(description)
         Dispatchers.resetMain()
     }
 }

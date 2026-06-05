@@ -27,7 +27,8 @@ class AdvertiserResponsesAcceptanceTest {
         repo.addQuestionnaireResponse(sample)
 
         composeTestRule.setContent {
-            AdvertiserResponsesScreen(adRepository = repo)
+            val viewModel = com.example.project_ad_wallet.ui.advertiser.AdvertiserResponsesViewModel(repo)
+            AdvertiserResponsesScreen(viewModel = viewModel)
         }
 
         val adTitle = repo.getAdById(sample.adId)?.title ?: "Unknown Ad"

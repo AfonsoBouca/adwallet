@@ -214,10 +214,19 @@ fun AdWalletNavGraph(
             )
         }
 
-        composable(Routes.CHARITIES) {
+        composable(
+            route = "charities?preselected={preselected}",
+            arguments = listOf(navArgument("preselected") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
+        ) { backStackEntry ->
+            val preselected = backStackEntry.arguments?.getString("preselected")
             CharitiesScreen(
                 navController = navController,
                 bottomNavItems = bottomNavItems,
+                preselectedCharityId = preselected,
             )
         }
 

@@ -7,6 +7,8 @@ import com.example.project_ad_wallet.data.model.CharityStatus
 import com.example.project_ad_wallet.data.model.Donation
 import com.example.project_ad_wallet.data.repository.CharityRepository
 import com.example.project_ad_wallet.data.repository.DonationRepository
+import com.example.project_ad_wallet.data.repository.UserActivityRepository
+import com.example.project_ad_wallet.data.repository.UserRepository
 import com.example.project_ad_wallet.data.repository.WalletRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,8 +20,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.util.UUID
 import javax.inject.Inject
-import com.example.project_ad_wallet.data.repository.UserRepository
-import com.example.project_ad_wallet.data.repository.UserActivityRepository
 import kotlinx.coroutines.launch
 
 data class CharitiesUiState(
@@ -33,7 +33,8 @@ data class CharitiesUiState(
     val confirmedDonation: Pair<String, Double>? = null,
     val charityDonations: Map<String, Double> = emptyMap(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val userRole: String = "USER"
 )
 
 @HiltViewModel
@@ -58,7 +59,8 @@ class CharitiesViewModel @Inject constructor(
             charityRepository.charities,
             walletRepository.balance,
             donationRepository.donations,
-        ) { charities, balance, donations ->
+            userRepository.user,
+        ) { charities, balance, donations, user ->
             val verifiedCharities = charities.filter { it.status == CharityStatus.VERIFIED }
             val donationTotals = donations.groupBy { it.charityId }
                 .mapValues { entry -> entry.value.sumOf { it.amount } }
@@ -67,7 +69,8 @@ class CharitiesViewModel @Inject constructor(
                     charities = verifiedCharities,
                     balance = balance,
                     charityDonations = donationTotals,
-                    isLoading = false
+                    isLoading = false,
+                    userRole = user.role
                 )
             }
         }.launchIn(viewModelScope)
@@ -96,6 +99,7 @@ class CharitiesViewModel @Inject constructor(
             _uiState.update { it.copy(errorMessage = "Please enter a valid amount.") }
             return
         }
+
         if (amount > state.balance) {
             _uiState.update { it.copy(errorMessage = "Insufficient balance. Watch more ads to earn!") }
             return

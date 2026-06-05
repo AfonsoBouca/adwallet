@@ -25,7 +25,8 @@ data class AdFeedUiState(
     val streakDays: Int = 0,
     val showStreakBrokenNotification: Boolean = false,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val userRole: String = "USER"
 )
 
 @HiltViewModel
@@ -58,7 +59,8 @@ class AdFeedViewModel @Inject constructor(
                 watchedAdIds = watched,
                 streakDays = user.streakDays,
                 showStreakBrokenNotification = isBroken && user.streakDays > 0,
-                isLoading = false
+                isLoading = false,
+                userRole = user.role
             )
         }.onEach { state ->
             _uiState.value = state

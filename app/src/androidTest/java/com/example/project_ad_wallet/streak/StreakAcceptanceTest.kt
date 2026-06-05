@@ -14,18 +14,34 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface DatabaseEntryPoint {
+    fun database(): com.example.project_ad_wallet.data.local.AdWalletDatabase
+}
+
 @RunWith(AndroidJUnit4::class)
 class StreakAcceptanceTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
+    private fun getDatabase(): com.example.project_ad_wallet.data.local.AdWalletDatabase {
+        return EntryPoints.get(
+            ApplicationProvider.getApplicationContext(),
+            DatabaseEntryPoint::class.java
+        ).database()
+    }
+
     @Before
     fun setup() {
-        val app = ApplicationProvider.getApplicationContext<AdWalletApp>()
-        val database = app.database
         runBlocking {
-            database.userProfileDao().upsertProfile(
+            getDatabase().userProfileDao().upsertProfile(
                 UserProfileEntity(
                     id = 1,
                     name = "User",
@@ -78,9 +94,8 @@ class StreakAcceptanceTest {
     fun streakBonus_isAppliedToEarnings() {
         // Scenario 3: Bónus aplicado ao saldo com streak ativa
         // Given o utilizador tem streak de 7 dias (bónus 20%)
-        val app = ApplicationProvider.getApplicationContext<AdWalletApp>()
         runBlocking {
-            app.database.userProfileDao().upsertProfile(
+            getDatabase().userProfileDao().upsertProfile(
                 UserProfileEntity(
                     id = 1,
                     name = "User",
@@ -111,9 +126,8 @@ class StreakAcceptanceTest {
     fun brokenStreak_showsNotification() {
         // Scenario 4: Streak quebrada mostra notificação
         // Given o utilizador não viu anúncios há 2 dias
-        val app = ApplicationProvider.getApplicationContext<AdWalletApp>()
         runBlocking {
-            app.database.userProfileDao().upsertProfile(
+            getDatabase().userProfileDao().upsertProfile(
                 UserProfileEntity(
                     id = 1,
                     name = "User",
