@@ -35,7 +35,7 @@ import com.example.project_ad_wallet.ui.navigation.Routes
 
 import com.example.project_ad_wallet.ui.components.AdWalletEmptyState
 import com.example.project_ad_wallet.ui.components.AdWalletErrorState
-import com.example.project_ad_wallet.ui.components.AdWalletLoadingState
+import com.example.project_ad_wallet.ui.components.SkeletonItem
 import androidx.compose.material.icons.filled.VideoLibrary
 
 @Composable
@@ -107,7 +107,15 @@ fun AdFeedScreen(
         ) {
             when {
                 uiState.isLoading -> {
-                    AdWalletLoadingState()
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        items(3) {
+                            SkeletonItem()
+                        }
+                    }
                 }
                 uiState.error != null -> {
                     AdWalletErrorState(

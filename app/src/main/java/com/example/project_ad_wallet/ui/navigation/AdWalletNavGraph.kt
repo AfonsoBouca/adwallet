@@ -43,6 +43,8 @@ import com.example.project_ad_wallet.ui.admin.AdminCharitiesScreen
 import com.example.project_ad_wallet.ui.admin.AdminUsersScreen
 import com.example.project_ad_wallet.data.model.CharityStatus
 import com.example.project_ad_wallet.ui.auth.LoginScreen
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import com.example.project_ad_wallet.ui.onboarding.OnboardingScreen
 
 @Composable
@@ -75,6 +77,30 @@ fun AdWalletNavGraph(
     NavHost(
         navController = navController,
         startDestination = startDestination,
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                animationSpec = tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                animationSpec = tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.End,
+                animationSpec = tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.End,
+                animationSpec = tween(300)
+            )
+        }
     ) {
         composable(Routes.ONBOARDING) {
             OnboardingScreen(

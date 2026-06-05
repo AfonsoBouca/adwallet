@@ -14,13 +14,20 @@ import com.example.project_ad_wallet.domain.StreakCalculator
 
 import androidx.compose.ui.platform.testTag
 
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+
 @Composable
 fun StreakWidget(
     streakDays: Int,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.testTag("streak_widget"),
+        modifier = modifier
+            .testTag("streak_widget")
+            .semantics {
+                contentDescription = "Streak de $streakDays dias"
+            },
         colors = CardDefaults.cardColors(containerColor = Color(0xFF161B22)),
         shape = RoundedCornerShape(12.dp)
     ) {
