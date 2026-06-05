@@ -96,6 +96,14 @@ class AdRepository @Inject constructor(
         }
     }
 
+    fun updateDemographicTarget(adId: String, target: com.example.project_ad_wallet.data.model.DemographicTarget) {
+        _ads.update { currentList ->
+            currentList.map { ad ->
+                if (ad.id == adId) ad.copy(demographicTarget = target) else ad
+            }
+        }
+    }
+
     fun addRating(rating: AdRating) {
         _ratings.update { it + rating }
     }
@@ -147,6 +155,24 @@ class AdRepository @Inject constructor(
         _watchedAdIds.value = emptySet()
         _skippedAdIds.value = emptySet()
         _questionnaireResponses.value = emptyList()
+    }
+
+    fun filterAdsForUser(ads: List<Ad>, userProfile: com.example.project_ad_wallet.data.local.entities.UserProfileEntity): List<Ad> {
+        val available = com.example.project_ad_wallet.domain.AdScheduler.filterAvailableAds(ads)
+        return com.example.project_ad_wallet.domain.DemographicMatcher.filterAdsForUser(available, userProfile)
+    }
+
+    fun filterAdsForUser(ads: List<Ad>, user: com.example.project_ad_wallet.data.model.User): List<Ad> {
+        val entity = com.example.project_ad_wallet.data.local.entities.UserProfileEntity(
+            name = user.name,
+            email = user.email,
+            age = user.age,
+            gender = user.gender,
+            streakDays = user.streakDays,
+            lastActiveDate = user.lastActiveDate,
+            profilePictureUri = user.profilePictureUri
+        )
+        return filterAdsForUser(ads, entity)
     }
 }
 

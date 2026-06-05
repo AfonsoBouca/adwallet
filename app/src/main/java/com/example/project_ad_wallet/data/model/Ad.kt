@@ -14,4 +14,5 @@ data class Ad(
     val status: AdStatus = AdStatus.PENDING,
     val durationSeconds: Int = 30,
     val isActive: Boolean = true,
+    val demographicTarget: DemographicTarget = DemographicTarget()
 )
