@@ -23,6 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.ui.res.stringResource
+import com.example.project_ad_wallet.R
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -68,7 +70,7 @@ fun WalletScreen(
     val tabs = listOf("Balance", "Earnings", "Donations", "Withdrawals")
 
     Scaffold(
-        topBar = { AdWalletTopBar(title = "Wallet", balance = uiState.balance) },
+        topBar = { AdWalletTopBar(title = stringResource(R.string.wallet_title), balance = uiState.balance) },
         bottomBar = { AdWalletBottomBar(navController = navController, items = bottomNavItems) },
     ) { innerPadding ->
         Box(
@@ -126,7 +128,7 @@ private fun BalanceTab(uiState: WalletUiState, onRequestWithdrawal: () -> Unit) 
             modifier = Modifier.size(64.dp),
         )
         Text(
-            text = "Current Balance",
+            text = stringResource(R.string.wallet_balance),
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -261,7 +263,7 @@ private fun DonationsTab(donations: List<Donation>, totalDonated: Double, navCon
     if (donations.isEmpty()) {
         AdWalletEmptyState(
             icon = Icons.Default.Favorite,
-            title = "Ainda não fizeste nenhuma doação.",
+            title = stringResource(R.string.donations_empty),
             subtitle = "Doa o teu saldo a uma causa que te importa.",
             actionLabel = "Donate to Charities",
             onAction = { navController.navigate(Routes.CHARITIES) }
@@ -280,13 +282,11 @@ private fun DonationsTab(donations: List<Donation>, totalDonated: Double, navCon
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
-                    Button(
+                    com.example.project_ad_wallet.ui.components.AnimatedDonateButton(
                         onClick = { navController.navigate(Routes.CHARITIES) },
-                        shape = RoundedCornerShape(50),
+                        enabled = true,
                         modifier = Modifier.testTag("donate_button_wallet")
-                    ) {
-                        Text("Donate")
-                    }
+                    )
                 }
             }
             items(donations) { donation ->

@@ -53,6 +53,7 @@ open class UserRepository @Inject constructor(
                     streakDays = entity.streakDays,
                     lastActiveDate = entity.lastActiveDate,
                     profilePictureUri = entity.profilePictureUri,
+                    role = entity.role,
                 )
             }
         }?.launchIn(repositoryScope)
@@ -71,6 +72,7 @@ open class UserRepository @Inject constructor(
                     streakDays = user.streakDays,
                     lastActiveDate = user.lastActiveDate,
                     profilePictureUri = user.profilePictureUri,
+                    role = user.role,
                 )
             )
         }

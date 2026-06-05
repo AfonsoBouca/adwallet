@@ -54,7 +54,7 @@ import com.example.project_ad_wallet.ui.registration.adWalletTextFieldColors
 
 import com.example.project_ad_wallet.ui.components.AdWalletEmptyState
 import com.example.project_ad_wallet.ui.components.AdWalletErrorState
-import com.example.project_ad_wallet.ui.components.AdWalletLoadingState
+import com.example.project_ad_wallet.ui.components.SkeletonItem
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.foundation.layout.Box
 
@@ -62,10 +62,22 @@ import androidx.compose.foundation.layout.Box
 fun CharitiesScreen(
     navController: NavHostController,
     bottomNavItems: List<BottomNavItem>,
+    preselectedCharityId: String? = null,
     viewModel: CharitiesViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val charityOfWeekViewModel: com.example.project_ad_wallet.ui.charities.CharityOfWeekViewModel = hiltViewModel()
+    val charityOfWeek by charityOfWeekViewModel.charityOfWeek.collectAsState()
+
+    LaunchedEffect(uiState.charities, preselectedCharityId) {
+        if (!preselectedCharityId.isNullOrBlank() && uiState.charities.isNotEmpty()) {
+            val charity = uiState.charities.find { it.id == preselectedCharityId }
+            if (charity != null) {
+                viewModel.selectCharity(charity)
+            }
+        }
+    }
 
     LaunchedEffect(uiState.errorMessage) {
         val msg = uiState.errorMessage
@@ -94,7 +106,17 @@ fun CharitiesScreen(
                 .padding(innerPadding)
         ) {
             when {
-                uiState.isLoading -> AdWalletLoadingState()
+                uiState.isLoading -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        items(3) {
+                            SkeletonItem()
+                        }
+                    }
+                }
                 uiState.error != null -> AdWalletErrorState(
                     message = uiState.error!!,
                     onRetry = { viewModel.retry() }
@@ -112,6 +134,26 @@ fun CharitiesScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
+                        if (uiState.userRole == "USER" && charityOfWeek != null) {
+                            item {
+                                com.example.project_ad_wallet.ui.components.CharityOfWeekCard(
+                                    charity = charityOfWeek!!,
+                                    onDonateClick = {
+                                        val c = charityOfWeek!!
+                                        viewModel.selectCharity(
+                                            com.example.project_ad_wallet.data.model.Charity(
+                                                id = c.charityId,
+                                                name = c.charityName,
+                                                description = c.charityDescription,
+                                                sdgNumber = c.sdgNumber,
+                                                sdgName = c.sdgDescription,
+                                                status = com.example.project_ad_wallet.data.model.CharityStatus.VERIFIED
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        }
                         items(uiState.charities, key = { it.id }) { charity ->
                             Card(
                                 modifier = Modifier
@@ -235,19 +277,11 @@ fun CharitiesScreen(
                 }
             },
             confirmButton = {
-                Button(
+                com.example.project_ad_wallet.ui.components.AnimatedDonateButton(
                     onClick = { viewModel.confirmDonation() },
                     enabled = confirmEnabled,
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = Color.White,
-                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.38f),
-                        disabledContentColor = Color.White.copy(alpha = 0.60f),
-                    ),
-                ) {
-                    Text("Confirm Donation", fontWeight = FontWeight.Bold)
-                }
+                    text = "Confirm Donation"
+                )
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.dismissCharity() }) {

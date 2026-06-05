@@ -8,6 +8,7 @@ import com.example.project_ad_wallet.data.local.AdWalletDatabase
 
 @HiltAndroidApp
 class AdWalletApp : Application() {
-    @Inject
-    lateinit var database: AdWalletDatabase
+    companion object {
+        lateinit var database: com.example.project_ad_wallet.data.local.AdWalletDatabase
+    }
 }
