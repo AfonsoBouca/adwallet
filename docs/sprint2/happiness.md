@@ -4,25 +4,25 @@
 
 ### Individual Responses
 
-**André**
+**Team Member 1**
 - How satisfied with work this sprint: 4
 - How satisfied with team: 5
 - How satisfied with product: 4
 - What would increase happiness: "Fewer merge conflicts when bringing branches together."
 
-**Rodrigo**
+**Team Member 2**
 - How satisfied with work this sprint: 5
 - How satisfied with team: 4
 - How satisfied with product: 5
 - What would increase happiness: "More time for code review discussions."
 
-**Afonso**
+**Team Member 3**
 - How satisfied with work this sprint: 4
 - How satisfied with team: 5
 - How satisfied with product: 4
 - What would increase happiness: "Better documentation on the Compose UI testing framework."
 
-**Tomás**
+**Team Member 4**
 - How satisfied with work this sprint: 5
 - How satisfied with team: 5
 - How satisfied with product: 4

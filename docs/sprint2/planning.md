@@ -7,14 +7,14 @@ Close the core AdWallet loop — allow users to watch ads, earn rewards, view ea
 
 | # | Feature | Type | Points | Owner(s) |
 |---|---------|------|--------|----------|
-| 25 | Watch ads + questionnaire + earn | Must | 30 | André, Rodrigo |
-| 54 | Advertiser upload portal | Must | 50 | Afonso, Tomás |
-| 42 | Rate advertisements | Must | 10 | André |
-| 44 | Earnings history | Should | 15 | Rodrigo |
-| 52 | Donation confirmation | Must | 10 | Afonso |
-| 53 | Donation history | Should | 20 | Tomás |
-| 41 | Report ads | Should | 20 | André |
-| 49 | Notification prefs | Should | 30 | Rodrigo |
+| 25 | Watch ads + questionnaire + earn | Must | 30 | Pair 1 |
+| 54 | Advertiser upload portal | Must | 50 | Pair 2 |
+| 42 | Rate advertisements | Must | 10 | Team Member |
+| 44 | Earnings history | Should | 15 | Team Member |
+| 52 | Donation confirmation | Must | 10 | Team Member |
+| 53 | Donation history | Should | 20 | Team Member |
+| 41 | Report ads | Should | 20 | Team Member |
+| 49 | Notification prefs | Should | 30 | Team Member |
 | **Total** | | | **185** | |
 
 ## Velocity
@@ -43,10 +43,10 @@ A feature is done when:
 9. CHANGELOG.md updated
 
 ## Team Assignments
-- Scrum Master: Rodrigo (daily standup, impediment removal)
-- Product Owner: André (backlog grooming, prioritization)
-- Pair 1 (A+R): feature/25-watch-ads, feature/44-earnings-history
-- Pair 2 (A+T): feature/54-advertiser-upload, feature/52-donation-confirmation
+- Scrum Master (daily standup, impediment removal)
+- Product Owner (backlog grooming, prioritization)
+- Pair 1: feature/25-watch-ads, feature/44-earnings-history
+- Pair 2: feature/54-advertiser-upload, feature/52-donation-confirmation
 - Floater: manage feature/42, #41, #49 in order
 
 ## Meetings

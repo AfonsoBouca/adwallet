@@ -1,7 +1,7 @@
 # Sprint 2 Retrospective
 
 ## Date & Attendees
-May 15, 2026 — André, Rodrigo, Afonso, Tomás
+May 15, 2026 — AdWallet Development Team
 
 ## Start — What We Should Begin Doing
 - Pair programming more regularly to catch issues early
@@ -18,7 +18,7 @@ May 15, 2026 — André, Rodrigo, Afonso, Tomás
 - Stop skipping retrospectives
 
 ## Continue — What We Should Keep Doing
-- Continue using `[MisterAI]` labels for AI-generated code
+- Continue using clear tags for AI-assisted code contributions
 - Continue GitHub Actions CI/CD for every PR
 - Continue pair programming on complex features
 - Continue writing acceptance tests in Gherkin
@@ -35,5 +35,5 @@ May 15, 2026 — André, Rodrigo, Afonso, Tomás
 ---
 
 Retro held: May 15, 2026
-Facilitated by: Rodrigo
+Facilitated by: Scrum Master
 Next retro: Sprint 3 (Friday, May 29, 2026)

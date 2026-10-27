@@ -29,10 +29,10 @@ All notable changes to this project will be documented in this file.
 ## [v0] - Sprint 0
 
 ### Added
-- Project initialized with Kotlin and Jetpack Compose # PBI: MisterAI
-- CI/CD pipeline with GitHub Actions # PBI: MisterAI
-- Basic directory structure for MVVM/Clean Architecture # PBI: MisterAI
+- Project initialized with Kotlin and Jetpack Compose
+- CI/CD pipeline with GitHub Actions
+- Basic directory structure for MVVM/Clean Architecture
 - Core ad feed screen with available advertisements
 - Quick Survey flow — watch an ad, answer a questionnaire, earn a reward
 - Virtual wallet balance management using ViewModel
-- Unit and acceptance tests for wallet and survey logic # PBI: MisterAI
+- Unit and acceptance tests for wallet and survey logic

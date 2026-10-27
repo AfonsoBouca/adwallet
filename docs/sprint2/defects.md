@@ -22,5 +22,5 @@ Escaped to next sprint: 0
 
 ---
 
-Logged by: André
+Logged by: Development Team
 Last updated: May 15, 2026

@@ -1,7 +1,7 @@
 # Sprint 2 Review
 
 ## Date & Attendees
-May 15, 2026 — André, Rodrigo, Afonso, Tomás, Prof. Assessor
+May 15, 2026 — AdWallet Development Team & Stakeholders
 
 ## Demo Summary
 Demonstrated working features:
